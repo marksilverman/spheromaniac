@@ -3,10 +3,10 @@ var canvas = document.querySelector('#glcanvas');
 var gl = canvas.getContext('webgl');
 var ww = window.innerWidth*.5;
 var hh = window.innerHeight*.6;
-var cubeRotation = 0.0;
 
 var spiro={
-    radius1: -0.3, radius2: 0.3, radius3: 0.4,
+    radius1: -0.3, radius2: -0.2, radius3: 0.4,
+    rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     scale: 0.7, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
     rotateSpeed: 0.00, rotateAngle: 0.0, loops: 10, x: -1, y: -1, oldx: -1, oldy: -1,
     program: gl.createProgram(), positions: [],
@@ -168,9 +168,9 @@ function drawScene()
     const modelViewMatrix = mat4.create();
     mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
 
-    cubeRotation+=0.01;
-    //mat4.rotate(modelViewMatrix, modelViewMatrix, cubeRotation, [0, 0, 1]);
-    //mat4.rotate(modelViewMatrix, modelViewMatrix, cubeRotation * .7, [0, 1, 0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotY, [0, 1, 0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotZ, [0, 0, 1]);
 
     gl.uniformMatrix4fv(spiro.modelLocation, false, modelViewMatrix);
 

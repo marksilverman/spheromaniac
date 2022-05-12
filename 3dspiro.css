@@ -6,3 +6,10 @@ canvas {
 video {
     display: none;
 }
+
+#radii {
+    background-color: lightgray;
+}
+#radius1disp, #radius2disp, #radius3disp {
+    width: 60px;
+}
