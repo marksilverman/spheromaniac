@@ -1,12 +1,23 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
 
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>Spiromaniac3D</title>
-    <link rel="stylesheet" href="./3dspiro.css" type="text/css">
+    <script src="3dspiro.js"></script>
     <script src="gl-matrix-min.js" defer></script>
-    <script src="spiro3d.js" defer></script>
+
+    <meta charset="utf-8">
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+            margin: 10px;
+        }
+        html, body, button {
+            margin: 2px;
+            font-family: monospace;
+            font-size: 20px;
+        }
+    </style>
+    <title>Spiromaniac3D</title>
 </head>
 
 <body>
@@ -16,7 +27,7 @@
                 <td>
                     <label>radius1</label>
                     <input tabindex="1" type="number" id="radius1disp">
-                    <input tabindex="1" type="range" id="radius1" value=-0.3 min=-1.0 max=1.0 step=.10 class="slider"
+                    <input tabindex="1" type="range" id="radius1" value=0.2 min=-1.0 max=1.0 step=.10 class="slider"
                            onchange="(function () { spiro.radius1 = document.getElementById('radius1disp').value=value; })();">
                 </td>
                 <td>
@@ -76,7 +87,7 @@
                 </td>
                 <td>
                     <label>scale</label>
-                    <input tabindex="-1" type="range" min=0.0 max=1.0 value=0.7 step=0.01 class="slider" id="scale"
+                    <input tabindex="-1" type="range" min=0.0 max=1.0 value=0.2 step=0.01 class="slider" id="scale"
                            oninput="(function(){ spiro.scale = value; })();">
                 </td>
                 <td>
@@ -89,9 +100,10 @@
                 </td>
             </tr>
         </table>
+        <canvas id="glcanvas" width="640" height="480"></canvas>
+        <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Spiromaniac</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/marksilverman/spiromaniac" property="cc:attributionName" rel="cc:attributionURL">Mark Silverman</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
         <div id="msg"></div>
     </p>
-    <canvas id="glcanvas" width="1024" height="768"></canvas>
 
 </body>
 </html>
