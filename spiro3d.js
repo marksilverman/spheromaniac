@@ -11,7 +11,7 @@ var spiro={
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     autoX: false, autoY: false, autoZ: false,
     scale: 0.7, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
-    rotateSpeed: 0.00, rotateAngle: 0.0, loops: 10, x: -1, y: -1, oldx: -1, oldy: -1,
+    loops: 10, x: -1, y: -1, oldx: -1, oldy: -1,
     program: gl.createProgram(), positions: [],
 
     draw: function()
@@ -45,15 +45,15 @@ var spiro={
 
             if (this.y > hh / 2) tooBig = true;
 
-            if(angle1)
+            if (angle1)
             {
                 this.positions.push(this.x);
                 this.positions.push(this.y);
                 this.positions.push(this.oldx);
                 this.positions.push(this.oldy);
             }
-            this.oldx=this.x;
-            this.oldy=this.y;
+            this.oldx = this.x;
+            this.oldy = this.y;
         }
         if (tooBig)
            this.scale-=0.25;
@@ -83,7 +83,6 @@ function main()
     document.getElementById("radius3disp").value=document.getElementById("radius3").value;
     document.getElementById("speed").value=spiro.speed;
     document.getElementById("scale").value=spiro.scale;
-    document.getElementById("rotate").value=spiro.rotateSpeed;
     document.getElementById("width").value=spiro.width;
     document.getElementById("blur").value=100-100*spiro.blur;
 
@@ -103,7 +102,7 @@ function main()
         }`;
 
     // fragment shader
-    const xxxfsSource = `
+    const zfsSource = `
         varying lowp vec4 vColor;
         void main(void) {
             gl_FragColor = vColor;
@@ -116,6 +115,8 @@ function main()
 
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+    spiro.draw();
 
     const shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
@@ -130,6 +131,21 @@ function main()
     spiro.projectionLocation = gl.getUniformLocation(shaderProgram, 'uProjectionMatrix');
     spiro.modelLocation = gl.getUniformLocation(shaderProgram, 'uModelViewMatrix');
 
+    spiro.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.positionBuffer);
+    //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.positions), gl.STATIC_DRAW);
+
+    spiro.colors = [
+    1.0,  1.0,  1.0,  1.0,    // white
+    1.0,  0.0,  0.0,  1.0,    // red
+    0.0,  1.0,  0.0,  1.0,    // green
+    0.0,  0.0,  1.0,  1.0,    // blue
+    ];
+
+    spiro.colorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.colors), gl.STATIC_DRAW);
+
     drawScene();
 }
 
@@ -138,14 +154,9 @@ function drawScene()
     spiro.positions.length=0;
     spiro.draw();
 
-    var colors = [
-        1.0,  1.0,  1.0,  1.0,    // white
-    ];
-
     if (Math.abs(spiro.offset) > spiro.maxOffset)
         spiro.speed = spiro.speed * -1;
     spiro.offset += spiro.speed / 10.0;
-    spiro.rotateAngle += spiro.rotateSpeed;
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clearDepth(1.0);
@@ -154,41 +165,38 @@ function drawScene()
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.positions), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(spiro.positionLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(spiro.positionLocation);
-
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(spiro.colorLocation, colors.length, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(spiro.colorLocation);
-
-    gl.useProgram(spiro.program);
-
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const fieldOfView = 45 * Math.PI / 180, zNear = 0.1, zFar = 100.0;
 
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    gl.uniformMatrix4fv(spiro.projectionLocation, false, projectionMatrix);
-
     const modelViewMatrix = mat4.create();
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
 
+    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotY, [0, 1, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotZ, [0, 0, 1]);
 
-    if (spiro.autoX) spiro.rotX += 0.05;
-    if (spiro.autoY) spiro.rotY += 0.05;
-    if (spiro.autoZ) spiro.rotZ += 0.05;
+    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.positions), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(spiro.positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(spiro.positionLocation);
 
+    //spiro.colors = [ 0.5, 0.5, 0.5, 0.5 ];
+    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.colorBuffer);
+    gl.vertexAttribPointer(spiro.colorLocation, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(spiro.colorLocation);
+
+    gl.useProgram(spiro.program);
+
+    gl.uniformMatrix4fv(spiro.projectionLocation, false, projectionMatrix);
     gl.uniformMatrix4fv(spiro.modelLocation, false, modelViewMatrix);
 
     gl.drawArrays(gl.LINES, 0, spiro.positions.length);
+
+    if (spiro.autoX) spiro.rotX += 0.05;
+    if (spiro.autoY) spiro.rotY += 0.05;
+    if (spiro.autoZ) spiro.rotZ += 0.05;
 
     raf = window.requestAnimationFrame(drawScene);
 }
