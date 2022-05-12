@@ -5,33 +5,43 @@ var ww = window.innerWidth*.5;
 var hh = window.innerHeight*.6;
 
 var spiro={
-    radius1: -0.3, radius2: -0.2, radius3: 0.4,
+    radius1: -0.3,
+    radius2: -0.2,
+    radius3: 0.4,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
+    autoX: false, autoY: false, autoZ: false,
     scale: 0.7, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
     rotateSpeed: 0.00, rotateAngle: 0.0, loops: 10, x: -1, y: -1, oldx: -1, oldy: -1,
     program: gl.createProgram(), positions: [],
 
     draw: function()
     {
-        var tooBig=false;
+        var tooBig = false;
         for (let angle1=0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
         {
             // 1st wheel
-            this.x = (this.radius1-this.radius2+this.radius3)*Math.cos(angle1);
-            this.y = (this.radius1-this.radius2+this.radius3)*Math.sin(angle1);
+            var rrr = this.radius1 - this.radius2 + this.radius3;
+            this.x = rrr * Math.cos(angle1);
+            this.y = rrr * Math.sin(angle1);
 
-            // 2nd wheel
-            var angle2=angle1*(this.radius1-this.radius2)/this.radius2;
-            this.x += Math.cos(angle2);
-            this.y -= Math.sin(angle2);
+            var angle2 = angle1;
 
-            // 3rd wheel
-            var angle3=angle2*(this.radius1-this.radius2+this.radius3)/this.radius3;
-            this.x += this.offset * Math.cos(angle3);
-            this.y -= this.offset * Math.sin(angle3);
+            if (this.radius2)
+            {
+                angle2=angle1 * (this.radius1 - this.radius2) / this.radius2;
+                this.x += Math.cos(angle2);
+                this.y -= Math.sin(angle2);
+            }
 
-            this.x *= 2*this.scale;
-            this.y *= 2*this.scale;
+            if (this.radius3)
+            {
+                var angle3=angle2 * rrr / this.radius3;
+                this.x += this.offset * Math.cos(angle3);
+                this.y -= this.offset * Math.sin(angle3);
+            }
+
+            this.x *= 2 * this.scale;
+            this.y *= 2 * this.scale;
 
             if (this.y > hh / 2) tooBig = true;
 
@@ -171,6 +181,10 @@ function drawScene()
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotY, [0, 1, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotZ, [0, 0, 1]);
+
+    if (spiro.autoX) spiro.rotX += 0.05;
+    if (spiro.autoY) spiro.rotY += 0.05;
+    if (spiro.autoZ) spiro.rotZ += 0.05;
 
     gl.uniformMatrix4fv(spiro.modelLocation, false, modelViewMatrix);
 

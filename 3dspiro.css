@@ -1,6 +1,12 @@
 canvas {
     border: 2px solid black;
     background-color: black;
+    width: 50%;
+    float: left;
+}
+
+#controls {
+    margin: 10px 10px 10px 10px;
 }
 
 video {
