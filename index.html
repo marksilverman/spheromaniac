@@ -21,17 +21,17 @@
 <div>
 <label>radius1</label>
 <input tabindex="1" type="number" id="radius1disp">
-<input tabindex="1" type="range" id="radius1" value=-0.3 min=-1.0 max=1.0 step=.10 class="slider"
+<input tabindex="1" type="range" id="radius1" value=-0.5 min=-1.0 max=1.0 step=.10 class="slider"
     oninput="(function () { spiro.radius1 = document.getElementById('radius1disp').value = parseFloat(value); })();">
 <br>
 <label>radius2</label>
 <input tabindex="2" type="number" id="radius2disp">
-<input tabindex="2" type="range" id="radius2" value=-0.2 min=-1.0 max=1.0 step=0.10 class="slider"
+<input tabindex="2" type="range" id="radius2" value=-0.1 min=-1.0 max=1.0 step=0.10 class="slider"
     oninput="(function () { spiro.radius2 = document.getElementById('radius2disp').value = parseFloat(value); })();">
 <br>
 <label>radius3</label>
 <input tabindex="2" type="number" id="radius3disp">
-<input tabindex="2" type="range" id="radius3" value=-0.4 min=-1.0 max=1.0 step=0.10 class="slider"
+<input tabindex="2" type="range" id="radius3" value=1.0 min=-1.0 max=1.0 step=0.10 class="slider"
     oninput="(function () { spiro.radius3 = document.getElementById('radius3disp').value = parseFloat(value); })();">
 </div>
 
@@ -52,7 +52,7 @@
     oninput="(function(){spiro.width = value;})();">
 <br>
 <label>scale</label>
-<input tabindex="-1" type="range" min=0.0 max=1.0 value=0.7 step=0.01 class="slider" id="scale"
+<input tabindex="-1" type="range" min=-20.0 max=0.0 value=-6.0 step=0.1 class="slider" id="scale"
     oninput="(function(){ spiro.scale = value; })();">
 <br>
 <label>blur</label>
@@ -87,17 +87,17 @@
 <br>
 
 <label>proX</label>
-<input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+<input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
     oninput="(function () { spiro.proX = parseFloat(value); })();">
 <br>
 
 <label>proY</label>
-<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
     oninput="(function () { spiro.proY = parseFloat(value); })();">
 <br>
 
 <label>proZ</label>
-<input tabindex="1" type="range" id="proZ" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+<input tabindex="1" type="range" id="proZ" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
     oninput="(function () { spiro.proZ = parseFloat(value); })();">
 <br>
 

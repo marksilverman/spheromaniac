@@ -47,7 +47,7 @@ var spiro =
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     proX: 0.0, proY: 0.0, proZ: 0.0,
     autoX: false, autoY: false, autoZ: false,
-    scale: 0.7, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
+    scale: -6.0, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
     loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
     program: gl.createProgram(),
     positions: [],
@@ -64,7 +64,7 @@ var spiro =
 
         let camX = 0.0;
         let camY = 0.0;
-        let camZ = 1.0;
+        let camZ = 0.0;
 
         let dx = camX + cosY * (sinZ * this.y + cosZ * this.x) - sinY * this.z;
         let dy = camY + sinX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) + cosX * (cosZ * this.y - sinZ * this.x);
@@ -75,16 +75,20 @@ var spiro =
         //this.newy = (this.fFov / dz) * dy + hh;
         this.newx = dx;
         this.newy = dy;
+        this.newz = dz;
 
         if (this.oldx != -1.0)
         {
             this.positions.push(this.newx);
             this.positions.push(this.newy);
+            this.positions.push(this.newz);
             this.positions.push(this.oldx);
             this.positions.push(this.oldy);
+            this.positions.push(this.oldz);
         }
         this.oldx = this.newx;
         this.oldy = this.newy;
+        this.oldz = this.newz;
     },
 
     draw: function()
@@ -120,8 +124,8 @@ var spiro =
                 this.y -= this.offset * Math.sin(angle3);
             }
 
-            this.x *= 2 * this.scale;
-            this.y *= 2 * this.scale;
+            //this.x *= 2 * this.scale;
+            //this.y *= 2 * this.scale;
 
             if (this.y > hh / 2) tooBig = true;
 
@@ -132,8 +136,8 @@ var spiro =
             if (angle1)
                 this.project(axisX, axisY, axisZ);
         }
-        if (tooBig)
-           this.scale-=0.25;
+        //if (tooBig)
+          // this.scale-=0.25;
         document.getElementById("scale").value=this.scale;
     }
 };
@@ -232,14 +236,14 @@ function drawScene()
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, spiro.scale]); // -6.0
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotY, [0, 1, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotZ, [0, 0, 1]);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, spiro.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.positions), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(spiro.positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(spiro.positionLocation, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(spiro.positionLocation);
 
     gl.useProgram(spiro.program);
@@ -271,7 +275,7 @@ function randomize()
     document.getElementById("radius1").value = spiro.radius1;
     document.getElementById("radius2").value = spiro.radius2;
     document.getElementById("radius3").value = spiro.radius3;
-    document.getElementById("scale").value = spiro.scale = 0.7;
+    //document.getElementById("scale").value = spiro.scale = -6.0;
 
     colorMgr.randomize();
     if (!raf) pause();
