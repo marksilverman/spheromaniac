@@ -3,6 +3,7 @@ var canvas = document.querySelector('#glcanvas');
 var gl = canvas.getContext('webgl');
 var ww = window.innerWidth*.5;
 var hh = window.innerHeight*.6;
+var raf = 0;
 
 var colorMgr =
 {
@@ -234,21 +235,24 @@ function randomize()
     document.getElementById("scale").value = spiro.scale = 0.7;
 
     colorMgr.randomize();
-//    if(!raf) pause();
+    if (!raf) pause();
 }
-/*
-        function pause() {
-            if(raf) {
-                window.cancelAnimationFrame(raf);
-                document.getElementById("pause").innerHTML="unpause";
-                raf=0;
-            }
-            else {
-                document.getElementById("pause").innerHTML="pause";
-                draw();
-            }
-        }
-*/
+
+function pause()
+{
+    if (raf)
+    {
+        window.cancelAnimationFrame(raf);
+        document.getElementById("pause").innerHTML = "unpause";
+        raf = 0;
+    }
+    else
+    {
+        document.getElementById("pause").innerHTML =  "pause";
+        drawScene();
+    }
+}
+
 function msg(info)
 {
     document.getElementById("msg").innerHTML=info;
