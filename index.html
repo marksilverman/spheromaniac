@@ -36,7 +36,7 @@
 </div>
 
 <label>speed</label>
-<input tabindex="-1" type="range" min=0 max=1 value=0.2 step=0.01 class="slider" id="speed"
+<input tabindex="-1" type="range" min=0 max=0.1 value=0.02 step=0.001 class="slider" id="speed"
     oninput="(function(){spiro.speed = Number.parseFloat(value); })();">
 <br>
 <label>maxoffset</label>
@@ -52,7 +52,7 @@
     oninput="(function(){spiro.width = value;})();">
 <br>
 <label>scale</label>
-<input tabindex="-1" type="range" min=-20.0 max=0.0 value=-6.0 step=0.1 class="slider" id="scale"
+<input tabindex="-1" type="range" min=-20.0 max=0.0 value=-6.0 step=-0.1 class="slider" id="scale"
     oninput="(function(){ spiro.scale = value; })();">
 <br>
 <label>blur</label>
@@ -87,18 +87,32 @@
 <br>
 
 <label>proX</label>
-<input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
+<input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=0.001 step=.00001 class="slider"
     oninput="(function () { spiro.proX = parseFloat(value); })();">
 <br>
 
 <label>proY</label>
-<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
+<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=0.001 step=.00001 class="slider"
     oninput="(function () { spiro.proY = parseFloat(value); })();">
 <br>
 
 <label>proZ</label>
-<input tabindex="1" type="range" id="proZ" value=0.0 min=0.0 max=0.01 step=.00001 class="slider"
+<input tabindex="1" type="range" id="proZ" value=0.0 min=0.0 max=0.001 step=.00001 class="slider"
     oninput="(function () { spiro.proZ = parseFloat(value); })();">
+<br>
+<label>camX</label>
+<input tabindex="1" type="range" id="camX" value=0.0 min=-3.0 max=3.0 step=.1 class="slider"
+    oninput="(function () { spiro.camX = parseFloat(value); })();">
+<br>
+
+<label>camY</label>
+<input tabindex="1" type="range" id="camY" value=0.0 min=-3.0 max=3.0 step=.1 class="slider"
+    oninput="(function () { spiro.camY = parseFloat(value); })();">
+<br>
+
+<label>camZ</label>
+<input tabindex="1" type="range" id="camZ" value=-6.0 min=-10.0 max=5.0 step=.1 class="slider"
+    oninput="(function () { spiro.camZ = parseFloat(value); })();">
 <br>
 
 </div>

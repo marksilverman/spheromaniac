@@ -46,6 +46,7 @@ var spiro =
     fFov: 1800.0,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     proX: 0.0, proY: 0.0, proZ: 0.0,
+    camX: 0.0, camY: 0.0, camZ: 0.0,
     autoX: false, autoY: false, autoZ: false,
     scale: -6.0, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
     loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
@@ -62,22 +63,16 @@ var spiro =
         let cosY = Math.cos(axisY);
         let cosZ = Math.cos(axisZ);
 
-        let camX = 0.0;
-        let camY = 0.0;
-        let camZ = 0.0;
+        let dx = this.camX + cosY * (sinZ * this.y + cosZ * this.x) - sinY * this.z;
+        let dy = this.camY + sinX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) + cosX * (cosZ * this.y - sinZ * this.x);
+        let dz = this.camZ + cosX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) - sinZ * (cosZ * this.y - sinZ * this.x);
 
-        let dx = camX + cosY * (sinZ * this.y + cosZ * this.x) - sinY * this.z;
-        let dy = camY + sinX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) + cosX * (cosZ * this.y - sinZ * this.x);
-        let dz = camZ + cosX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) - sinZ * (cosZ * this.y - sinZ * this.x);
-
-        // projected point
-        //this.newx = (this.fFov / dz) * dx + ww;
-        //this.newy = (this.fFov / dz) * dy + hh;
         this.newx = dx;
         this.newy = dy;
         this.newz = dz;
 
         if (this.oldx != -1.0)
+        //if (this.newx || this.newy || this.newz)
         {
             this.positions.push(this.newx);
             this.positions.push(this.newy);
@@ -103,18 +98,26 @@ var spiro =
 
         for (let angle1 = 0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
         {
-            // 1st wheel
             var rrr = this.radius1 - this.radius2 + this.radius3;
             this.x = rrr * Math.cos(angle1);
             this.y = rrr * Math.sin(angle1);
+            this.z = 0.0;
 
             var angle2 = angle1;
 
             if (this.radius2)
             {
                 angle2 = angle1 * (this.radius1 - this.radius2) / this.radius2;
-                this.x += Math.cos(angle2);
-                this.y -= Math.sin(angle2);
+                if (this.radius3)
+                {
+                    this.x += Math.cos(angle2);
+                    this.y -= Math.sin(angle2);
+                }
+                else
+                {
+                    this.x += this.offset * Math.cos(angle2);
+                    this.y -= this.offset * Math.sin(angle2);
+                }
             }
 
             if (this.radius3)
@@ -124,9 +127,6 @@ var spiro =
                 this.y -= this.offset * Math.sin(angle3);
             }
 
-            //this.x *= 2 * this.scale;
-            //this.y *= 2 * this.scale;
-
             if (this.y > hh / 2) tooBig = true;
 
             axisX += this.proX;
@@ -134,11 +134,13 @@ var spiro =
             axisZ += this.proZ;
 
             if (angle1)
+            {
                 this.project(axisX, axisY, axisZ);
+                //this.positions.push(this.x);
+                //this.positions.push(this.y);
+                //this.positions.push(-3.0);
+            }
         }
-        //if (tooBig)
-          // this.scale-=0.25;
-        document.getElementById("scale").value=this.scale;
     }
 };
 
@@ -163,7 +165,6 @@ function main()
     document.getElementById("radius2disp").value=document.getElementById("radius2").value;
     document.getElementById("radius3disp").value=document.getElementById("radius3").value;
     document.getElementById("speed").value=spiro.speed;
-    document.getElementById("scale").value=spiro.scale;
     document.getElementById("width").value=spiro.width;
     document.getElementById("blur").value=100-100*spiro.blur;
 
@@ -236,7 +237,7 @@ function drawScene()
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, spiro.scale]); // -6.0
+    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, spiro.scale]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotY, [0, 1, 0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotZ, [0, 0, 1]);
@@ -253,11 +254,12 @@ function drawScene()
 
     gl.uniform4fv(spiro.uGlobalColor, spiro.colors);
 
+    //gl.lineWidth(5);
     gl.drawArrays(gl.LINES, 0, spiro.positions.length);
 
-    if (spiro.autoX) spiro.rotX += 0.05;
-    if (spiro.autoY) spiro.rotY += 0.05;
-    if (spiro.autoZ) spiro.rotZ += 0.05;
+    if (spiro.autoX) spiro.rotX += 0.04;
+    if (spiro.autoY) spiro.rotY += 0.04;
+    if (spiro.autoZ) spiro.rotZ += 0.04;
 
     raf = window.requestAnimationFrame(drawScene);
 }
@@ -275,7 +277,6 @@ function randomize()
     document.getElementById("radius1").value = spiro.radius1;
     document.getElementById("radius2").value = spiro.radius2;
     document.getElementById("radius3").value = spiro.radius3;
-    //document.getElementById("scale").value = spiro.scale = -6.0;
 
     colorMgr.randomize();
     if (!raf) pause();
