@@ -4,7 +4,41 @@ var gl = canvas.getContext('webgl');
 var ww = window.innerWidth*.5;
 var hh = window.innerHeight*.6;
 
-var spiro={
+var colorMgr =
+{
+    radd: 0.001, gadd: -0.001, badd: 0.001, inColor: true,
+    randomize: function()
+    {
+        this.red = Math.random();
+        this.green = Math.random();
+        this.blue = Math.random();
+    },
+    flip: function()
+    {
+        this.randomize();
+        this.inColor = !colorMgr.inColor;
+    },
+    next: function()
+    {
+        if (!this.inColor)
+        {
+            this.red = this.green = this.blue = 1.0;
+            return;
+        }
+        this.red += this.radd;
+        this.green += this.gadd;
+        this.blue += this.badd;
+        if (this.red > 1.0) { this.red = 1.0; this.radd *= -1;}
+        if (this.red < 0.50) { this.red = 0.50; this.radd *= -1;}
+        if (this.green > 1.0) { this.green = 1.0; this.gadd *= -1;}
+        if (this.green < 0.50) { this.green = 0.50; this.gadd *= -1;}
+        if (this.blue > 1.0) { this.blue = 1.0; this.badd *= -1;}
+        if (this.blue < 0.50) { this.blue = 0.50; this.badd *= -1;}
+    }
+}
+
+var spiro =
+{
     radius1: -0.3,
     radius2: -0.2,
     radius3: 0.4,
@@ -16,6 +50,9 @@ var spiro={
 
     draw: function()
     {
+        colorMgr.next();
+        spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
+
         var tooBig = false;
         for (let angle1=0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
         {
@@ -86,31 +123,25 @@ function main()
     document.getElementById("width").value=spiro.width;
     document.getElementById("blur").value=100-100*spiro.blur;
 
+    colorMgr.randomize();
+
     // vertex shader
     const vsSource = `
         attribute vec4 aVertexPosition;
-        attribute vec4 aVertexColor;
 
         uniform mat4 uModelViewMatrix;
         uniform mat4 uProjectionMatrix;
 
-        varying lowp vec4 vColor;
-
         void main(void) {
             gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-            vColor = aVertexColor;
         }`;
 
     // fragment shader
-    const zfsSource = `
-        varying lowp vec4 vColor;
-        void main(void) {
-            gl_FragColor = vColor;
-        }`;
-
     const fsSource = `
-        void main() {
-            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        precision highp float;
+        uniform vec4 uGlobalColor;
+        void main(void) {
+            gl_FragColor = uGlobalColor;
         }`;
 
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -131,20 +162,10 @@ function main()
     spiro.projectionLocation = gl.getUniformLocation(shaderProgram, 'uProjectionMatrix');
     spiro.modelLocation = gl.getUniformLocation(shaderProgram, 'uModelViewMatrix');
 
+    spiro.uGlobalColor = gl.getUniformLocation(shaderProgram, "uGlobalColor");
+
     spiro.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, spiro.positionBuffer);
-    //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.positions), gl.STATIC_DRAW);
-
-    spiro.colors = [
-    1.0,  1.0,  1.0,  1.0,    // white
-    1.0,  0.0,  0.0,  1.0,    // red
-    0.0,  1.0,  0.0,  1.0,    // green
-    0.0,  0.0,  1.0,  1.0,    // blue
-    ];
-
-    spiro.colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spiro.colors), gl.STATIC_DRAW);
 
     drawScene();
 }
@@ -162,15 +183,14 @@ function drawScene()
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const fieldOfView = 45 * Math.PI / 180, zNear = 0.1, zFar = 100.0;
 
+    const modelViewMatrix = mat4.create();
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    const modelViewMatrix = mat4.create();
 
     mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, spiro.rotX, [1, 0, 0]);
@@ -182,15 +202,12 @@ function drawScene()
     gl.vertexAttribPointer(spiro.positionLocation, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(spiro.positionLocation);
 
-    //spiro.colors = [ 0.5, 0.5, 0.5, 0.5 ];
-    gl.bindBuffer(gl.ARRAY_BUFFER, spiro.colorBuffer);
-    gl.vertexAttribPointer(spiro.colorLocation, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(spiro.colorLocation);
-
     gl.useProgram(spiro.program);
 
     gl.uniformMatrix4fv(spiro.projectionLocation, false, projectionMatrix);
     gl.uniformMatrix4fv(spiro.modelLocation, false, modelViewMatrix);
+
+    gl.uniform4fv(spiro.uGlobalColor, spiro.colors);
 
     gl.drawArrays(gl.LINES, 0, spiro.positions.length);
 
@@ -202,28 +219,6 @@ function drawScene()
 }
 
 /*
-        var colorMgr=
-        {
-            radd: 1,gadd: -1,badd: 1,inColor: true,fgColor: '',bgColor: 'rgba(255, 255, 255,',
-            rando: function() {return Math.floor(Math.random()*100);},
-            next: function() {
-                if(!this.inColor) {
-                    this.bgColor='rgba(255, 255, 255,';
-                    this.fgColor='black';
-                    return;
-                }
-                this.red+=this.radd;
-                this.green+=this.gadd;
-                this.blue+=this.badd;
-                if(this.red>255) {this.red=255; this.radd*=-1;}
-                if(this.red<0) {this.red=0; this.radd*=-1;}
-                if(this.green>255) {this.green=255; this.gadd*=-1;}
-                if(this.green<0) {this.green=0; this.gadd*=-1;}
-                if(this.blue>255) {this.blue=255; this.badd*=-1;}
-                if(this.blue<0) {this.blue=0; this.badd*=-1;}
-                this.fgColor='rgba('+this.red+','+this.green+','+this.blue+')';
-            }
-        }
 
 
         function randomize() {
@@ -261,9 +256,6 @@ function drawScene()
 
         function main() {
 
-            colorMgr.red=colorMgr.rando();
-            colorMgr.green=colorMgr.rando();
-            colorMgr.blue=colorMgr.rando();
 
             draw();
         }
