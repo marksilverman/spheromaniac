@@ -65,7 +65,7 @@ var spiro =
 
             if (this.radius2)
             {
-                angle2=angle1 * (this.radius1 - this.radius2) / this.radius2;
+                angle2 = angle1 * (this.radius1 - this.radius2) / this.radius2;
                 this.x += Math.cos(angle2);
                 this.y -= Math.sin(angle2);
             }
@@ -218,27 +218,25 @@ function drawScene()
     raf = window.requestAnimationFrame(drawScene);
 }
 
+function randomize()
+{
+    spiro.radius1 = spiro.radius2 = spiro.radius3 = 0.0;
+    while (spiro.radius1 == 0.0)
+        spiro.radius1 = 1.0 - Math.random() * 2.0;
+    while(spiro.radius2 == 0.0 || spiro.radius2 == radius1)
+        spiro.radius2 = 1.0 - Math.random() * 2.0;
+    while(spiro.radius3 == 0.0 || spiro.radius3 == spiro.radius2 || spiro.radius3 == spiro.radius1)
+        spiro.radius3 = 1.0 - Math.random() * 2.0;
+
+    document.getElementById("radius1").value = spiro.radius1;
+    document.getElementById("radius2").value = spiro.radius2;
+    document.getElementById("radius3").value = spiro.radius3;
+    document.getElementById("scale").value = spiro.scale = 0.7;
+
+    colorMgr.randomize();
+//    if(!raf) pause();
+}
 /*
-
-
-        function randomize() {
-            spiro.radius1=spiro.radius2=spiro.radius3=0;
-            while(spiro.radius1==0)
-                spiro.radius1=Math.round(1.0-Math.random()*2.0);
-            while(spiro.radius2==0||spiro.radius2==radius1)
-                spiro.radius2=Math.round(1.0-Math.random()*2.0);
-            while(spiro.radius3==0||spiro.radius3==spiro.radius2||spiro.radius3==spiro.radius1)
-                spiro.radius3=Math.round(1.0-Math.random()*2.0);
-            document.getElementById("radius1").value=spiro.radius1;
-            document.getElementById("radius2").value=spiro.radius2;
-            document.getElementById("radius3").value=spiro.radius3;
-            document.getElementById("scale").value=spiro.scale=20;
-            if(colorMgr.inColor)
-                colorMgr.bgColor='rgba('+rando1()+','+rando1()+','+rando1()+',';
-            else
-                colorMgr.bgColor='rgba(255, 255, 255,';
-            if(!raf) pause();
-        }
         function pause() {
             if(raf) {
                 window.cancelAnimationFrame(raf);
@@ -249,17 +247,6 @@ function drawScene()
                 document.getElementById("pause").innerHTML="pause";
                 draw();
             }
-        }
-        function rando1(r) {
-            return Math.floor(Math.random()*155)+100;
-        }
-
-        function main() {
-
-
-            draw();
-        }
-
         }
 */
 function msg(info)
