@@ -46,44 +46,17 @@ var spiro =
     fFov: 1800.0,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     proX: 0.0, proY: 0.0, proZ: 0.0,
-    camX: 0.0, camY: 0.0, camZ: 0.0,
+    centerX: 0.0, centerY: 0.0, centerZ: 0.0,
     autoX: false, autoY: false, autoZ: false,
     scale: -6.0, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
     loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
     program: gl.createProgram(),
     positions: [],
 
-    project: function(axisX, axisY, axisZ)
+    // process (as in "procession") 
+    process: function(axisX, axisY, axisZ)
     {
-        let sinX = Math.sin(axisX);
-        let sinY = Math.sin(axisY);
-        let sinZ = Math.sin(axisZ);
 
-        let cosX = Math.cos(axisX);
-        let cosY = Math.cos(axisY);
-        let cosZ = Math.cos(axisZ);
-
-        let dx = this.camX + cosY * (sinZ * this.y + cosZ * this.x) - sinY * this.z;
-        let dy = this.camY + sinX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) + cosX * (cosZ * this.y - sinZ * this.x);
-        let dz = this.camZ + cosX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) - sinZ * (cosZ * this.y - sinZ * this.x);
-
-        this.newx = dx;
-        this.newy = dy;
-        this.newz = dz;
-
-        if (this.oldx != -1.0)
-        //if (this.newx || this.newy || this.newz)
-        {
-            this.positions.push(this.newx);
-            this.positions.push(this.newy);
-            this.positions.push(this.newz);
-            this.positions.push(this.oldx);
-            this.positions.push(this.oldy);
-            this.positions.push(this.oldz);
-        }
-        this.oldx = this.newx;
-        this.oldy = this.newy;
-        this.oldz = this.newz;
     },
 
     draw: function()
@@ -91,7 +64,6 @@ var spiro =
         colorMgr.next();
         spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
 
-        var tooBig = false;
         let axisX = 0.0;
         let axisY = 0.0;
         let axisZ = 0.0;
@@ -127,19 +99,34 @@ var spiro =
                 this.y -= this.offset * Math.sin(angle3);
             }
 
-            if (this.y > hh / 2) tooBig = true;
-
             axisX += this.proX;
             axisY += this.proY;
             axisZ += this.proZ;
 
+            this.x += this.centerX;
+            this.y += this.centerY;
+            this.z += this.centerZ;
+            let center = vec3.fromValues(this.centerX, this.centerY, this.centerZ);
+            xyz = vec3.fromValues(this.x, this.y, this.z);
+            vec3.rotateX(xyz, xyz, center, axisX);
+            vec3.rotateY(xyz, xyz, center, axisY);
+            vec3.rotateZ(xyz, xyz, center, axisZ);
+            this.x = xyz[0];
+            this.y = xyz[1];
+            this.z = xyz[2];
+
             if (angle1)
             {
-                this.project(axisX, axisY, axisZ);
-                //this.positions.push(this.x);
-                //this.positions.push(this.y);
-                //this.positions.push(-3.0);
+                this.positions.push(this.x);
+                this.positions.push(this.y);
+                this.positions.push(this.z);
+                this.positions.push(this.oldx);
+                this.positions.push(this.oldy);
+                this.positions.push(this.oldz);
             }
+            this.oldx = this.x;
+            this.oldy = this.y;
+            this.oldz = this.z;
         }
     }
 };
