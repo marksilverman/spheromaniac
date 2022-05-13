@@ -43,11 +43,49 @@ var spiro =
     radius1: -0.3,
     radius2: -0.2,
     radius3: 0.4,
+    fFov: 1800.0,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
+    proX: 0.0, proY: 0.0, proZ: 0.0,
     autoX: false, autoY: false, autoZ: false,
     scale: 0.7, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
-    loops: 10, x: -1, y: -1, oldx: -1, oldy: -1,
-    program: gl.createProgram(), positions: [],
+    loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
+    program: gl.createProgram(),
+    positions: [],
+
+    project: function(axisX, axisY, axisZ)
+    {
+        let sinX = Math.sin(axisX);
+        let sinY = Math.sin(axisY);
+        let sinZ = Math.sin(axisZ);
+
+        let cosX = Math.cos(axisX);
+        let cosY = Math.cos(axisY);
+        let cosZ = Math.cos(axisZ);
+
+        let camX = 0.0;
+        let camY = 0.0;
+        let camZ = 1.0;
+
+        let dx = camX + cosY * (sinZ * this.y + cosZ * this.x) - sinY * this.z;
+        let dy = camY + sinX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) + cosX * (cosZ * this.y - sinZ * this.x);
+        let dz = camZ + cosX * (cosY * this.z + sinY * (sinZ * this.y + cosZ * this.x)) - sinZ * (cosZ * this.y - sinZ * this.x);
+
+        // projected point
+        //this.newx = (this.fFov / dz) * dx + ww;
+        //this.newy = (this.fFov / dz) * dy + hh;
+        this.newx = dx;
+        this.newy = dy;
+
+        if (this.oldx != -1.0)
+        {
+            this.positions.push(this.newx);
+            this.positions.push(this.newy);
+            this.positions.push(this.oldx);
+            this.positions.push(this.oldy);
+        }
+        this.oldx = this.newx;
+        this.oldy = this.newy;
+    },
 
     draw: function()
     {
@@ -55,7 +93,11 @@ var spiro =
         spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
 
         var tooBig = false;
-        for (let angle1=0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
+        let axisX = 0.0;
+        let axisY = 0.0;
+        let axisZ = 0.0;
+
+        for (let angle1 = 0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
         {
             // 1st wheel
             var rrr = this.radius1 - this.radius2 + this.radius3;
@@ -73,7 +115,7 @@ var spiro =
 
             if (this.radius3)
             {
-                var angle3=angle2 * rrr / this.radius3;
+                var angle3 = angle2 * rrr / this.radius3;
                 this.x += this.offset * Math.cos(angle3);
                 this.y -= this.offset * Math.sin(angle3);
             }
@@ -83,15 +125,12 @@ var spiro =
 
             if (this.y > hh / 2) tooBig = true;
 
+            axisX += this.proX;
+            axisY += this.proY;
+            axisZ += this.proZ;
+
             if (angle1)
-            {
-                this.positions.push(this.x);
-                this.positions.push(this.y);
-                this.positions.push(this.oldx);
-                this.positions.push(this.oldy);
-            }
-            this.oldx = this.x;
-            this.oldy = this.y;
+                this.project(axisX, axisY, axisZ);
         }
         if (tooBig)
            this.scale-=0.25;

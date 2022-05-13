@@ -86,6 +86,21 @@
 <input tabindex="-1" type="checkbox" id="autoZ" unchecked onclick="(function(){ spiro.rotZ = 0; spiro.autoZ = !spiro.autoZ; })();">
 <br>
 
+<label>proX</label>
+<input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+    oninput="(function () { spiro.proX = parseFloat(value); })();">
+<br>
+
+<label>proY</label>
+<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+    oninput="(function () { spiro.proY = parseFloat(value); })();">
+<br>
+
+<label>proZ</label>
+<input tabindex="1" type="range" id="proZ" value=0.0 min=0.0 max=1.0 step=.001 class="slider"
+    oninput="(function () { spiro.proZ = parseFloat(value); })();">
+<br>
+
 </div>
 </div>
 </div>
