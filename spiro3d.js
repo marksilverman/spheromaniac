@@ -40,24 +40,17 @@ var colorMgr =
 
 var spiro =
 {
-    radius1: -0.3,
-    radius2: -0.2,
-    radius3: 0.4,
     fFov: 1800.0,
+    radius1: -0.3, radius2: -0.2, radius3: 0.4,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     proX: 0.0, proY: 0.0, proZ: 0.0,
+    speedX: 0.02, speedY: 0.02, speedZ: 0.02,
     centerX: 0.0, centerY: 0.0, centerZ: 0.0,
-    autoX: false, autoY: false, autoZ: false,
-    scale: -6.0, speed: 0.04, blur: 0.2, width: 3, offset: 0.0, maxOffset: 0.2,
+    autoX: false, autoY: false, autoZ: false, autoOffset: false,
+    scale: -6.0, speed: 0.0, blur: 0.0, width: 3, offset: 0.0, maxOffset: 0.2,
     loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
     program: gl.createProgram(),
     positions: [],
-
-    // process (as in "procession") 
-    process: function(axisX, axisY, axisZ)
-    {
-
-    },
 
     draw: function()
     {
@@ -204,18 +197,24 @@ function main()
 
 function drawScene()
 {
-    spiro.positions.length=0;
+    // if (spiro.blur == 0.0)
+    {
+        spiro.positions.length=0;
+        gl.clearColor(0.0,0.0,0.0,1.0);
+        gl.clearDepth(1.0);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LEQUAL);
+        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    }
     spiro.draw();
 
-    if (Math.abs(spiro.offset) > spiro.maxOffset)
-        spiro.speed = spiro.speed * -1;
-    spiro.offset += spiro.speed / 10.0;
+    if (spiro.autoOffset)
+    {
+        if (Math.abs(spiro.offset) > spiro.maxOffset)
+            spiro.speed = spiro.speed * -1;
+        spiro.offset += spiro.speed / 10.0;
+    }
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clearDepth(1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const fieldOfView = 45 * Math.PI / 180, zNear = 0.1, zFar = 100.0;
@@ -244,9 +243,9 @@ function drawScene()
     //gl.lineWidth(5);
     gl.drawArrays(gl.LINES, 0, spiro.positions.length);
 
-    if (spiro.autoX) spiro.rotX += 0.04;
-    if (spiro.autoY) spiro.rotY += 0.04;
-    if (spiro.autoZ) spiro.rotZ += 0.04;
+    if (spiro.autoX) spiro.rotX += spiro.speedX;
+    if (spiro.autoY) spiro.rotY += spiro.speedY;
+    if (spiro.autoZ) spiro.rotZ += spiro.speedZ;
 
     raf = window.requestAnimationFrame(drawScene);
 }

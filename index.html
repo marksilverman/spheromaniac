@@ -35,29 +35,24 @@
     oninput="(function () { spiro.radius3 = document.getElementById('radius3disp').value = parseFloat(value); })();">
 </div>
 
-<label>speed</label>
-<input tabindex="-1" type="range" min=0 max=0.1 value=0.02 step=0.001 class="slider" id="speed"
-    oninput="(function(){spiro.speed = Number.parseFloat(value); })();">
-<br>
-<label>maxoffset</label>
-<input tabindex="-1" type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
-    oninput="(function(){ spiro.maxOffset = value; })();">
-<br>
 <label>loops</label>
 <input tabindex="-1" type="range" min="1" max="100" value="10" class="slider" id="loops"
-    oninput="(function(){spiro.loops = value;})();">
+    oninput="(function(){spiro.loops = parseFloat(value);})();">
 <br>
+
 <label>width</label>
 <input tabindex="-1" type="range" min="1" max="20" value="3" class="slider" id="width"
-    oninput="(function(){spiro.width = value;})();">
+    oninput="(function(){spiro.width = parseFloat(value);})();">
 <br>
+
 <label>scale</label>
 <input tabindex="-1" type="range" min=-20.0 max=0.0 value=-6.0 step=-0.1 class="slider" id="scale"
-    oninput="(function(){ spiro.scale = value; })();">
+    oninput="(function(){ spiro.scale = parseFloat(value); })();">
 <br>
+
 <label>blur</label>
-<input tabindex="-1" type="range" min="10" max="100" value="80" class="slider" id="blur"
-    oninput="(function(){ spiro.blur = 1 - value / 100; })();">
+<input tabindex="-1" type="range" min="0" max="100" value="0" class="slider" id="blur"
+    oninput="(function(){ spiro.blur = 1 - parseFloat(value) / 100; })();">
 <br>
 
 <button tabindex="-1" id="pause" onclick="pause()">pause</button>
@@ -68,22 +63,50 @@
 <input tabindex="-1" type="checkbox" id="inColor" checked onclick="(function(){ colorMgr.flip(); })();">
 <br>
 
+<label>offset</label>
+<input tabindex="-1" type="range" min=-2.0 max=2.0 step=0.1 value="0.2" class="slider" id="offset"
+    oninput="(function(){ spiro.offset = parseFloat(value); })();">
+
+<input tabindex="-1" type="checkbox" id="autoOffset" unchecked onclick="(function(){ spiro.offset = 0.0; spiro.autoOffset = !spiro.autoOffset; })();">
+
+<label>offset speed</label>
+<input tabindex="-1" type="range" min=0 max=0.1 value=0.02 step=0.001 class="slider" id="speed"
+    oninput="(function(){spiro.speed = Number.parseFloat(value); })();">
+<br>
+
+<label>maxoffset</label>
+<input tabindex="-1" type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
+    oninput="(function(){ spiro.maxOffset = parseFloat(value); })();">
+<br>
+
 <label>rotX</label>
 <input tabindex="1" type="range" id="rotX" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotX = value; })();">
-<input tabindex="-1" type="checkbox" id="autoX" unchecked onclick="(function(){ spiro.rotX = 0; spiro.autoX = !spiro.autoX; })();">
+    oninput="(function () { spiro.rotX = parseFloat(value); })();">
+<input tabindex="-1" type="checkbox" id="autoX" unchecked onclick="(function(){ spiro.rotX = 0.0; spiro.autoX = !spiro.autoX; })();">
+
+<label>speedX</label>
+<input tabindex="1" type="range" id="speedX" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
+    oninput="(function () { spiro.speedX = parseFloat(value); })();">
 <br>
 
 <label>rotY</label>
 <input tabindex="1" type="range" id="rotY" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotY = value; })();">
+    oninput="(function () { spiro.rotY = parseFloat(value); })();">
 <input tabindex="-1" type="checkbox" id="autoY" unchecked onclick="(function(){ spiro.rotY = 0; spiro.autoY = !spiro.autoY; })();">
+
+<label>speedY</label>
+<input tabindex="1" type="range" id="speedY" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
+    oninput="(function () { spiro.speedY = parseFloat(value); })();">
 <br>
 
 <label>rotZ</label>
 <input tabindex="1" type="range" id="rotZ" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotZ = value; })();">
+    oninput="(function () { spiro.rotZ = parseFloat(value); })();">
 <input tabindex="-1" type="checkbox" id="autoZ" unchecked onclick="(function(){ spiro.rotZ = 0; spiro.autoZ = !spiro.autoZ; })();">
+
+<label>speedZ</label>
+<input tabindex="1" type="range" id="speedZ" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
+    oninput="(function () { spiro.speedZ = parseFloat(value); })();">
 <br>
 
 <label>proX</label>
