@@ -43,12 +43,12 @@ var spiro =
     fFov: 1800.0,
     radius1: -0.3, radius2: -0.2, radius3: 0.4,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
-    proX: 0.0, proY: 0.0, proZ: 0.0,
+    proX: 0.0, proY: 0.0,
     speedX: 0.02, speedY: 0.02, speedZ: 0.02,
     centerX: 0.0, centerY: 0.0, centerZ: 0.0,
     autoX: false, autoY: false, autoZ: false, autoOffset: false,
-    scale: -6.0, speed: 0.0, blur: 0.0, width: 3, offset: 0.0, maxOffset: 0.2,
-    loops: 10, x: -1.0, y: -1.0, z: 1.0, oldx: -1.0, oldy: -1.0,
+    scale: -6.0, speed: 0.0, width: 3, offset: 0.5, maxOffset: 1.0,
+    loops: 20.0, x: 0.0, y: 0.0, z: 0.0, oldx: -1.0, oldy: -1.0, oldz: -1.0,
     program: gl.createProgram(),
     positions: [],
 
@@ -59,54 +59,33 @@ var spiro =
 
         let axisX = 0.0;
         let axisY = 0.0;
-        let axisZ = 0.0;
+        this.x = this.offset;
+        this.y = 0.0;
+        this.z = 0.0;
+        let center = vec3.fromValues(this.centerX, this.centerY, this.centerZ);
 
-        for (let angle1 = 0.0; angle1 < this.loops * 2 * Math.PI; angle1 += 0.005)
+        for (let angle1 = 0.0; angle1 < this.loops * Math.PI; angle1 += 0.01)
         {
-            var rrr = this.radius1 - this.radius2 + this.radius3;
-            this.x = rrr * Math.cos(angle1);
-            this.y = rrr * Math.sin(angle1);
-            this.z = 0.0;
-
-            var angle2 = angle1;
-
-            if (this.radius2)
-            {
-                angle2 = angle1 * (this.radius1 - this.radius2) / this.radius2;
-                if (this.radius3)
-                {
-                    this.x += Math.cos(angle2);
-                    this.y -= Math.sin(angle2);
-                }
-                else
-                {
-                    this.x += this.offset * Math.cos(angle2);
-                    this.y -= this.offset * Math.sin(angle2);
-                }
-            }
-
-            if (this.radius3)
-            {
-                var angle3 = angle2 * rrr / this.radius3;
-                this.x += this.offset * Math.cos(angle3);
-                this.y -= this.offset * Math.sin(angle3);
-            }
-
             axisX += this.proX;
             axisY += this.proY;
-            axisZ += this.proZ;
 
-            this.x += this.centerX;
-            this.y += this.centerY;
-            this.z += this.centerZ;
-            let center = vec3.fromValues(this.centerX, this.centerY, this.centerZ);
+            // start with a circle
+            this.x = this.centerX + this.offset + Math.cos(angle1);
+            this.y = this.centerY + Math.sin(angle1);
+            this.z = this.centerZ;
+
+            // rotate around Z to create a basic spirograph
             xyz = vec3.fromValues(this.x, this.y, this.z);
+            vec3.rotateZ(xyz, xyz, center, angle1 * (this.radius1 - this.radius2) / this.radius2);
+
+            // rotate around X and Y to move into 3d
             vec3.rotateX(xyz, xyz, center, axisX);
             vec3.rotateY(xyz, xyz, center, axisY);
-            vec3.rotateZ(xyz, xyz, center, axisZ);
+
             this.x = xyz[0];
             this.y = xyz[1];
             this.z = xyz[2];
+
 
             if (angle1)
             {
@@ -146,7 +125,6 @@ function main()
     document.getElementById("radius3disp").value=document.getElementById("radius3").value;
     document.getElementById("speed").value=spiro.speed;
     document.getElementById("width").value=spiro.width;
-    document.getElementById("blur").value=100-100*spiro.blur;
 
     colorMgr.randomize();
 
@@ -197,15 +175,12 @@ function main()
 
 function drawScene()
 {
-    // if (spiro.blur == 0.0)
-    {
-        spiro.positions.length=0;
-        gl.clearColor(0.0,0.0,0.0,1.0);
-        gl.clearDepth(1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-    }
+    spiro.positions.length=0;
+    gl.clearColor(0.0,0.0,0.0,1.0);
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     spiro.draw();
 
     if (spiro.autoOffset)
