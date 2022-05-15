@@ -41,9 +41,8 @@ var colorMgr =
 var spiro =
 {
     fFov: 1800.0,
-    radius1: -0.3, radius2: -0.2, radius3: 0.4,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
-    proX: 0.0, proY: 0.0,
+    proX: 0.0, proY: 0.0, proZ: -0.3333,
     speedX: 0.02, speedY: 0.02, speedZ: 0.02,
     centerX: 0.0, centerY: 0.0, centerZ: 0.0,
     autoX: false, autoY: false, autoZ: false, autoOffset: false,
@@ -57,8 +56,7 @@ var spiro =
         colorMgr.next();
         spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
 
-        let axisX = 0.0;
-        let axisY = 0.0;
+        let axisX = 0.0, axisY = 0.0, axisZ = 0.0;
         this.x = this.offset;
         this.y = 0.0;
         this.z = 0.0;
@@ -66,8 +64,9 @@ var spiro =
 
         for (let angle1 = 0.0; angle1 < this.loops * Math.PI; angle1 += 0.01)
         {
-            axisX += this.proX;
-            axisY += this.proY;
+            axisX += this.proX / 1000.0;
+            axisY += this.proY / 1000.0;
+            axisZ += this.proZ;
 
             // start with a circle
             this.x = this.centerX + this.offset + Math.cos(angle1);
@@ -76,7 +75,7 @@ var spiro =
 
             // rotate around Z to create a basic spirograph
             xyz = vec3.fromValues(this.x, this.y, this.z);
-            vec3.rotateZ(xyz, xyz, center, angle1 * (this.radius1 - this.radius2) / this.radius2);
+            vec3.rotateZ(xyz, xyz, center, angle1 * this.proZ);
 
             // rotate around X and Y to move into 3d
             vec3.rotateX(xyz, xyz, center, axisX);
@@ -120,9 +119,9 @@ function main()
     if (!gl)
         return alert('Your browser doesn\'t support WebGL.');
 
-    document.getElementById("radius1disp").value=document.getElementById("radius1").value;
-    document.getElementById("radius2disp").value=document.getElementById("radius2").value;
-    document.getElementById("radius3disp").value=document.getElementById("radius3").value;
+    document.getElementById("proXdisp").value=document.getElementById("proX").value;
+    document.getElementById("proYdisp").value=document.getElementById("proY").value;
+    document.getElementById("proZdisp").value=document.getElementById("proZ").value;
     document.getElementById("speed").value=spiro.speed;
     document.getElementById("width").value=spiro.width;
 
@@ -227,17 +226,17 @@ function drawScene()
 
 function randomize()
 {
-    spiro.radius1 = spiro.radius2 = spiro.radius3 = 0.0;
-    while (spiro.radius1 == 0.0)
-        spiro.radius1 = 1.0 - Math.random() * 2.0;
-    while(spiro.radius2 == 0.0 || spiro.radius2 == radius1)
-        spiro.radius2 = 1.0 - Math.random() * 2.0;
-    while(spiro.radius3 == 0.0 || spiro.radius3 == spiro.radius2 || spiro.radius3 == spiro.radius1)
-        spiro.radius3 = 1.0 - Math.random() * 2.0;
+    spiro.proX = spiro.proY = spiro.proZ = 0.0;
+    while (spiro.proZ == 0.0)
+        spiro.proZ = (1.0 - Math.random() * 2.0).toPrecision(2);
+    /*while(spiro.proY == 0.0 || spiro.proY == proZ)
+        spiro.proY = (1.0 - Math.random() * 2.0).toPrecision(1);
+    while(spiro.proX == 0.0 || spiro.proX == spiro.proY || spiro.proX == spiro.proZ)
+        spiro.proX = (1.0 - Math.random() * 2.0).toPrecision(1);*/
 
-    document.getElementById("radius1").value = spiro.radius1;
-    document.getElementById("radius2").value = spiro.radius2;
-    document.getElementById("radius3").value = spiro.radius3;
+    document.getElementById("proX").value = document.getElementById("proXdisp").value = spiro.proX;
+    document.getElementById("proY").value = document.getElementById("proYdisp").value = spiro.proY;
+    document.getElementById("proZ").value = document.getElementById("proZdisp").value = spiro.proZ;
 
     colorMgr.randomize();
     if (!raf) pause();
