@@ -1,6 +1,6 @@
 
 var canvas = document.querySelector('#glcanvas');
-var gl = canvas.getContext('webgl');
+var gl = canvas.getContext('webgl2');
 var ww = window.innerWidth*.5;
 var hh = window.innerHeight*.6;
 var raf = 0;
@@ -40,14 +40,12 @@ var colorMgr =
 
 var spiro =
 {
-    fFov: 1800.0,
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
     proX: 0.0, proY: 0.0, proZ: -0.3333,
     speedX: 0.02, speedY: 0.02, speedZ: 0.02,
-    centerX: 0.0, centerY: 0.0, centerZ: 0.0,
+    fFov: 1800.0, centerX: 0.0, centerY: 0.0, centerZ: 0.0,
     autoX: false, autoY: false, autoZ: false, autoOffset: false,
-    scale: -6.0, speed: 0.0, width: 3, offset: 0.5, maxOffset: 1.0,
-    loops: 20.0, x: 0.0, y: 0.0, z: 0.0, oldx: -1.0, oldy: -1.0, oldz: -1.0,
+    scale: -6.0, speed: 0.0, width: 3, offset: 0.5, maxOffset: 1.0, loops: 40.0,
     program: gl.createProgram(),
     positions: [],
 
@@ -57,10 +55,8 @@ var spiro =
         spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
 
         let axisX = 0.0, axisY = 0.0, axisZ = 0.0;
-        this.x = this.offset;
-        this.y = 0.0;
-        this.z = 0.0;
         let center = vec3.fromValues(this.centerX, this.centerY, this.centerZ);
+        let oldxyz = vec3.create();
 
         for (let angle1 = 0.0; angle1 < this.loops * Math.PI; angle1 += 0.01)
         {
@@ -69,35 +65,32 @@ var spiro =
             axisZ += this.proZ;
 
             // start with a circle
-            this.x = this.centerX + this.offset + Math.cos(angle1);
-            this.y = this.centerY + Math.sin(angle1);
-            this.z = this.centerZ;
+            let x = parseFloat(this.centerX + this.offset + Math.cos(angle1));
+            let y = parseFloat(this.centerY + Math.sin(angle1));
+            let z = parseFloat(this.centerZ);
+            xyz = vec3.fromValues(x, y, z);
 
             // rotate around Z to create a basic spirograph
-            xyz = vec3.fromValues(this.x, this.y, this.z);
             vec3.rotateZ(xyz, xyz, center, angle1 * this.proZ);
 
             // rotate around X and Y to move into 3d
             vec3.rotateX(xyz, xyz, center, axisX);
             vec3.rotateY(xyz, xyz, center, axisY);
 
-            this.x = xyz[0];
-            this.y = xyz[1];
-            this.z = xyz[2];
-
-
             if (angle1)
             {
-                this.positions.push(this.x);
-                this.positions.push(this.y);
-                this.positions.push(this.z);
-                this.positions.push(this.oldx);
-                this.positions.push(this.oldy);
-                this.positions.push(this.oldz);
+                let jog =  0.005;
+                for (let i = 0; i < 1/*spiro.width*/; i++)
+                {
+                this.positions.push(xyz[0]+jog*i);
+                this.positions.push(xyz[1]+jog*i);
+                this.positions.push(xyz[2]+jog*i);
+                this.positions.push(oldxyz[0]+jog*i);
+                this.positions.push(oldxyz[1]+jog*i);
+                this.positions.push(oldxyz[2]+jog*i);
+                }
             }
-            this.oldx = this.x;
-            this.oldy = this.y;
-            this.oldz = this.z;
+            vec3.copy(oldxyz, xyz);
         }
     }
 };
@@ -123,7 +116,7 @@ function main()
     document.getElementById("proYdisp").value=document.getElementById("proY").value;
     document.getElementById("proZdisp").value=document.getElementById("proZ").value;
     document.getElementById("speed").value=spiro.speed;
-    document.getElementById("width").value=spiro.width;
+    //document.getElementById("width").value=spiro.width;
 
     colorMgr.randomize();
 
@@ -174,7 +167,8 @@ function main()
 
 function drawScene()
 {
-    spiro.positions.length=0;
+    while(spiro.positions.length)
+        spiro.positions.pop();
     gl.clearColor(0.0,0.0,0.0,1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -214,7 +208,8 @@ function drawScene()
 
     gl.uniform4fv(spiro.uGlobalColor, spiro.colors);
 
-    //gl.lineWidth(5);
+    //msg(gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE) );
+    //gl.lineWidth(2);
     gl.drawArrays(gl.LINES, 0, spiro.positions.length);
 
     if (spiro.autoX) spiro.rotX += spiro.speedX;
