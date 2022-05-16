@@ -135,7 +135,7 @@ function randomize()
 
 function pause()
 {
-    if (raf)
+    if (document.getElementById("pause").innerHTML == "pause")
     {
         window.cancelAnimationFrame(raf);
         document.getElementById("pause").innerHTML = "unpause";
