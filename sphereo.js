@@ -118,13 +118,16 @@ function drawScene()
 
 function randomize()
 {
-    proX = (1.0 - Math.random() * 2.0).toPrecision(2);
-    document.getElementById("proX").value = document.getElementById("proXdisp").value = proZ;
+    proX = proY = 0.0;
 
-    proY = (1.0 - Math.random() * 2.0).toPrecision(2);
-    document.getElementById("proY").value = document.getElementById("proYdisp").value = proZ;
+    if (Math.random() > 0.5)
+        proX = (Math.random() * 0.7).toPrecision(2);
+    else
+        proY = (Math.random() * 0.7).toPrecision(2);
+    proZ = Math.random().toPrecision(2);
 
-    proZ = (1.0 - Math.random() * 2.0).toPrecision(2);
+    document.getElementById("proX").value = document.getElementById("proXdisp").value = proX;
+    document.getElementById("proY").value = document.getElementById("proYdisp").value = proY;
     document.getElementById("proZ").value = document.getElementById("proZdisp").value = proZ;
     colorMgr.randomize();
     if (!raf) pause();
