@@ -3,93 +3,89 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Spiromaniac3D</title>
-    <link rel="stylesheet" href="./3dspiro.css" type="text/css">
+    <title>Sphereomaniac</title>
+    <link rel="stylesheet" href="sphereo.css" type="text/css">
     <script src="gl-matrix-min.js" defer></script>
-    <script src="spiro3d.js" defer></script>
+    <script src="sphereo.js" defer></script>
 </head>
 
 <body>
 
 <div class="container" style="display: flex; height: 600px;">
-
 <canvas id="canvas" width=1024 height=768 style="width: 60%"></canvas>
-
 <div style="flex-grow: 1; background: gray;">
 <div id="controls">
-
 <div>
-
 <div id="pro">
 
 <label>proX</label>
 <input tabindex="1" type="number" id="proXdisp" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { spiro.proX = document.getElementById('proX').value = parseFloat(value); })();">
+    oninput="(function () { proX = document.getElementById('proX').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proX" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { spiro.proX = document.getElementById('proXdisp').value = parseFloat(value); })();">
+    oninput="(function () { proX = document.getElementById('proXdisp').value = parseFloat(value); })();">
 <br>
 
 <label>proY</label>
 <input tabindex="2" type="number" id="proYdisp" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { spiro.proY = document.getElementById('proY').value = parseFloat(value); })();">
+    oninput="(function () { proY = document.getElementById('proY').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { spiro.proY = document.getElementById('proYdisp').value = parseFloat(value); })();">
+    oninput="(function () { proY = document.getElementById('proYdisp').value = parseFloat(value); })();">
 <br>
 
 <label>proZ</label>
 <input tabindex="2" type="number" id="proZdisp" value=-0.3333 min=-1.0 max=1.0 step=0.01
-    oninput="(function () { spiro.proZ = document.getElementById('proZ').value = parseFloat(value); })();">
+    oninput="(function () { proZ = document.getElementById('proZ').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proZ" value=-0.3333 min=-1.0 max=1.0 step=0.1 class="slider"
-    oninput="(function () { spiro.proZ = document.getElementById('proZdisp').value = parseFloat(value); })();">
+    oninput="(function () { proZ = document.getElementById('proZdisp').value = parseFloat(value); })();">
 <br>
 
 </div>
 
 <label>loops</label>
 <input tabindex="-1" type="range" min="1.0" max="100.0" value="40.0" step=0.01 class="slider" id="loops"
-    oninput="(function(){spiro.loops = parseFloat(value);})();">
+    oninput="(function() { loops = parseFloat(value);})();">
 <br>
 
 <label>width</label>
-<input tabindex="-1" type="range" min="1" max="20" value="3" class="slider" id="width"
-    oninput="(function(){spiro.width = parseFloat(value);})();">
+<input tabindex="-1" type="range" min="1" max="20" value="3" class="slider" id="lineWidth"
+    oninput="(function() { lineWidth = parseFloat(value);})();">
 <br>
 
 <label>scale</label>
 <input tabindex="-1" type="range" min=0.0 max=200.0 value=40.0 step=1 class="slider" id="scale"
-    oninput="(function(){ spiro.scale = parseFloat(value); })();">
+    oninput="(function() { scale = parseFloat(value); })();">
 <br>
 
 <div id="rot">
 
 <label>rotX</label>
 <input tabindex="1" type="range" id="rotX" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotX = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoX" unchecked onclick="(function(){ spiro.rotX = 0.0; spiro.autoX = !spiro.autoX; })();">
+    oninput="(function () { rotX = parseFloat(value); })();">
+<input tabindex="-1" type="checkbox" id="autoX" unchecked onclick="(function(){ rotX = 0.0; autoX = !autoX; })();">
 
 <label>speedX</label>
 <input tabindex="1" type="range" id="speedX" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { spiro.speedX = parseFloat(value); })();">
+    oninput="(function () { speedX = parseFloat(value); })();">
 <br>
 
 <label>rotY</label>
 <input tabindex="1" type="range" id="rotY" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotY = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoY" unchecked onclick="(function(){ spiro.rotY = 0; spiro.autoY = !spiro.autoY; })();">
+    oninput="(function () { rotY = parseFloat(value); })();">
+<input tabindex="-1" type="checkbox" id="autoY" unchecked onclick="(function(){ rotY = 0; autoY = !autoY; })();">
 
 <label>speedY</label>
 <input tabindex="1" type="range" id="speedY" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { spiro.speedY = parseFloat(value); })();">
+    oninput="(function () { speedY = parseFloat(value); })();">
 <br>
 
 <label>rotZ</label>
 <input tabindex="1" type="range" id="rotZ" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { spiro.rotZ = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoZ" unchecked onclick="(function(){ spiro.rotZ = 0; spiro.autoZ = !spiro.autoZ; })();">
+    oninput="(function () { rotZ = parseFloat(value); })();">
+<input tabindex="-1" type="checkbox" id="autoZ" unchecked onclick="(function(){ rotZ = 0; autoZ = !autoZ; })();">
 
 <label>speedZ</label>
 <input tabindex="1" type="range" id="speedZ" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { spiro.speedZ = parseFloat(value); })();">
+    oninput="(function () { speedZ = parseFloat(value); })();">
 <br>
 
 </div>
@@ -97,7 +93,6 @@
 <div id="other">
 
 <button tabindex="-1" id="pause " onclick="pause()">pause</button>
-
 <button tabindex="-1" onclick="randomize()">randomize</button>
 
 <label>color shift</label>
@@ -109,19 +104,19 @@
 <div id="offset">
 
 <label>offset</label>
-<input tabindex="-1" type="range" min=-1.0 max=1.0 step=0.01 value="0.5" class="slider" id="offset"
-    oninput="(function(){ spiro.offset = parseFloat(value); })();">
+<input tabindex="-1" type="range" min=-5.0 max=5.0 step=0.05 value="2.5" class="slider" id="offset"
+    oninput="(function(){ offset = parseFloat(value); })();">
 
-<input tabindex="-1" type="checkbox" id="autoOffset" unchecked onclick="(function(){ spiro.offset = 0.0; spiro.autoOffset = !spiro.autoOffset; })();">
+<input tabindex="-1" type="checkbox" id="autoOff" unchecked onclick="(function(){ offset = 0.0; autoOff = !autoOff; })();">
 
-<label>offset speed</label>
-<input tabindex="-1" type="range" min=0 max=0.1 value=0.02 step=0.001 class="slider" id="speed"
-    oninput="(function(){spiro.speed = Number.parseFloat(value); })();">
+<label>speedOff</label>
+<input tabindex="-1" type="range" min=0 max=0.05 value=0.01 step=0.0005 class="slider" id="speedOff"
+    oninput="(function() { speedOff = Number.parseFloat(value); })();">
 <br>
 
 <label>maxoffset</label>
 <input tabindex="-1" type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
-    oninput="(function(){ spiro.maxOffset = parseFloat(value); })();">
+    oninput="(function() { maxOffset = parseFloat(value); })();">
 <br>
 
 </div>
