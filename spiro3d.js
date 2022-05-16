@@ -41,7 +41,7 @@ var colorMgr =
 var spiro =
 {
     rotX: 0.0, rotY: 0.0, rotZ: 0.0,
-    proX: 0.0, proY: 0.0, proZ: -0.3333,
+    proX: 0.0, proY: 0.0, proZ: -0.3333, //proZ2: 0.0,
     speedX: 0.02, speedY: 0.02, speedZ: 0.02,
     fFov: 1800.0, centerX: 0.0, centerY: 0.0, centerZ: 0.0,
     autoX: false, autoY: false, autoZ: false, autoOffset: false,
@@ -54,7 +54,7 @@ var spiro =
         colorMgr.next();
         spiro.colors = [colorMgr.red, colorMgr.blue, colorMgr.green, 1.0];
 
-        let axisX = 0.0, axisY = 0.0, axisZ = 0.0;
+        let axisX = 0.0, axisY = 0.0;
         let center = vec3.fromValues(this.centerX, this.centerY, this.centerZ);
         let oldxyz = vec3.create();
 
@@ -62,7 +62,6 @@ var spiro =
         {
             axisX += this.proX / 1000.0;
             axisY += this.proY / 1000.0;
-            axisZ += this.proZ;
 
             // start with a circle
             let x = parseFloat(this.centerX + this.offset + Math.cos(angle1));
@@ -72,6 +71,7 @@ var spiro =
 
             // rotate around Z to create a basic spirograph
             vec3.rotateZ(xyz, xyz, center, angle1 * this.proZ);
+            //vec3.rotateZ(xyz, xyz, center, -0.5*angle1 * (this.proZ2 / this.proZ));
 
             // rotate around X and Y to move into 3d
             vec3.rotateX(xyz, xyz, center, axisX);
@@ -115,6 +115,7 @@ function main()
     document.getElementById("proXdisp").value=document.getElementById("proX").value;
     document.getElementById("proYdisp").value=document.getElementById("proY").value;
     document.getElementById("proZdisp").value=document.getElementById("proZ").value;
+    //document.getElementById("proZ2disp").value=document.getElementById("proZ2").value;
     document.getElementById("speed").value=spiro.speed;
     //document.getElementById("width").value=spiro.width;
 
