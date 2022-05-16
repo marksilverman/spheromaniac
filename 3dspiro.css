@@ -5,6 +5,31 @@ canvas {
     float: left;
 }
 
+body {
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+#pro {
+    padding: 5px 5px 5px 5px;
+    background-color: darkolivegreen;
+}
+
+#other {
+    padding: 5px 5px 5px 5px;
+    background-color: saddlebrown;
+}
+
+#offset {
+    padding: 5px 5px 5px 5px;
+    background-color: mediumpurple
+}
+
+#rot {
+    padding: 5px 5px 5px 5px;
+    background-color: darkblue;
+    color: lightblue;
+}
+
 #controls {
     margin: 10px 10px 10px 10px;
 }
