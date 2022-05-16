@@ -1,10 +1,10 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 var rotX = 0.0, rotY = 0.0, rotZ = 0.0;
-var proX = 0.0, proY = 0.0, proZ = -0.3333;
-var speedX = 0.02, speedY = 0.02, speedZ = 0.02;
-var autoX = false, autoY = false, autoZ = false, autoOff = false;
-var fFov = 1800.0, scale = 40.0, speedOff = 0.01, lineWidth = 3, offset = 2.5, maxOffset = 5.0, loops = 40.0, raf = 0;
+var proX = 0.28, proY = 0.0, proZ = -0.3333;
+var speedX = 0.01, speedY = 0.01, speedZ = 0.02;
+var autoX = true, autoY = true, autoZ = false, autoOff = false;
+var scale = 60.0, speedOff = 0.01, lineWidth = 3, offset = 2.5, maxOffset = 5.0, loops = 60.0, raf = 0;
 
 var colorMgr =
 {
@@ -78,7 +78,7 @@ function drawScene()
         angleY += proY / 1000.0;
 
         // start with a circle
-        let xyz = [ parseFloat(offset + Math.cos(angleZ)), parseFloat(Math.sin(angleZ)), 0.0 ];
+        let xyz = [ scale * parseFloat(offset + Math.cos(angleZ)), scale * parseFloat(Math.sin(angleZ)), 0.0 ];
 
         // rotate around Z to create a basic spirograph
         vec3.rotateZ(xyz, xyz, center, angleZ * proZ);
@@ -93,9 +93,9 @@ function drawScene()
         vec3.rotateZ(xyz, xyz, center, rotZ);
 
         if (angleZ == 0)
-            ctx.moveTo(xyz[0]*scale, xyz[1]*scale);
+            ctx.moveTo(xyz[0], xyz[1]);
         else
-            ctx.lineTo(xyz[0]*scale, xyz[1]*scale);
+            ctx.lineTo(xyz[0], xyz[1]);
     }
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = colorMgr.fgColor;
