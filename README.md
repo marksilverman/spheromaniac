@@ -2,7 +2,7 @@
 
 To generate typical [spirograph](https://en.wikipedia.org/wiki/Spirograph)-like patterns (aka [mathematical roulettes](https://en.wikipedia.org/wiki/Roulette_(curve))), you can trace the path of a circle rolling around inside a bigger circle. What if, instead, you rolled one *sphere* inside another *sphere*? That generates a three-dimensional pattern that I call a *spherograph*. This code generates spherographs.
 
-[spherograph](sphero.png)
+![spherograph](sphero.png)
 
 # How does it work?
 
