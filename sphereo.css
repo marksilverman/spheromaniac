@@ -11,25 +11,16 @@ body {
     font-family: "Lucida Console", "Courier New", monospace;
 }
 
-#pro {
+#section2 {
     padding: 5px 5px 5px 5px;
     background-color: darkolivegreen;
+    color: white;
 }
 
-#other {
+#section1 {
     padding: 5px 5px 5px 5px;
-    background-color: saddlebrown;
-}
-
-#offset {
-    padding: 5px 5px 5px 5px;
-    background-color: mediumpurple
-}
-
-#rot {
-    padding: 5px 5px 5px 5px;
-    background-color: darkblue;
-    color: lightblue;
+    background-color: black;
+    color: white;
 }
 
 #controls {

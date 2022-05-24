@@ -16,23 +16,28 @@
 <div style="flex-grow: 1; background: gray;">
 <div id="controls">
 <div>
-<div id="pro">
+</div>
+Spheromaniac! by <a href=https://github.com/marksilverman/spheromaniac.git>Mark Silverman</a>
+<div>
 
-<label>proX</label>
+
+<div id="section1">
+
+<label>rotateX</label>
 <input tabindex="2" type="number" id="proXdisp" value=0.28 min=0.0 max=2.0 step=0.01
     oninput="(function () { proX = document.getElementById('proX').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proX" value=0.28 min=0.0 max=2.0 step=0.01
     oninput="(function () { proX = document.getElementById('proXdisp').value = parseFloat(value); })();">
 <br>
 
-<label>proY</label>
+<label>rotateY</label>
 <input tabindex="2" type="number" id="proYdisp" value=0.0 min=0.0 max=2.0 step=0.01
     oninput="(function () { proY = document.getElementById('proY').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=2.0 step=0.01
     oninput="(function () { proY = document.getElementById('proYdisp').value = parseFloat(value); })();">
 <br>
 
-<label>proZ</label>
+<label>rotateZ</label>
 <input tabindex="2" type="number" id="proZdisp" value=-0.3333 min=-1.0 max=1.0 step=0.01
     oninput="(function () { proZ = document.getElementById('proZ').value = parseFloat(value); })();">
 <input tabindex="1" type="range" id="proZ" value=-0.3333 min=-1.0 max=1.0 step=0.1 class="slider"
@@ -41,47 +46,65 @@
 
 </div>
 
-<label>loops</label>
-<input tabindex="-1" type="range" min="1.0" max="100.0" value="60.0" step=0.01 class="slider" id="loops"
+<div id="section2">
+<label>offset:</label>
+<input type="range" min=-5.0 max=5.0 step=0.05 value="2.5" class="slider" id="offset"
+    oninput="(function(){ offset = parseFloat(value); })();">
+<br>
+animate?
+<input type="checkbox" id="autoOff" unchecked onclick="(function(){ offset = 0.0; autoOff = !autoOff; })();">
+<br>
+<label>speed:</label>
+<input type="range" min=0 max=0.05 value=0.01 step=0.0005 class="slider" id="speedOff"
+    oninput="(function() { speedOff = Number.parseFloat(value); })();">
+<br>
+<label>maximum offset:</label>
+<input type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
+    oninput="(function() { maxOffset = parseFloat(value); })();">
+</div>
+
+<div id="section1">
+<label>number of loops:</label>
+<input type="range" min="1.0" max="100.0" value="60.0" step=0.01 class="slider" id="loops"
     oninput="(function() { loops = parseFloat(value);})();">
 <br>
 
-<label>width</label>
-<input tabindex="-1" type="range" min="1" max="20" value="3" class="slider" id="lineWidth"
+<label>line width:</label>
+<input type="range" min="1" max="20" value="3" class="slider" id="lineWidth"
     oninput="(function() { lineWidth = parseFloat(value);})();">
 <br>
 
-<label>scale</label>
-<input tabindex="-1" type="range" min=0.0 max=200.0 value=60.0 step=1 class="slider" id="scale"
+<label>scale:</label>
+<input type="range" min=0.0 max=200.0 value=60.0 step=1 class="slider" id="scale"
     oninput="(function() { scale = parseFloat(value); })();">
 <br>
+</div>
+<div id="section2">
 
-<div id="rot">
-
-<label>rotX</label>
+<label>cameraX:</label>
 <input tabindex="1" type="range" id="rotX" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
     oninput="(function () { rotX = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoX" checked onclick="(function(){ rotX = 0.0; autoX = !autoX; })();">
+<input type="checkbox" id="autoX" checked onclick="(function(){ rotX = 0.0; autoX = !autoX; })();">
 
 <label>speedX</label>
 <input tabindex="1" type="range" id="speedX" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
     oninput="(function () { speedX = parseFloat(value); })();">
 <br>
 
-<label>rotY</label>
+<label>cameraY:</label>
 <input tabindex="1" type="range" id="rotY" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
     oninput="(function () { rotY = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoY" checked onclick="(function(){ rotY = 0; autoY = !autoY; })();">
+<input type="checkbox" id="autoY" checked onclick="(function(){ rotY = 0; autoY = !autoY; })();">
 
 <label>speedY</label>
 <input tabindex="1" type="range" id="speedY" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
     oninput="(function () { speedY = parseFloat(value); })();">
 <br>
 
-<label>rotZ</label>
+<label>cameraZ:</label>
 <input tabindex="1" type="range" id="rotZ" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
     oninput="(function () { rotZ = parseFloat(value); })();">
-<input tabindex="-1" type="checkbox" id="autoZ" unchecked onclick="(function(){ rotZ = 0; autoZ = !autoZ; })();">
+<input type="checkbox" id="autoZ" unchecked onclick="(function(){ rotZ = 0; autoZ = !autoZ; })();">
 
 <label>speedZ</label>
 <input tabindex="1" type="range" id="speedZ" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
@@ -90,41 +113,20 @@
 
 </div>
 
-<div id="other">
+<div id="section1">
 
-<button tabindex="-1" id="pause" onclick="pause()">pause</button>
-<button tabindex="-1" onclick="randomize()">randomize</button>
+<button id="pause" onclick="pause()">pause</button>
+<button onclick="randomize()">randomize</button>
 
 <label>color shift</label>
-<input tabindex="-1" type="checkbox" id="inColor" checked onclick="(function(){ colorMgr.flip(); })();">
+<input type="checkbox" id="inColor" checked onclick="(function(){ colorMgr.flip(); })();">
 <br>
 
 </div>
 
-<div id="offset">
-
-<label>offset</label>
-<input tabindex="-1" type="range" min=-5.0 max=5.0 step=0.05 value="2.5" class="slider" id="offset"
-    oninput="(function(){ offset = parseFloat(value); })();">
-
-<input tabindex="-1" type="checkbox" id="autoOff" unchecked onclick="(function(){ offset = 0.0; autoOff = !autoOff; })();">
-<br>
-
-<label>speedOff</label>
-<input tabindex="-1" type="range" min=0 max=0.05 value=0.01 step=0.0005 class="slider" id="speedOff"
-    oninput="(function() { speedOff = Number.parseFloat(value); })();">
-<br>
-
-<label>maxoffset</label>
-<input tabindex="-1" type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
-    oninput="(function() { maxOffset = parseFloat(value); })();">
-<br>
-
 </div>
 </div>
 </div>
-</div>
-
 </div>
 
 <div id="msg"></div>

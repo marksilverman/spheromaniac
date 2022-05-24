@@ -8,7 +8,7 @@ var scale = 60.0, speedOff = 0.01, lineWidth = 3, offset = 2.5, maxOffset = 5.0,
 
 var colorMgr =
 {
-    red: 100, green: 200, blue: 50, radd: 1, gadd: -1, badd: 1, inColor: true, fgColor: '',
+    red: 100, green: 200, blue: 50, radd: 2, gadd: -2, badd: 2, inColor: true, fgColor: '',
     randomize: function ()
     {
         this.red = 100 + Math.floor(Math.random() * 100);
