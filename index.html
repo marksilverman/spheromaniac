@@ -48,19 +48,11 @@ Spheromaniac! by <a href=https://github.com/marksilverman/spheromaniac.git>Mark 
 
 <div id="section2">
 <label>offset:</label>
-<input type="range" min=-5.0 max=5.0 step=0.05 value="2.5" class="slider" id="offset"
+<input type="range" min=-4.0 max=4.0 step=0.05 value="2.5" class="slider" id="offset"
     oninput="(function(){ offset = parseFloat(value); })();">
-<br>
-animate?
-<input type="checkbox" id="autoOff" unchecked onclick="(function(){ offset = 0.0; autoOff = !autoOff; })();">
-<br>
-<label>speed:</label>
-<input type="range" min=0 max=0.05 value=0.01 step=0.0005 class="slider" id="speedOff"
+<label>animate:</label>
+<input type="range" min=0 max=0.05 value=0.0 step=0.0005 class="slider" id="speedOff"
     oninput="(function() { speedOff = Number.parseFloat(value); })();">
-<br>
-<label>maximum offset:</label>
-<input type="range" min=0.0 max=1.0 step=0.1 value="0.2" class="slider" id="maxoffset"
-    oninput="(function() { maxOffset = parseFloat(value); })();">
 </div>
 
 <div id="section1">
@@ -82,32 +74,26 @@ animate?
 <div id="section2">
 
 <label>cameraX:</label>
-<input tabindex="1" type="range" id="rotX" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { rotX = parseFloat(value); })();">
-<input type="checkbox" id="autoX" checked onclick="(function(){ rotX = 0.0; autoX = !autoX; })();">
-
-<label>speedX</label>
+<input tabindex="1" type="range" id="camX" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
+    oninput="(function () { camX = parseFloat(value); })();">
+<label>speedX:</label>
 <input tabindex="1" type="range" id="speedX" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
     oninput="(function () { speedX = parseFloat(value); })();">
 <br>
 
 <label>cameraY:</label>
-<input tabindex="1" type="range" id="rotY" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { rotY = parseFloat(value); })();">
-<input type="checkbox" id="autoY" checked onclick="(function(){ rotY = 0; autoY = !autoY; })();">
-
-<label>speedY</label>
+<input tabindex="1" type="range" id="camY" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
+    oninput="(function () { camY = parseFloat(value); })();">
+<label>speedY:</label>
 <input tabindex="1" type="range" id="speedY" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
     oninput="(function () { speedY = parseFloat(value); })();">
 <br>
 
 <label>cameraZ:</label>
-<input tabindex="1" type="range" id="rotZ" value=0.0 min=0.0 max=10.0 step=.01 class="slider"
-    oninput="(function () { rotZ = parseFloat(value); })();">
-<input type="checkbox" id="autoZ" unchecked onclick="(function(){ rotZ = 0; autoZ = !autoZ; })();">
-
-<label>speedZ</label>
-<input tabindex="1" type="range" id="speedZ" value=0.02 min=0.0 max=0.1 step=.001 class="slider"
+<input tabindex="1" type="range" id="camZ" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
+    oninput="(function () { camZ = parseFloat(value); })();">
+<label>speedZ:</label>
+<input tabindex="1" type="range" id="speedZ" value=0.0 min=0.0 max=0.1 step=.001 class="slider"
     oninput="(function () { speedZ = parseFloat(value); })();">
 <br>
 

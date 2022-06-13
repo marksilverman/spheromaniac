@@ -1,10 +1,9 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
-var rotX = 0.0, rotY = 0.0, rotZ = 0.0;
+var camX = 0.0, camY = 0.0, camZ = 0.0;
 var proX = 0.28, proY = 0.0, proZ = -0.3333;
-var speedX = 0.01, speedY = 0.01, speedZ = 0.02;
-var autoX = true, autoY = true, autoZ = false, autoOff = false;
-var scale = 60.0, speedOff = 0.01, lineWidth = 3, offset = 2.5, maxOffset = 5.0, loops = 60.0, raf = 0;
+var speedX = 0.01, speedY = 0.01, speedZ = 0.0;
+var scale = 60.0, speedOff = 0.0, speedOffSign = 1.0, lineWidth = 3, offset = 2.5, maxOffset = 4.0, loops = 60.0, raf = 0;
 
 var colorMgr =
 {
@@ -50,11 +49,6 @@ function main()
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
 
-    document.getElementById("proXdisp").value=document.getElementById("proX").value;
-    document.getElementById("proYdisp").value=document.getElementById("proY").value;
-    document.getElementById("proZdisp").value=document.getElementById("proZ").value;
-    document.getElementById("speedOff").value=speedOff;
-    document.getElementById("lineWidth").value=lineWidth;
     colorMgr.randomize();
     drawScene();
 }
@@ -88,9 +82,9 @@ function drawScene()
         vec3.rotateY(xyz, xyz, center, angleY);
 
         // account for rotation of the camera
-        vec3.rotateX(xyz, xyz, center, rotX);
-        vec3.rotateY(xyz, xyz, center, rotY);
-        vec3.rotateZ(xyz, xyz, center, rotZ);
+        vec3.rotateX(xyz, xyz, center, camX);
+        vec3.rotateY(xyz, xyz, center, camY);
+        vec3.rotateZ(xyz, xyz, center, camZ);
 
         if (angleZ == 0)
             ctx.moveTo(xyz[0], xyz[1]);
@@ -102,18 +96,58 @@ function drawScene()
     ctx.stroke();
     ctx.restore();
 
-    if (autoOff)
+    if (speedOff)
     {
-        if (Math.abs(offset) > maxOffset)
-            speedOff = speedOff * -1;
-        offset += speedOff;
+        if (offset > maxOffset)
+        {
+            offset = maxOffset;
+            speedOffSign = -1;
+        }
+        if (offset < -1 * maxOffset)
+        {
+            offset = -1 * maxOffset;
+            speedOffSign = 1;
+        }
+        offset += speedOffSign * speedOff;
+        document.getElementById("offset").value = offset;
     }
 
-    if (autoX) rotX += speedX;
-    if (autoY) rotY += speedY;
-    if (autoZ) rotZ += speedZ;
+    if (speedX)
+    {
+        camX += speedX;
+        if (camX > 6.28) camX = 0.0;
+        document.getElementById("camX").value = camX;
+    }
+    if (speedY)
+    {
+        camY += speedY;
+        if (camY > 6.28) camY = 0.0;
+        document.getElementById("camY").value = camY;
+    }
+    if (speedZ > 0.0)
+    {
+        camZ += speedZ;
+        if (camZ > 6.28) camZ = 0.0;
+        document.getElementById("camZ").value = camZ;
+    }
 
     raf = window.requestAnimationFrame(drawScene);
+}
+
+function toggleAutoX()
+{
+    autoX = !autoX;
+    document.getElementById("speedX").disabled = !autoX;
+}
+function toggleAutoY()
+{
+    autoY = !autoY;
+    document.getElementById("speedY").disabled = !autoY;
+}
+function toggleAutoZ()
+{
+    autoZ = !autoZ;
+    document.getElementById("speedZ").disabled = !autoZ;
 }
 
 function randomize()
