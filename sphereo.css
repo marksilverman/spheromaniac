@@ -1,39 +1,115 @@
-
-canvas {
-    border: 2px solid black;
-    background-color: black;
-    width: 50%;
-    height: 100%;
-    float: left;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
     font-family: "Lucida Console", "Courier New", monospace;
-}
-
-#section2 {
-    padding: 5px 5px 5px 5px;
-    background-color: darkolivegreen;
+    background: black;
     color: white;
+    overflow: hidden;
 }
 
-#section1 {
-    padding: 5px 5px 5px 5px;
-    background-color: black;
-    color: white;
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
 }
 
-#controls {
-    margin: 10px 10px 10px 10px;
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
-video {
-    display: none;
+#panel-left, #panel-right {
+    position: absolute;
+    top: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    border-radius: 10px;
 }
 
-#radii {
-    background-color: lightgray;
+#panel-left {
+    left: 20px;
 }
-#radius1disp, #radius2disp, #radius3disp {
+
+#panel-right {
+    right: 20px;
+}
+
+#panel-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 15px 30px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.control {
+    margin-bottom: 15px;
+}
+
+.control:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+input[type="range"] {
+    width: 150px;
+    display: block;
+    margin-top: 5px;
+}
+
+input[type="number"] {
     width: 60px;
+    font-size: 14px;
+}
+
+button {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #777;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.credit {
+    font-size: 14px;
+    color: #888;
+}
+
+.credit a {
+    color: #aaa;
+    text-decoration: none;
 }

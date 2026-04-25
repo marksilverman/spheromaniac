@@ -5,118 +5,78 @@
     <meta charset="utf-8">
     <title>Sphereomaniac</title>
     <link rel="stylesheet" href="sphereo.css" type="text/css">
-    <script src="gl-matrix-min.js" defer></script>
-    <script src="sphereo.js" defer></script>
 </head>
 
 <body>
 
-<div class="container" style="display: flex; height: 100%;">
-<canvas id="canvas" width=1024 height=768 style="width: 60%"></canvas>
-<div style="flex-grow: 1; background: gray;">
-<div id="controls">
-<div>
-</div>
-Spheromaniac! by <a href=https://github.com/marksilverman/spheromaniac.git>Mark Silverman</a>
-<div>
+<div id="container">
+<canvas id="canvas" width="1024" height="768"></canvas>
 
-
-<div id="section1">
-
-<label>rotateX</label>
-<input tabindex="2" type="number" id="proXdisp" value=0.28 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proX = document.getElementById('proX').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proX" value=0.28 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proX = document.getElementById('proXdisp').value = parseFloat(value); })();">
-<br>
-
-<label>rotateY</label>
-<input tabindex="2" type="number" id="proYdisp" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proY = document.getElementById('proY').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proY = document.getElementById('proYdisp').value = parseFloat(value); })();">
-<br>
-
-<label>rotateZ</label>
-<input tabindex="2" type="number" id="proZdisp" value=-0.3333 min=-1.0 max=1.0 step=0.01
-    oninput="(function () { proZ = document.getElementById('proZ').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proZ" value=-0.3333 min=-1.0 max=1.0 step=0.1 class="slider"
-    oninput="(function () { proZ = document.getElementById('proZdisp').value = parseFloat(value); })();">
-<br>
-
+<div id="panel-left">
+    <div class="control">
+        <span class="label">rotateX</span>
+        <input type="number" id="proXdisp" value="0.28" min="0" max="2" step="0.01"
+            oninput="proX = parseFloat(value); document.getElementById('proX').value = proX;">
+        <input type="range" id="proX" value="0.28" min="0" max="2" step="0.01"
+            oninput="proX = parseFloat(value); document.getElementById('proXdisp').value = proX;">
+    </div>
+    <div class="control">
+        <span class="label">rotateY</span>
+        <input type="number" id="proYdisp" value="0" min="0" max="2" step="0.01"
+            oninput="proY = parseFloat(value); document.getElementById('proY').value = proY;">
+        <input type="range" id="proY" value="0" min="0" max="2" step="0.01"
+            oninput="proY = parseFloat(value); document.getElementById('proYdisp').value = proY;">
+    </div>
+    <div class="control">
+        <span class="label">rotateZ</span>
+        <input type="number" id="proZdisp" value="-0.33" min="-1" max="1" step="0.01"
+            oninput="proZ = parseFloat(value); document.getElementById('proZ').value = proZ;">
+        <input type="range" id="proZ" value="-0.33" min="-1" max="1" step="0.01"
+            oninput="proZ = parseFloat(value); document.getElementById('proZdisp').value = proZ;">
+    </div>
+    <div class="control">
+        <span class="label">offset</span>
+        <input type="range" id="offset" value="2.5" min="-4" max="4" step="0.05"
+            oninput="offset = parseFloat(value);">
+    </div>
 </div>
 
-<div id="section2">
-<label>offset:</label>
-<input type="range" min=-4.0 max=4.0 step=0.05 value="2.5" class="slider" id="offset"
-    oninput="(function(){ offset = parseFloat(value); })();">
-<label>animate:</label>
-<input type="range" min=0 max=0.05 value=0.0 step=0.0005 class="slider" id="speedOff"
-    oninput="(function() { speedOff = Number.parseFloat(value); })();">
+<div id="panel-right">
+    <div class="control">
+        <span class="label">loops</span>
+        <input type="range" id="loops" value="60" min="1" max="100" step="1"
+            oninput="loops = parseFloat(value);">
+    </div>
+    <div class="control">
+        <span class="label">line width</span>
+        <input type="range" id="lineWidth" value="3" min="1" max="20" step="1"
+            oninput="lineWidth = parseInt(value);">
+    </div>
+    <div class="control">
+        <span class="label">scale</span>
+        <input type="range" id="scale" value="60" min="10" max="150" step="1"
+            oninput="scale = parseFloat(value);">
+    </div>
+    <div class="control">
+        <span class="label">animate</span>
+        <input type="range" id="speedOff" value="0" min="0" max="0.05" step="0.001"
+            oninput="speedOff = parseFloat(value);">
+    </div>
 </div>
 
-<div id="section1">
-<label>number of loops:</label>
-<input type="range" min="1.0" max="100.0" value="60.0" step=0.01 class="slider" id="loops"
-    oninput="(function() { loops = parseFloat(value);})();">
-<br>
-
-<label>line width:</label>
-<input type="range" min="1" max="20" value="3" class="slider" id="lineWidth"
-    oninput="(function() { lineWidth = parseFloat(value);})();">
-<br>
-
-<label>scale:</label>
-<input type="range" min=0.0 max=200.0 value=60.0 step=1 class="slider" id="scale"
-    oninput="(function() { scale = parseFloat(value); })();">
-<br>
-</div>
-<div id="section2">
-
-<label>cameraX:</label>
-<input tabindex="1" type="range" id="camX" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camX = parseFloat(value); })();">
-<label>speedX:</label>
-<input tabindex="1" type="range" id="speedX" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedX = parseFloat(value); })();">
-<br>
-
-<label>cameraY:</label>
-<input tabindex="1" type="range" id="camY" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camY = parseFloat(value); })();">
-<label>speedY:</label>
-<input tabindex="1" type="range" id="speedY" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedY = parseFloat(value); })();">
-<br>
-
-<label>cameraZ:</label>
-<input tabindex="1" type="range" id="camZ" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camZ = parseFloat(value); })();">
-<label>speedZ:</label>
-<input tabindex="1" type="range" id="speedZ" value=0.0 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedZ = parseFloat(value); })();">
-<br>
-
-</div>
-
-<div id="section1">
-
-<button id="pause" onclick="pause()">pause</button>
-<button onclick="randomize()">randomize</button>
-
-<label>color shift</label>
-<input type="checkbox" id="inColor" checked onclick="(function(){ colorMgr.flip(); })();">
-<br>
-
-</div>
-
-</div>
-</div>
+<div id="panel-bottom">
+    <button onclick="pause()">pause</button>
+    <button onclick="randomize()">randomize</button>
+    <label>
+        <input type="checkbox" id="inColor" checked onclick="colorMgr.flip();">
+        color
+    </label>
+    <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
 </div>
 </div>
 
-<div id="msg"></div>
+<script src="gl-matrix-min.js"></script>
+<script src="sphereo.js"></script>
 
 </body>
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Spheromaniac</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/marksilverman/spheromaniac" property="cc:attributionName" rel="cc:attributionURL">Mark Silverman</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </html>

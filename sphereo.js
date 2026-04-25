@@ -1,9 +1,56 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
+if (!ctx) {
+    document.body.innerHTML = '<h1>No canvas context</h1>';
+}
 var camX = 0.0, camY = 0.0, camZ = 0.0;
 var proX = 0.28, proY = 0.0, proZ = -0.3333;
 var speedX = 0.01, speedY = 0.01, speedZ = 0.0;
 var scale = 60.0, speedOff = 0.0, speedOffSign = 1.0, lineWidth = 3, offset = 2.5, maxOffset = 4.0, loops = 60.0, raf = 0;
+
+var viewMat = mat4.create();
+var isDragging = false;
+var lastMouseX = 0;
+var lastMouseY = 0;
+var activeMouseButton = -1;
+var dragSensitivity = 0.005;
+
+canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+canvas.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    activeMouseButton = e.button;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+});
+
+canvas.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    var deltaX = e.clientX - lastMouseX;
+    var deltaY = e.clientY - lastMouseY;
+    if (activeMouseButton === 0) {
+        var rotY = mat4.fromYRotation(mat4.create(), deltaX * dragSensitivity);
+        var rotX = mat4.fromXRotation(mat4.create(), deltaY * dragSensitivity);
+        var temp = mat4.create();
+        mat4.multiply(temp, rotY, viewMat);
+        mat4.multiply(viewMat, rotX, temp);
+    } else if (activeMouseButton === 2) {
+        var rotZ = mat4.fromZRotation(mat4.create(), deltaY * dragSensitivity);
+        mat4.multiply(viewMat, rotZ, viewMat);
+    }
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+});
+
+canvas.addEventListener('mouseup', function() {
+    isDragging = false;
+    activeMouseButton = -1;
+});
+
+canvas.addEventListener('mouseleave', function() {
+    isDragging = false;
+    activeMouseButton = -1;
+});
 
 var colorMgr =
 {
@@ -82,9 +129,7 @@ function drawScene()
         vec3.rotateY(xyz, xyz, center, angleY);
 
         // account for rotation of the camera
-        vec3.rotateX(xyz, xyz, center, camX);
-        vec3.rotateY(xyz, xyz, center, camY);
-        vec3.rotateZ(xyz, xyz, center, camZ);
+        vec3.transformMat4(xyz, xyz, viewMat);
 
         if (angleZ == 0)
             ctx.moveTo(xyz[0], xyz[1]);
@@ -112,24 +157,7 @@ function drawScene()
         document.getElementById("offset").value = offset;
     }
 
-    if (speedX)
-    {
-        camX += speedX;
-        if (camX > 6.28) camX = 0.0;
-        document.getElementById("camX").value = camX;
-    }
-    if (speedY)
-    {
-        camY += speedY;
-        if (camY > 6.28) camY = 0.0;
-        document.getElementById("camY").value = camY;
-    }
-    if (speedZ > 0.0)
-    {
-        camZ += speedZ;
-        if (camZ > 6.28) camZ = 0.0;
-        document.getElementById("camZ").value = camZ;
-    }
+    // speedX/Y/Z disabled - mouse controls rotation now
 
     raf = window.requestAnimationFrame(drawScene);
 }
