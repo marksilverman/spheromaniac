@@ -1,13 +1,12 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
-var camX = 0.0, camY = 0.0, camZ = 0.0;
 var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
-var speedX = 0.0, speedY = 0.0, speedZ = 0.0;
 var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
 var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
 var customColor = '#00ffff';
+var autoRotate = true;
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
@@ -19,6 +18,8 @@ canvas.addEventListener('mousedown', function(e) {
     activeMouseButton = e.button;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
+    autoRotate = false;
+    document.getElementById('autoRotate').checked = false;
 });
 
 canvas.addEventListener('mousemove', function(e) {
@@ -135,6 +136,7 @@ function main()
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
     colorMgr.randomize();
+    updateDisplay();
     drawScene();
 }
 
@@ -191,28 +193,21 @@ function drawScene()
         document.getElementById("offset").value = offset;
     }
 
-    if (speedX)
+    if (autoRotate)
     {
-        camX += speedX;
-        if (camX > 6.28) camX = 0.0;
-        document.getElementById("camX").value = camX;
-    }
-
-    if (speedY)
-    {
-        camY += speedY;
-        if (camY > 6.28) camY = 0.0;
-        document.getElementById("camY").value = camY;
-    }
-
-    if (speedZ > 0.0)
-    {
-        camZ += speedZ;
-        if (camZ > 6.28) camZ = 0.0;
-        document.getElementById("camZ").value = camZ;
+        mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), 0.005), viewMat);
+        mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), 0.003), viewMat);
+        mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), 0.002), viewMat);
     }
 
     raf = window.requestAnimationFrame(drawScene);
+}
+
+function randomColor()
+{
+    var hue = Math.floor(Math.random() * 360);
+    var lightness = document.body.classList.contains('light') ? 25 : 70;
+    return 'hsl(' + hue + ', 100%, ' + lightness + '%)';
 }
 
 function randomFraction()
@@ -239,6 +234,7 @@ function randomize()
     document.getElementById('scale').value = scale;
     document.getElementById('offset').value = offset;
 
+    customColor = randomColor();
     updateDisplay();
     colorMgr.randomize();
     if (!raf) pause();

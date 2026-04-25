@@ -25,6 +25,8 @@
     <div class="control btn-row">
         <button onclick="adjustX(-0.1)">◀</button>
         <button onclick="adjustX(-0.01)">◁</button>
+        <button onclick="adjustX(-0.001)">‹</button>
+        <button onclick="adjustX(0.001)">›</button>
         <button onclick="adjustX(0.01)">▷</button>
         <button onclick="adjustX(0.1)">▶</button>
     </div>
@@ -48,6 +50,8 @@
     <div class="control btn-row">
         <button onclick="adjustY(-0.1)">◀</button>
         <button onclick="adjustY(-0.01)">◁</button>
+        <button onclick="adjustY(-0.001)">‹</button>
+        <button onclick="adjustY(0.001)">›</button>
         <button onclick="adjustY(0.01)">▷</button>
         <button onclick="adjustY(0.1)">▶</button>
     </div>
@@ -73,6 +77,8 @@
     <div class="control btn-row">
         <button onclick="adjustZ(-0.1)">◀</button>
         <button onclick="adjustZ(-0.01)">◁</button>
+        <button onclick="adjustZ(-0.001)">‹</button>
+        <button onclick="adjustZ(0.001)">›</button>
         <button onclick="adjustZ(0.01)">▷</button>
         <button onclick="adjustZ(0.1)">▶</button>
     </div>
@@ -84,32 +90,32 @@
         <button onclick="z_rotation=1/7; updateDisplay()">⅐</button>
         <button onclick="z_rotation=1/9; updateDisplay()">⅑</button>
     </div>
-    <div class="control">
-        <span class="label">offset</span>
-        <input type="range" id="offset" value=0.1 min=-2.0 max=2.0 step=0.01
-            oninput="offset = parseFloat(value);">
-    </div>
 </div>
 
 <div id="panel-right">
     <div class="control">
         <span class="label">loops</span>
         <input type="range" id="loops" value=10 min=1 max=200 step=1
-            oninput="loops = parseFloat(value);">
+            oninput="loops = parseFloat(this.value);">
     </div>
     <div class="control">
         <span class="label">line width</span>
         <input type="range" id="lineWidth" value=3 min=1 max=20 step=1
-            oninput="lineWidth = parseInt(value);">
+            oninput="lineWidth = parseInt(this.value);">
     </div>
     <div class="control">
         <span class="label">scale</span>
-        <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="scale = parseFloat(value);">
+        <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="scale = parseFloat(this.value);">
     </div>
     <div class="control">
-        <span class="label">animate</span>
+        <span class="label">offset</span>
+        <input type="range" id="offset" value=0.1 min=-2.0 max=2.0 step=0.01
+            oninput="offset = parseFloat(this.value);">
+    </div>
+    <div class="control">
+        <span class="label">animate offset</span>
         <input type="range" id="speedOff" value=0 min=0 max=0.05 step=0.001
-            oninput="speedOff = parseFloat(value);">
+            oninput="speedOff = parseFloat(this.value);">
     </div>
 </div>
 
@@ -117,8 +123,12 @@
     <button onclick="pause()">pause</button>
     <button onclick="randomize()">randomize</button>
     <label>
+        <input type="checkbox" id="autoRotate" checked onclick="autoRotate = this.checked;">
+        rotate
+    </label>
+    <label>
         <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
-        color
+        cycle color
     </label>
     <label>
         <input type="checkbox" id="lightMode" onclick="toggleLight();">
