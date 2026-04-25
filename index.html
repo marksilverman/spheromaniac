@@ -117,13 +117,14 @@
     <button onclick="pause()">pause</button>
     <button onclick="randomize()">randomize</button>
     <label>
-        <input type="checkbox" id="inColor" checked onclick="colorMgr.flip();">
+        <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
         color
     </label>
     <label>
-        <input type="checkbox" id="lightMode" onclick="document.body.classList.toggle('light');">
+        <input type="checkbox" id="lightMode" onclick="toggleLight();">
         light
     </label>
+    <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
     <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
 </div>
 </div>

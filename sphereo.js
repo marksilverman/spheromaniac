@@ -7,6 +7,7 @@ var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
 var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
+var customColor = '#00ffff';
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
@@ -92,7 +93,7 @@ function updateDisplay()
 
 var colorMgr =
 {
-    red: 100, green: 200, blue: 50, radd: 2, gadd: -2, badd: 2, inColor: true, fgColor: '',
+    red: 100, green: 200, blue: 50, radd: 2, gadd: -2, badd: 2, inColor: false, fgColor: '',
     randomize: function ()
     {
         this.red = 100 + Math.floor(Math.random() * 100);
@@ -170,7 +171,7 @@ function drawScene()
             ctx.lineTo(xyz[0], xyz[1]);
     }
     ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = colorMgr.fgColor;
+    ctx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
     ctx.stroke();
     ctx.restore();
 
@@ -241,6 +242,13 @@ function randomize()
     updateDisplay();
     colorMgr.randomize();
     if (!raf) pause();
+}
+
+function toggleLight()
+{
+    document.body.classList.toggle('light');
+    customColor = document.body.classList.contains('light') ? '#000000' : '#00ffff';
+    document.getElementById('colorPicker').value = customColor;
 }
 
 function pause()
