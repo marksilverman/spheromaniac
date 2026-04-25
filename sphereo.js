@@ -223,25 +223,31 @@ function drawScene()
     raf = window.requestAnimationFrame(drawScene);
 }
 
+function randomFraction()
+{
+    var denom = 2 + Math.floor(Math.random() * 8);
+    var numer = 1 + Math.floor(Math.random() * (denom - 1));
+    return numer / denom;
+}
+
 function randomize()
 {
-    x_rotation = y_rotation = 0.0;
+    x_rotation = randomFraction();
+    y_rotation = randomFraction();
+    z_rotation = randomFraction();
 
-    if (Math.random() > 0.5)
-        x_rotation = (Math.random() * 0.7).toPrecision(2);
-    else
-        y_rotation = (Math.random() * 0.7).toPrecision(2);
-    z_rotation = Math.random().toPrecision(2);
+    var zeroAxis = Math.floor(Math.random() * 3);
+    if (zeroAxis === 0) x_rotation = 0;
+    else if (zeroAxis === 1) y_rotation = 0;
+    else z_rotation = 0;
 
-    document.getElementById("x_rotation_num").value = x_rotation;
-    document.getElementById("x_rotation_slide").value = x_rotation;
+    scale = 100 + Math.floor(Math.random() * 201);
+    offset = Math.random() * ((canvas.width / 2) / scale - 1);
 
-    document.getElementById("y_rotation_num").value = y_rotation;
-    document.getElementById("y_rotation_slide").value = y_rotation;
+    document.getElementById('scale').value = scale;
+    document.getElementById('offset').value = offset;
 
-    document.getElementById("z_rotation_num").value = z_rotation;
-    document.getElementById("z_rotation_slide").value = z_rotation;
-
+    updateDisplay();
     colorMgr.randomize();
     if (!raf) pause();
 }
