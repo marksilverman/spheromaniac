@@ -6,6 +6,7 @@ var speedX = 0.0, speedY = 0.0, speedZ = 0.0;
 var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
 var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
+var center = [0.0, 0.0, 0.0];
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
@@ -41,15 +42,13 @@ canvas.addEventListener('mousemove', function(e) {
     lastMouseY = e.clientY;
 });
 
-canvas.addEventListener('mouseup', function() {
+function stopDrag() {
     isDragging = false;
     activeMouseButton = -1;
-});
+}
 
-canvas.addEventListener('mouseleave', function() {
-    isDragging = false;
-    activeMouseButton = -1;
-});
+canvas.addEventListener('mouseup', stopDrag);
+canvas.addEventListener('mouseleave', stopDrag);
 
 function adjustX(amount)
 {
@@ -57,7 +56,7 @@ function adjustX(amount)
 	x_rotation = 0;
     else
 	x_rotation += amount;
-    updateDisplay('x', x_rotation);
+    updateDisplay();
 }
 
 function adjustY(amount)
@@ -66,7 +65,7 @@ function adjustY(amount)
 	y_rotation = 0;
     else
 	y_rotation += amount;
-    updateDisplay('y', y_rotation);
+    updateDisplay();
 }
 
 function adjustZ(amount)
@@ -75,7 +74,7 @@ function adjustZ(amount)
 	z_rotation = 0;
     else
 	z_rotation += amount;
-    updateDisplay('z', z_rotation);
+    updateDisplay();
 }
 
 function safeEval(str)
@@ -90,12 +89,14 @@ function safeEval(str)
     }
 }
 
-function updateDisplay(axis, value)
+function updateDisplay()
 {
-    let num = document.getElementById(axis + '_rotation_num');
-    let slide = document.getElementById(axis + '_rotation_slide');
-    if (num) num.value = value.toFixed(6);
-    if (slide) slide.value = value;
+    document.getElementById('x_rotation_num').value = x_rotation.toFixed(6);
+    document.getElementById('x_rotation_slide').value = x_rotation;
+    document.getElementById('y_rotation_num').value = y_rotation.toFixed(6);
+    document.getElementById('y_rotation_slide').value = y_rotation;
+    document.getElementById('z_rotation_num').value = z_rotation.toFixed(6);
+    document.getElementById('z_rotation_slide').value = z_rotation;
 }
 
 var colorMgr =
@@ -154,31 +155,25 @@ function drawScene()
     ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
     ctx.beginPath();
 
-    let angleX = 0.0, angleY = 0.0;
-    let center = [ 0.0, 0.0, 0.0 ];
     let increment = 2 * Math.PI / 360;
-    for (let angleZ = 0.0; angleZ < loops * 2 * Math.PI; angleZ += increment)
+    for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
     {
-        angleX += increment;
-        angleY += increment;
-
         // start with a circle
-	let x = scale * (offset + Math.cos(angleZ));
-	let y = scale * Math.sin(angleZ);
-	let z = 0.0;
-        let xyz = [ x, y, z ];
+	let x = scale * (offset + Math.cos(angle));
+	let y = scale * Math.sin(angle);
+        let xyz = [ x, y, 0.0 ];
 
         // rotate around Z to create a basic spirograph
-        vec3.rotateZ(xyz, xyz, center, angleZ * z_rotation);
+        vec3.rotateZ(xyz, xyz, center, angle * z_rotation);
 
         // rotate around X and Y to move into 3d
-        vec3.rotateX(xyz, xyz, center, angleX * x_rotation);
-        vec3.rotateY(xyz, xyz, center, angleY * y_rotation);
+        vec3.rotateX(xyz, xyz, center, angle * x_rotation);
+        vec3.rotateY(xyz, xyz, center, angle * y_rotation);
 
         // account for rotation of the camera
         vec3.transformMat4(xyz, xyz, viewMat);
 
-        if (angleZ == 0)
+        if (angle == 0)
             ctx.moveTo(xyz[0], xyz[1]);
         else
             ctx.lineTo(xyz[0], xyz[1]);
