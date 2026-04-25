@@ -57,8 +57,7 @@ function adjustX(amount)
 	x_rotation = 0;
     else
 	x_rotation += amount;
-    document.getElementById('x_rotation_num').value = x_rotation.toFixed(2);
-    document.getElementById('x_rotation_slide').value = x_rotation;
+    updateDisplay('x', x_rotation);
 }
 
 function adjustY(amount)
@@ -67,8 +66,7 @@ function adjustY(amount)
 	y_rotation = 0;
     else
 	y_rotation += amount;
-    document.getElementById('y_rotation_num').value = y_rotation.toFixed(2);
-    document.getElementById('y_rotation_slide').value = y_rotation;
+    updateDisplay('y', y_rotation);
 }
 
 function adjustZ(amount)
@@ -77,8 +75,27 @@ function adjustZ(amount)
 	z_rotation = 0;
     else
 	z_rotation += amount;
-    document.getElementById('z_rotation_num').value = z_rotation.toFixed(2);
-    document.getElementById('z_rotation_slide').value = z_rotation;
+    updateDisplay('z', z_rotation);
+}
+
+function safeEval(str)
+{
+    if (!/^[\d\s+\-*/().]+$/.test(str))
+	return 0;
+
+    try {
+	return Function('"use strict"; return (' + str + ')')();
+    } catch {
+	return 0;
+    }
+}
+
+function updateDisplay(axis, value)
+{
+    let num = document.getElementById(axis + '_rotation_num');
+    let slide = document.getElementById(axis + '_rotation_slide');
+    if (num) num.value = value.toFixed(6);
+    if (slide) slide.value = value;
 }
 
 var colorMgr =
