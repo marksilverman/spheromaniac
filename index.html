@@ -25,11 +25,11 @@
     <div class="control btn-row">
         <button onclick="adjustX(-0.1)">◀</button>
         <button onclick="adjustX(-0.01)">◁</button>
-        <button onclick="adjustX(0)">0</button>
         <button onclick="adjustX(0.01)">▷</button>
         <button onclick="adjustX(0.1)">▶</button>
     </div>
     <div class="control btn-row" style="font-size:14px">
+        <button onclick="x_rotation=0; updateDisplay()">0</button>
         <button onclick="x_rotation=1/3; updateDisplay()">⅓</button>
         <button onclick="x_rotation=1/5; updateDisplay()">⅕</button>
         <button onclick="x_rotation=1/6; updateDisplay()">⅙</button>
@@ -48,11 +48,11 @@
     <div class="control btn-row">
         <button onclick="adjustY(-0.1)">◀</button>
         <button onclick="adjustY(-0.01)">◁</button>
-        <button onclick="adjustY(0)">0</button>
         <button onclick="adjustY(0.01)">▷</button>
         <button onclick="adjustY(0.1)">▶</button>
     </div>
     <div class="control btn-row" style="font-size:14px">
+        <button onclick="y_rotation=0; updateDisplay()">0</button>
         <button onclick="y_rotation=1/3; updateDisplay()">⅓</button>
         <button onclick="y_rotation=1/5; updateDisplay()">⅕</button>
         <button onclick="y_rotation=1/6; updateDisplay()">⅙</button>
@@ -73,11 +73,11 @@
     <div class="control btn-row">
         <button onclick="adjustZ(-0.1)">◀</button>
         <button onclick="adjustZ(-0.01)">◁</button>
-        <button onclick="adjustZ(0)">0</button>
         <button onclick="adjustZ(0.01)">▷</button>
         <button onclick="adjustZ(0.1)">▶</button>
     </div>
     <div class="control btn-row" style="font-size:14px">
+        <button onclick="z_rotation=0; updateDisplay()">0</button>
         <button onclick="z_rotation=1/3; updateDisplay()">⅓</button>
         <button onclick="z_rotation=1/5; updateDisplay()">⅕</button>
         <button onclick="z_rotation=1/6; updateDisplay()">⅙</button>
@@ -119,6 +119,10 @@
     <label>
         <input type="checkbox" id="inColor" checked onclick="colorMgr.flip();">
         color
+    </label>
+    <label>
+        <input type="checkbox" id="lightMode" onclick="document.body.classList.toggle('light');">
+        light
     </label>
     <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
 </div>

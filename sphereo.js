@@ -52,28 +52,19 @@ canvas.addEventListener('mouseleave', stopDrag);
 
 function adjustX(amount)
 {
-    if (amount === 0)
-	x_rotation = 0;
-    else
-	x_rotation += amount;
+    x_rotation += amount;
     updateDisplay();
 }
 
 function adjustY(amount)
 {
-    if (amount === 0)
-	y_rotation = 0;
-    else
-	y_rotation += amount;
+    y_rotation += amount;
     updateDisplay();
 }
 
 function adjustZ(amount)
 {
-    if (amount === 0)
-	z_rotation = 0;
-    else
-	z_rotation += amount;
+    z_rotation += amount;
     updateDisplay();
 }
 

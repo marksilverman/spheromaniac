@@ -148,3 +148,35 @@ input[type="checkbox"] {
     color: #aaa;
     text-decoration: none;
 }
+
+body.light {
+    background: white;
+    color: black;
+}
+
+body.light #panel-left,
+body.light #panel-right,
+body.light #panel-bottom {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+body.light button {
+    background: #aaa;
+    color: black;
+}
+
+body.light button:hover {
+    background: #888;
+}
+
+body.light button:active {
+    background: #666;
+}
+
+body.light .credit {
+    color: #555;
+}
+
+body.light .credit a {
+    color: #333;
+}
