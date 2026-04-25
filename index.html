@@ -13,33 +13,82 @@
 <div id="panel-left">
     <div class="control btn-row">
         <span class="label">rotateX</span>
-        <input type="number" id="proXnum" value=0 step=0.01
-            style="width:75px;font-size:20px;padding:4px" onchange="proX=parseFloat(this.value)">
+        <input type="number" id="x_rotation_num" value=0 step=0.01
+               style="width:75px;font-size:20px;padding:4px"
+	       onchange="x_rotation=parseFloat(this.value);document.getElementById('x_rotation_slide').value=x_rotation">
+        <input type="range" id="x_rotation_slide" value=0 min="-1" max="1" step=0.01
+               style="width:400px"
+	       oninput="x_rotation=parseFloat(this.value);document.getElementById('x_rotation_num').value=x_rotation">
         <button onclick="adjustX(-1)">◀</button>
         <button onclick="adjustX(-0.1)">◁</button>
         <button onclick="adjustX(0)">0</button>
         <button onclick="adjustX(0.1)">▷</button>
         <button onclick="adjustX(1)">▶</button>
     </div>
+    <div class="control btn-row" style="font-size:14px">
+        <button onclick="adjustX(-Math.PI)">−π</button>
+        <button onclick="adjustX(-Math.PI/2)">−½π</button>
+        <button onclick="adjustX(-Math.PI/3)">−⅓π</button>
+        <button onclick="adjustX(-Math.PI/4)">−¼π</button>
+        <button onclick="adjustX(-Math.PI/6)">−⅙π</button>
+        <button onclick="adjustX(0)">0</button>
+        <button onclick="adjustX(Math.PI/6)">+⅙π</button>
+        <button onclick="adjustX(Math.PI/4)">+¼π</button>
+        <button onclick="adjustX(Math.PI/3)">+⅓π</button>
+        <button onclick="adjustX(Math.PI/2)">+½π</button>
+        <button onclick="adjustX(Math.PI)">+π</button>
+    </div>
     <div class="control btn-row">
         <span class="label">rotateY</span>
-        <input type="number" id="proYnum" value=0 step=0.01
-            style="width:75px;font-size:20px;padding:4px" onchange="proY=parseFloat(this.value)">
+        <input type="number" id="y_rotation_num" value=0 step=0.01
+            style="width:75px;font-size:20px;padding:4px" onchange="y_rotation=parseFloat(this.value);document.getElementById('y_rotation_slide').value=y_rotation">
+        <input type="range" id="y_rotation_slide" value=0 min="-1" max="1" step=0.01
+            style="width:400px" oninput="y_rotation=parseFloat(this.value);document.getElementById('y_rotation_num').value=y_rotation">
         <button onclick="adjustY(-1)">◀</button>
         <button onclick="adjustY(-0.1)">◁</button>
         <button onclick="adjustY(0)">0</button>
         <button onclick="adjustY(0.1)">▷</button>
         <button onclick="adjustY(1)">▶</button>
     </div>
+<div class="control btn-row" style="font-size:14px">
+        <button onclick="adjustY(-Math.PI)">−π</button>
+        <button onclick="adjustY(-Math.PI/2)">−½π</button>
+        <button onclick="adjustY(-Math.PI/3)">−⅓π</button>
+        <button onclick="adjustY(-Math.PI/4)">−¼π</button>
+        <button onclick="adjustY(-Math.PI/6)">−⅙π</button>
+        <button onclick="adjustY(0)">0</button>
+        <button onclick="adjustY(Math.PI/6)">+⅙π</button>
+        <button onclick="adjustY(Math.PI/4)">+¼π</button>
+        <button onclick="adjustY(Math.PI/3)">+⅓π</button>
+        <button onclick="adjustY(Math.PI/2)">+½π</button>
+        <button onclick="adjustY(Math.PI)">+π</button>
+    </div>
     <div class="control btn-row">
         <span class="label">rotateZ</span>
-        <input type="number" id="proZnum" value=0 step=0.01
-            style="width:75px;font-size:20px;padding:4px" onchange="proZ=parseFloat(this.value)">
+        <input type="number" id="z_rotation_num" value=0 step=0.01
+               style="width:75px;font-size:20px;padding:4px"
+	       onchange="z_rotation=parseFloat(this.value);document.getElementById('z_rotation_slide').value=z_rotation">
+        <input type="range" id="z_rotation_slide" value=0 min="-1" max="1" step=0.01
+               style="width:400px"
+	       oninput="z_rotation=parseFloat(this.value);document.getElementById('z_rotation_num').value=z_rotation">
         <button onclick="adjustZ(-1)">◀</button>
         <button onclick="adjustZ(-0.1)">◁</button>
         <button onclick="adjustZ(0)">0</button>
         <button onclick="adjustZ(0.1)">▷</button>
         <button onclick="adjustZ(1)">▶</button>
+    </div>
+    <div class="control btn-row" style="font-size:14px">
+        <button onclick="adjustZ(-Math.PI)">−π</button>
+        <button onclick="adjustZ(-Math.PI/2)">−½π</button>
+        <button onclick="adjustZ(-Math.PI/3)">−⅓π</button>
+        <button onclick="adjustZ(-Math.PI/4)">−¼π</button>
+        <button onclick="adjustZ(-Math.PI/6)">−⅙π</button>
+        <button onclick="adjustZ(0)">0</button>
+        <button onclick="adjustZ(Math.PI/6)">+⅙π</button>
+        <button onclick="adjustZ(Math.PI/4)">+¼π</button>
+        <button onclick="adjustZ(Math.PI/3)">+⅓π</button>
+        <button onclick="adjustZ(Math.PI/2)">+½π</button>
+        <button onclick="adjustZ(Math.PI)">+π</button>
     </div>
     <div class="control">
         <span class="label">offset</span>
@@ -51,7 +100,7 @@
 <div id="panel-right">
     <div class="control">
         <span class="label">loops</span>
-        <input type="range" id="loops" value=60 min=1 max=100 step=1
+        <input type="range" id="loops" value=10 min=1 max=200 step=1
             oninput="loops = parseFloat(value);">
     </div>
     <div class="control">

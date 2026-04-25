@@ -1,10 +1,10 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 var camX = 0.0, camY = 0.0, camZ = 0.0;
-var proX = 0.0, proY = 0.0, proZ = 0.0;
+var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
 var speedX = 0.0, speedY = 0.0, speedZ = 0.0;
 var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
-var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 60.0, raf = 0;
+var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
@@ -54,28 +54,31 @@ canvas.addEventListener('mouseleave', function() {
 function adjustX(amount)
 {
     if (amount === 0)
-	proX = 0;
+	x_rotation = 0;
     else
-	proX += amount;
-    document.getElementById('proXnum').value = proX.toFixed(2);
+	x_rotation += amount;
+    document.getElementById('x_rotation_num').value = x_rotation.toFixed(2);
+    document.getElementById('x_rotation_slide').value = x_rotation;
 }
 
 function adjustY(amount)
 {
     if (amount === 0)
-	proY = 0;
+	y_rotation = 0;
     else
-	proY += amount;
-    document.getElementById('proYnum').value = proY.toFixed(2);
+	y_rotation += amount;
+    document.getElementById('y_rotation_num').value = y_rotation.toFixed(2);
+    document.getElementById('y_rotation_slide').value = y_rotation;
 }
 
 function adjustZ(amount)
 {
     if (amount === 0)
-	proZ = 0;
+	z_rotation = 0;
     else
-	proZ += amount;
-    document.getElementById('proZnum').value = proZ.toFixed(2);
+	z_rotation += amount;
+    document.getElementById('z_rotation_num').value = z_rotation.toFixed(2);
+    document.getElementById('z_rotation_slide').value = z_rotation;
 }
 
 var colorMgr =
@@ -136,11 +139,11 @@ function drawScene()
 
     let angleX = 0.0, angleY = 0.0;
     let center = [ 0.0, 0.0, 0.0 ];
-
-    for (let angleZ = 0.0; angleZ < loops * Math.PI; angleZ += 0.01)
+    let increment = 2 * Math.PI / 360;
+    for (let angleZ = 0.0; angleZ < loops * 2 * Math.PI; angleZ += increment)
     {
-        angleX += proX / 1000.0;
-        angleY += proY / 1000.0;
+        angleX += increment;
+        angleY += increment;
 
         // start with a circle
 	let x = scale * (offset + Math.cos(angleZ));
@@ -149,11 +152,11 @@ function drawScene()
         let xyz = [ x, y, z ];
 
         // rotate around Z to create a basic spirograph
-        vec3.rotateZ(xyz, xyz, center, angleZ * proZ);
+        vec3.rotateZ(xyz, xyz, center, angleZ * z_rotation);
 
         // rotate around X and Y to move into 3d
-        vec3.rotateX(xyz, xyz, center, angleX);
-        vec3.rotateY(xyz, xyz, center, angleY);
+        vec3.rotateX(xyz, xyz, center, angleX * x_rotation);
+        vec3.rotateY(xyz, xyz, center, angleY * y_rotation);
 
         // account for rotation of the camera
         vec3.transformMat4(xyz, xyz, viewMat);
@@ -210,17 +213,23 @@ function drawScene()
 
 function randomize()
 {
-    proX = proY = 0.0;
+    x_rotation = y_rotation = 0.0;
 
     if (Math.random() > 0.5)
-        proX = (Math.random() * 0.7).toPrecision(2);
+        x_rotation = (Math.random() * 0.7).toPrecision(2);
     else
-        proY = (Math.random() * 0.7).toPrecision(2);
-    proZ = Math.random().toPrecision(2);
+        y_rotation = (Math.random() * 0.7).toPrecision(2);
+    z_rotation = Math.random().toPrecision(2);
 
-    document.getElementById("proX").value = document.getElementById("proXdisp").value = proX;
-    document.getElementById("proY").value = document.getElementById("proYdisp").value = proY;
-    document.getElementById("proZ").value = document.getElementById("proZdisp").value = proZ;
+    document.getElementById("x_rotation_num").value = x_rotation;
+    document.getElementById("x_rotation_slide").value = x_rotation;
+
+    document.getElementById("y_rotation_num").value = y_rotation;
+    document.getElementById("y_rotation_slide").value = y_rotation;
+
+    document.getElementById("z_rotation_num").value = z_rotation;
+    document.getElementById("z_rotation_slide").value = z_rotation;
+
     colorMgr.randomize();
     if (!raf) pause();
 }
