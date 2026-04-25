@@ -13,26 +13,35 @@
 <canvas id="canvas" width="1024" height="768"></canvas>
 
 <div id="panel-left">
-    <div class="control">
+    <div class="control btn-row">
         <span class="label">rotateX</span>
-        <input type="number" id="proXdisp" value="0.28" min="0" max="2" step="0.01"
-            oninput="proX = parseFloat(value); document.getElementById('proX').value = proX;">
-        <input type="range" id="proX" value="0.28" min="0" max="2" step="0.01"
-            oninput="proX = parseFloat(value); document.getElementById('proXdisp').value = proX;">
+        <input type="number" id="proXnum" value="0.28" step="0.01"
+            style="width:75px;font-size:20px;padding:4px" onchange="proX=parseFloat(this.value)">
+        <button onclick="adj('X',-1)">◀</button>
+        <button onclick="adj('X',-0.1)">◁</button>
+        <button onclick="adj('X',0)">0</button>
+        <button onclick="adj('X',0.1)">▷</button>
+        <button onclick="adj('X',1)">▶</button>
     </div>
-    <div class="control">
+    <div class="control btn-row">
         <span class="label">rotateY</span>
-        <input type="number" id="proYdisp" value="0" min="0" max="2" step="0.01"
-            oninput="proY = parseFloat(value); document.getElementById('proY').value = proY;">
-        <input type="range" id="proY" value="0" min="0" max="2" step="0.01"
-            oninput="proY = parseFloat(value); document.getElementById('proYdisp').value = proY;">
+        <input type="number" id="proYnum" value="0" step="0.01"
+            style="width:75px;font-size:20px;padding:4px" onchange="proY=parseFloat(this.value)">
+        <button onclick="adj('Y',-1)">◀</button>
+        <button onclick="adj('Y',-0.1)">◁</button>
+        <button onclick="adj('Y',0)">0</button>
+        <button onclick="adj('Y',0.1)">▷</button>
+        <button onclick="adj('Y',1)">▶</button>
     </div>
-    <div class="control">
+    <div class="control btn-row">
         <span class="label">rotateZ</span>
-        <input type="number" id="proZdisp" value="-0.33" min="-1" max="1" step="0.01"
-            oninput="proZ = parseFloat(value); document.getElementById('proZ').value = proZ;">
-        <input type="range" id="proZ" value="-0.33" min="-1" max="1" step="0.01"
-            oninput="proZ = parseFloat(value); document.getElementById('proZdisp').value = proZ;">
+        <input type="number" id="proZnum" value="-0.33" step="0.01"
+            style="width:75px;font-size:20px;padding:4px" onchange="proZ=parseFloat(this.value)">
+        <button onclick="adj('Z',-1)">◀</button>
+        <button onclick="adj('Z',-0.1)">◁</button>
+        <button onclick="adj('Z',0)">0</button>
+        <button onclick="adj('Z',0.1)">▷</button>
+        <button onclick="adj('Z',1)">▶</button>
     </div>
     <div class="control">
         <span class="label">offset</span>

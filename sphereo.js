@@ -5,6 +5,7 @@ if (!ctx) {
 }
 var camX = 0.0, camY = 0.0, camZ = 0.0;
 var proX = 0.28, proY = 0.0, proZ = -0.3333;
+var proX = 0.28, proY = 0.0, proZ = -0.3333;
 var speedX = 0.01, speedY = 0.01, speedZ = 0.0;
 var scale = 60.0, speedOff = 0.0, speedOffSign = 1.0, lineWidth = 3, offset = 2.5, maxOffset = 4.0, loops = 60.0, raf = 0;
 
@@ -52,6 +53,19 @@ canvas.addEventListener('mouseleave', function() {
     activeMouseButton = -1;
 });
 
+function adj(ax, d) {
+    if (ax === 'X') {
+        proX = d === 0 ? 0 : proX + d;
+        document.getElementById('proXnum').value = proX.toFixed(2);
+    } else if (ax === 'Y') {
+        proY = d === 0 ? 0 : proY + d;
+        document.getElementById('proYnum').value = proY.toFixed(2);
+    } else if (ax === 'Z') {
+        proZ = d === 0 ? 0 : proZ + d;
+        document.getElementById('proZnum').value = proZ.toFixed(2);
+    }
+}
+
 var colorMgr =
 {
     red: 100, green: 200, blue: 50, radd: 2, gadd: -2, badd: 2, inColor: true, fgColor: '',
@@ -95,6 +109,10 @@ function main()
 {
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
+
+    document.getElementById('proXnum').value = proX.toFixed(2);
+    document.getElementById('proYnum').value = proY.toFixed(2);
+    document.getElementById('proZnum').value = proZ.toFixed(2);
 
     colorMgr.randomize();
     drawScene();
