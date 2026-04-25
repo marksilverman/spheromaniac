@@ -1,20 +1,14 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
-if (!ctx) {
-    document.body.innerHTML = '<h1>No canvas context</h1>';
-}
 var camX = 0.0, camY = 0.0, camZ = 0.0;
-var proX = 0.28, proY = 0.0, proZ = -0.3333;
-var proX = 0.28, proY = 0.0, proZ = -0.3333;
-var speedX = 0.01, speedY = 0.01, speedZ = 0.0;
-var scale = 60.0, speedOff = 0.0, speedOffSign = 1.0, lineWidth = 3, offset = 2.5, maxOffset = 4.0, loops = 60.0, raf = 0;
-
+var proX = 0.0, proY = 0.0, proZ = 0.0;
+var speedX = 0.0, speedY = 0.0, speedZ = 0.0;
+var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
+var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 60.0, raf = 0;
 var viewMat = mat4.create();
 var isDragging = false;
-var lastMouseX = 0;
-var lastMouseY = 0;
-var activeMouseButton = -1;
-var dragSensitivity = 0.005;
+var lastMouseX = 0, lastMouseY = 0;
+var activeMouseButton = -1, dragSensitivity = 0.005;
 
 canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
@@ -26,16 +20,20 @@ canvas.addEventListener('mousedown', function(e) {
 });
 
 canvas.addEventListener('mousemove', function(e) {
-    if (!isDragging) return;
+    if (!isDragging)
+	return;
     var deltaX = e.clientX - lastMouseX;
     var deltaY = e.clientY - lastMouseY;
-    if (activeMouseButton === 0) {
+    if (activeMouseButton === 0)
+    {
         var rotY = mat4.fromYRotation(mat4.create(), deltaX * dragSensitivity);
         var rotX = mat4.fromXRotation(mat4.create(), deltaY * dragSensitivity);
         var temp = mat4.create();
         mat4.multiply(temp, rotY, viewMat);
         mat4.multiply(viewMat, rotX, temp);
-    } else if (activeMouseButton === 2) {
+    }
+    else if (activeMouseButton === 2)
+    {
         var rotZ = mat4.fromZRotation(mat4.create(), deltaY * dragSensitivity);
         mat4.multiply(viewMat, rotZ, viewMat);
     }
@@ -53,17 +51,31 @@ canvas.addEventListener('mouseleave', function() {
     activeMouseButton = -1;
 });
 
-function adj(ax, d) {
-    if (ax === 'X') {
-        proX = d === 0 ? 0 : proX + d;
-        document.getElementById('proXnum').value = proX.toFixed(2);
-    } else if (ax === 'Y') {
-        proY = d === 0 ? 0 : proY + d;
-        document.getElementById('proYnum').value = proY.toFixed(2);
-    } else if (ax === 'Z') {
-        proZ = d === 0 ? 0 : proZ + d;
-        document.getElementById('proZnum').value = proZ.toFixed(2);
-    }
+function adjustX(amount)
+{
+    if (amount === 0)
+	proX = 0;
+    else
+	proX += amount;
+    document.getElementById('proXnum').value = proX.toFixed(2);
+}
+
+function adjustY(amount)
+{
+    if (amount === 0)
+	proY = 0;
+    else
+	proY += amount;
+    document.getElementById('proYnum').value = proY.toFixed(2);
+}
+
+function adjustZ(amount)
+{
+    if (amount === 0)
+	proZ = 0;
+    else
+	proZ += amount;
+    document.getElementById('proZnum').value = proZ.toFixed(2);
 }
 
 var colorMgr =
@@ -109,11 +121,6 @@ function main()
 {
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
-
-    document.getElementById('proXnum').value = proX.toFixed(2);
-    document.getElementById('proYnum').value = proY.toFixed(2);
-    document.getElementById('proZnum').value = proZ.toFixed(2);
-
     colorMgr.randomize();
     drawScene();
 }
@@ -129,7 +136,6 @@ function drawScene()
 
     let angleX = 0.0, angleY = 0.0;
     let center = [ 0.0, 0.0, 0.0 ];
-    let oldxyz = [ 0.0, 0.0, 0.0 ];
 
     for (let angleZ = 0.0; angleZ < loops * Math.PI; angleZ += 0.01)
     {
@@ -137,7 +143,10 @@ function drawScene()
         angleY += proY / 1000.0;
 
         // start with a circle
-        let xyz = [ scale * parseFloat(offset + Math.cos(angleZ)), scale * parseFloat(Math.sin(angleZ)), 0.0 ];
+	let x = scale * (offset + Math.cos(angleZ));
+	let y = scale * Math.sin(angleZ);
+	let z = 0.0;
+        let xyz = [ x, y, z ];
 
         // rotate around Z to create a basic spirograph
         vec3.rotateZ(xyz, xyz, center, angleZ * proZ);
@@ -175,25 +184,28 @@ function drawScene()
         document.getElementById("offset").value = offset;
     }
 
-    // speedX/Y/Z disabled - mouse controls rotation now
+    if (speedX)
+    {
+        camX += speedX;
+        if (camX > 6.28) camX = 0.0;
+        document.getElementById("camX").value = camX;
+    }
+
+    if (speedY)
+    {
+        camY += speedY;
+        if (camY > 6.28) camY = 0.0;
+        document.getElementById("camY").value = camY;
+    }
+
+    if (speedZ > 0.0)
+    {
+        camZ += speedZ;
+        if (camZ > 6.28) camZ = 0.0;
+        document.getElementById("camZ").value = camZ;
+    }
 
     raf = window.requestAnimationFrame(drawScene);
-}
-
-function toggleAutoX()
-{
-    autoX = !autoX;
-    document.getElementById("speedX").disabled = !autoX;
-}
-function toggleAutoY()
-{
-    autoY = !autoY;
-    document.getElementById("speedY").disabled = !autoY;
-}
-function toggleAutoZ()
-{
-    autoZ = !autoZ;
-    document.getElementById("speedZ").disabled = !autoZ;
 }
 
 function randomize()
@@ -227,9 +239,3 @@ function pause()
         drawScene();
     }
 }
-
-function msg(info)
-{
-    document.getElementById("msg").innerHTML=info;
-}
-

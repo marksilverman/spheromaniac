@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Sphereomaniac</title>
@@ -8,44 +7,43 @@
 </head>
 
 <body>
-
 <div id="container">
 <canvas id="canvas" width="1024" height="768"></canvas>
 
 <div id="panel-left">
     <div class="control btn-row">
         <span class="label">rotateX</span>
-        <input type="number" id="proXnum" value="0.28" step="0.01"
+        <input type="number" id="proXnum" value=0 step=0.01
             style="width:75px;font-size:20px;padding:4px" onchange="proX=parseFloat(this.value)">
-        <button onclick="adj('X',-1)">◀</button>
-        <button onclick="adj('X',-0.1)">◁</button>
-        <button onclick="adj('X',0)">0</button>
-        <button onclick="adj('X',0.1)">▷</button>
-        <button onclick="adj('X',1)">▶</button>
+        <button onclick="adjustX(-1)">◀</button>
+        <button onclick="adjustX(-0.1)">◁</button>
+        <button onclick="adjustX(0)">0</button>
+        <button onclick="adjustX(0.1)">▷</button>
+        <button onclick="adjustX(1)">▶</button>
     </div>
     <div class="control btn-row">
         <span class="label">rotateY</span>
-        <input type="number" id="proYnum" value="0" step="0.01"
+        <input type="number" id="proYnum" value=0 step=0.01
             style="width:75px;font-size:20px;padding:4px" onchange="proY=parseFloat(this.value)">
-        <button onclick="adj('Y',-1)">◀</button>
-        <button onclick="adj('Y',-0.1)">◁</button>
-        <button onclick="adj('Y',0)">0</button>
-        <button onclick="adj('Y',0.1)">▷</button>
-        <button onclick="adj('Y',1)">▶</button>
+        <button onclick="adjustY(-1)">◀</button>
+        <button onclick="adjustY(-0.1)">◁</button>
+        <button onclick="adjustY(0)">0</button>
+        <button onclick="adjustY(0.1)">▷</button>
+        <button onclick="adjustY(1)">▶</button>
     </div>
     <div class="control btn-row">
         <span class="label">rotateZ</span>
-        <input type="number" id="proZnum" value="-0.33" step="0.01"
+        <input type="number" id="proZnum" value=0 step=0.01
             style="width:75px;font-size:20px;padding:4px" onchange="proZ=parseFloat(this.value)">
-        <button onclick="adj('Z',-1)">◀</button>
-        <button onclick="adj('Z',-0.1)">◁</button>
-        <button onclick="adj('Z',0)">0</button>
-        <button onclick="adj('Z',0.1)">▷</button>
-        <button onclick="adj('Z',1)">▶</button>
+        <button onclick="adjustZ(-1)">◀</button>
+        <button onclick="adjustZ(-0.1)">◁</button>
+        <button onclick="adjustZ(0)">0</button>
+        <button onclick="adjustZ(0.1)">▷</button>
+        <button onclick="adjustZ(1)">▶</button>
     </div>
     <div class="control">
         <span class="label">offset</span>
-        <input type="range" id="offset" value="2.5" min="-4" max="4" step="0.05"
+        <input type="range" id="offset" value=0.1 min=-2.0 max=2.0 step=0.01
             oninput="offset = parseFloat(value);">
     </div>
 </div>
@@ -53,22 +51,21 @@
 <div id="panel-right">
     <div class="control">
         <span class="label">loops</span>
-        <input type="range" id="loops" value="60" min="1" max="100" step="1"
+        <input type="range" id="loops" value=60 min=1 max=100 step=1
             oninput="loops = parseFloat(value);">
     </div>
     <div class="control">
         <span class="label">line width</span>
-        <input type="range" id="lineWidth" value="3" min="1" max="20" step="1"
+        <input type="range" id="lineWidth" value=3 min=1 max=20 step=1
             oninput="lineWidth = parseInt(value);">
     </div>
     <div class="control">
         <span class="label">scale</span>
-        <input type="range" id="scale" value="60" min="10" max="150" step="1"
-            oninput="scale = parseFloat(value);">
+        <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="scale = parseFloat(value);">
     </div>
     <div class="control">
         <span class="label">animate</span>
-        <input type="range" id="speedOff" value="0" min="0" max="0.05" step="0.001"
+        <input type="range" id="speedOff" value=0 min=0 max=0.05 step=0.001
             oninput="speedOff = parseFloat(value);">
     </div>
 </div>
