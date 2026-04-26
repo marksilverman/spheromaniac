@@ -4,7 +4,7 @@ var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
 var x_twists = 0, x_period = 1;
 var y_twists = 0, y_period = 1;
 var z_twists = 0, z_period = 1;
-var offsetX = -1.0, offsetY = -1.0, offsetZ = -1.0;
+var offsetX = 1.0, offsetY = 0.0, offsetZ = 0.0;
 var speedOffX = 0.0, speedOffY = 0.0, speedOffZ = 0.0;
 var speedOffXSign = 1, speedOffYSign = 1, speedOffZSign = 1;
 var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
@@ -53,12 +53,7 @@ canvas.addEventListener('mousedown', function(e)
     activeMouseButton = e.button;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
-    autoRotateX = false;
-    autoRotateY = false;
-    autoRotateZ = false;
-    autoRotateXCheck.checked = false;
-    autoRotateYCheck.checked = false;
-    autoRotateZCheck.checked = false;
+    stopAutoRotate();
 });
 
 canvas.addEventListener('mousemove', function(e)
@@ -145,12 +140,7 @@ document.addEventListener('keydown', function(e)
     }
     if (handled)
     {
-        autoRotateX = false;
-        autoRotateY = false;
-        autoRotateZ = false;
-        autoRotateXCheck.checked = false;
-        autoRotateYCheck.checked = false;
-        autoRotateZCheck.checked = false;
+        stopAutoRotate();
         e.preventDefault();
     }
 });
@@ -424,9 +414,9 @@ function drawScene()
             offsetX = 1.0;
             speedOffXSign = -1;
         }
-        if (offsetX < -1.0)
+        if (offsetX < 0.0)
         {
-            offsetX = -1.0;
+            offsetX = 0.0;
             speedOffXSign = 1;
         }
         offsetX += speedOffXSign * speedOffX;
@@ -439,9 +429,9 @@ function drawScene()
             offsetY = 1.0;
             speedOffYSign = -1;
         }
-        if (offsetY < -1.0)
+        if (offsetY < 0.0)
         {
-            offsetY = -1.0;
+            offsetY = 0.0;
             speedOffYSign = 1;
         }
         offsetY += speedOffYSign * speedOffY;
@@ -454,9 +444,9 @@ function drawScene()
             offsetZ = 1.0;
             speedOffZSign = -1;
         }
-        if (offsetZ < -1.0)
+        if (offsetZ < 0.0)
         {
-            offsetZ = -1.0;
+            offsetZ = 0.0;
             speedOffZSign = 1;
         }
         offsetZ += speedOffZSign * speedOffZ;
@@ -648,28 +638,62 @@ function rebuildViewMat()
     mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), cameraRotationZ), viewMat);
 }
 
+function stopAutoRotate()
+{
+    autoRotateX = false;
+    autoRotateY = false;
+    autoRotateZ = false;
+    autoRotateXCheck.checked = false;
+    autoRotateYCheck.checked = false;
+    autoRotateZCheck.checked = false;
+}
+
 function setCameraX(value)
 {
     cameraRotationX = wrapAngle(parseFloat(value));
     rebuildViewMat();
-    autoRotate = false;
-    autoRotateCheck.checked = false;
+    stopAutoRotate();
 }
 
 function setCameraY(value)
 {
     cameraRotationY = wrapAngle(parseFloat(value));
     rebuildViewMat();
-    autoRotate = false;
-    autoRotateCheck.checked = false;
+    stopAutoRotate();
 }
 
 function setCameraZ(value)
 {
     cameraRotationZ = wrapAngle(parseFloat(value));
     rebuildViewMat();
-    autoRotate = false;
-    autoRotateCheck.checked = false;
+    stopAutoRotate();
+}
+
+function setCameraPlaneXY()
+{
+    cameraRotationX = 0;
+    cameraRotationY = 0;
+    cameraRotationZ = 0;
+    rebuildViewMat();
+    stopAutoRotate();
+}
+
+function setCameraPlaneXZ()
+{
+    cameraRotationX = 3 * Math.PI / 2;
+    cameraRotationY = 0;
+    cameraRotationZ = 0;
+    rebuildViewMat();
+    stopAutoRotate();
+}
+
+function setCameraPlaneYZ()
+{
+    cameraRotationX = 0;
+    cameraRotationY = Math.PI / 2;
+    cameraRotationZ = 0;
+    rebuildViewMat();
+    stopAutoRotate();
 }
 
 function toggleLight()
