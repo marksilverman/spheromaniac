@@ -360,6 +360,7 @@ function main()
     autoRotateCheck.checked = autoRotate;
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
+    initPanelPositions();
     drawScene();
 }
 
@@ -376,14 +377,14 @@ function drawScene()
     for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
     {
         // start with a circle
-        let x = scale * (offset + Math.cos(angle));
-        let y = scale * Math.sin(angle);
-        let xyz = [ x, y, 0.0 ];
+        // let x = scale * (offset + Math.cos(angle));
+        // let y = scale * Math.sin(angle);
+        let x = scale;
+        let y = 0;
+	let z = 0;
+        let xyz = [ x, y, z ];
 
-        // rotate around Z to create a basic spirograph
         vec3.rotateZ(xyz, xyz, center, angle * z_rotation);
-
-        // rotate around X and Y to move into 3d
         vec3.rotateX(xyz, xyz, center, angle * x_rotation);
         vec3.rotateY(xyz, xyz, center, angle * y_rotation);
 
@@ -516,6 +517,65 @@ function randomize()
     customColor = randomColor();
     updateDisplay();
     colorMgr.randomize();
+}
+
+function makeDraggable(panel, handle)
+{
+    var dragOffsetX = 0;
+    var dragOffsetY = 0;
+    var panelDragging = false;
+
+    handle.addEventListener('mousedown', function(e)
+    {
+        panelDragging = true;
+        var rect = panel.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', function(e)
+    {
+        if (!panelDragging)
+            return;
+        panel.style.left = (e.clientX - dragOffsetX) + 'px';
+        panel.style.top = (e.clientY - dragOffsetY) + 'px';
+    });
+
+    window.addEventListener('mouseup', function()
+    {
+        panelDragging = false;
+    });
+}
+
+function initPanelPositions()
+{
+    var panelLeft = document.getElementById('panel-left');
+    var panelRight = document.getElementById('panel-right');
+    var panelBottomRight = document.getElementById('panel-bottom-right');
+    var panelBottom = document.getElementById('panel-bottom');
+
+    panelLeft.style.top = '20px';
+    panelLeft.style.left = '20px';
+
+    panelRight.style.right = '';
+    panelRight.style.top = '20px';
+    panelRight.style.left = (window.innerWidth - panelRight.offsetWidth - 20) + 'px';
+
+    panelBottomRight.style.bottom = '';
+    panelBottomRight.style.right = '';
+    panelBottomRight.style.top = (window.innerHeight - panelBottomRight.offsetHeight - 20) + 'px';
+    panelBottomRight.style.left = (window.innerWidth - panelBottomRight.offsetWidth - 20) + 'px';
+
+    panelBottom.style.bottom = '';
+    panelBottom.style.transform = 'none';
+    panelBottom.style.top = (window.innerHeight - panelBottom.offsetHeight - 20) + 'px';
+    panelBottom.style.left = ((window.innerWidth - panelBottom.offsetWidth) / 2) + 'px';
+
+    makeDraggable(panelLeft, panelLeft.querySelector('.drag-handle'));
+    makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
+    makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
+    makeDraggable(panelBottom, panelBottom.querySelector('.drag-handle'));
 }
 
 function resetCamera()

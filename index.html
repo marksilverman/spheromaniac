@@ -12,6 +12,7 @@
 <canvas id="canvas" width="1024" height="768"></canvas>
 
 <div id="panel-left">
+    <div class="drag-handle">⠿</div>
     <div class="axis-panel">
         <div class="axis-panel-header">X-axis</div>
         <div class="control btn-row">
@@ -60,6 +61,7 @@
 </div>
 
 <div id="panel-right">
+    <div class="drag-handle">⠿</div>
     <div class="control btn-row">
         <span class="label">loops</span>
         <input type="text" id="loops_num" value="10"
@@ -92,6 +94,7 @@
 </div>
 
 <div id="panel-bottom-right">
+    <div class="drag-handle">⠿</div>
     <button onclick="resetCamera()">[r]eset camera</button>
     <div class="control">
         <label>
@@ -135,17 +138,20 @@
 </div>
 
 <div id="panel-bottom">
-    <button onclick="randomize()">randomize</button>
-    <label>
-        <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
-        cycle color
-    </label>
-    <label>
-        <input type="checkbox" id="lightMode" onclick="toggleLight();">
-        light mode
-    </label>
-    <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
-    <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
+    <div class="drag-handle">⠿</div>
+    <div class="panel-row">
+        <button onclick="randomize()">randomize</button>
+        <label>
+            <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
+            cycle color
+        </label>
+        <label>
+            <input type="checkbox" id="lightMode" onclick="toggleLight();">
+            light mode
+        </label>
+        <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
+        <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
+    </div>
 </div>
 </div>
 

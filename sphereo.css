@@ -85,6 +85,11 @@ body.light #panel-bottom-right {
     padding: 15px 30px;
     border-radius: 10px;
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.panel-row {
+    display: flex;
     align-items: center;
     gap: 25px;
 }
@@ -268,6 +273,17 @@ body.light button:active {
     background: #666;
 }
 
+.drag-handle {
+    cursor: move;
+    text-align: center;
+    padding-bottom: 8px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 20px;
+    user-select: none;
+}
+body.light .drag-handle {
+    color: rgba(0, 0, 0, 0.25);
+}
 body.light .credit {
     color: #555;
 }
