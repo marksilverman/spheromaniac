@@ -16,9 +16,9 @@
     <div class="axis-panel">
         <div class="axis-panel-header">X-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">turns:</span>
+            <span class="axis-label">twists:</span>
             <button onclick="adjustX(-1)">◀</button>
-            <input type="number" id="x_turns" value="0" oninput="setXTurns()">
+            <input type="number" id="x_twists" value="0" oninput="setXTwists()">
             <button onclick="adjustX(1)">▶</button>
         </div>
         <div class="control btn-row">
@@ -27,13 +27,23 @@
             <input type="number" id="x_period" value="1" min="1" oninput="setXPeriod()">
             <button onclick="adjustXPeriod(1)">▶</button>
         </div>
+        <div class="control">
+            <span class="axis-label">offset:</span>
+            <input type="range" id="offset_x" value=-1 min=-1 max=1 step=0.01
+                oninput="offsetX = parseFloat(this.value);">
+        </div>
+        <div class="control">
+            <span class="axis-label">animate:</span>
+            <input type="range" id="speed_off_x" value=0 min=0 max=0.02 step=0.001
+                oninput="speedOffX = parseFloat(this.value);">
+        </div>
     </div>
     <div class="axis-panel">
         <div class="axis-panel-header">Y-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">turns:</span>
+            <span class="axis-label">twists:</span>
             <button onclick="adjustY(-1)">◀</button>
-            <input type="number" id="y_turns" value="0" oninput="setYTurns()">
+            <input type="number" id="y_twists" value="0" oninput="setYTwists()">
             <button onclick="adjustY(1)">▶</button>
         </div>
         <div class="control btn-row">
@@ -42,13 +52,23 @@
             <input type="number" id="y_period" value="1" min="1" oninput="setYPeriod()">
             <button onclick="adjustYPeriod(1)">▶</button>
         </div>
+        <div class="control">
+            <span class="axis-label">offset:</span>
+            <input type="range" id="offset_y" value=-1 min=-1 max=1 step=0.01
+                oninput="offsetY = parseFloat(this.value);">
+        </div>
+        <div class="control">
+            <span class="axis-label">animate:</span>
+            <input type="range" id="speed_off_y" value=0 min=0 max=0.02 step=0.001
+                oninput="speedOffY = parseFloat(this.value);">
+        </div>
     </div>
     <div class="axis-panel">
         <div class="axis-panel-header">Z-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">turns:</span>
+            <span class="axis-label">twists:</span>
             <button onclick="adjustZ(-1)">◀</button>
-            <input type="number" id="z_turns" value="0" oninput="setZTurns()">
+            <input type="number" id="z_twists" value="0" oninput="setZTwists()">
             <button onclick="adjustZ(1)">▶</button>
         </div>
         <div class="control btn-row">
@@ -56,6 +76,16 @@
             <button onclick="adjustZPeriod(-1)">◀</button>
             <input type="number" id="z_period" value="1" min="1" oninput="setZPeriod()">
             <button onclick="adjustZPeriod(1)">▶</button>
+        </div>
+        <div class="control">
+            <span class="axis-label">offset:</span>
+            <input type="range" id="offset_z" value=-1 min=-1 max=1 step=0.01
+                oninput="offsetZ = parseFloat(this.value);">
+        </div>
+        <div class="control">
+            <span class="axis-label">animate:</span>
+            <input type="range" id="speed_off_z" value=0 min=0 max=0.02 step=0.001
+                oninput="speedOffZ = parseFloat(this.value);">
         </div>
     </div>
 </div>
@@ -81,29 +111,15 @@
         <input type="range" id="scale" value=200 min=10 max=400 step=1
             oninput="scale = parseFloat(this.value);">
     </div>
-    <div class="control">
-        <span class="label">offset</span>
-        <input type="range" id="offset" value=0.1 min=-4.0 max=4.0 step=0.01
-            oninput="offset = parseFloat(this.value);">
-    </div>
-    <div class="control">
-        <span class="label">animate offset</span>
-        <input type="range" id="speedOff" value=0 min=0 max=0.05 step=0.001
-            oninput="speedOff = parseFloat(this.value);">
-    </div>
 </div>
+
 
 <div id="panel-bottom-right">
     <div class="drag-handle">⠿</div>
     <button onclick="resetCamera()">[r]eset camera</button>
-    <div class="control">
-        <label>
-            <input type="checkbox" id="autoRotate" checked onclick="autoRotate = this.checked;">
-            auto-rotate
-        </label>
-    </div>
-    <div class="control">
+    <div class="camera-label-row">
         <span class="label">cameraX (w/s)</span>
+        <label><input type="checkbox" id="autoRotateX" checked onclick="autoRotateX = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
         <button class="jump-btn" onclick="setCameraX(cameraRotationX - Math.PI/2)">«</button>
@@ -113,8 +129,9 @@
         <button onclick="setCameraX(cameraRotationX + keyboardStep)">▶</button>
         <button class="jump-btn" onclick="setCameraX(cameraRotationX + Math.PI/2)">»</button>
     </div>
-    <div class="control">
+    <div class="camera-label-row">
         <span class="label">cameraY (a/d)</span>
+        <label><input type="checkbox" id="autoRotateY" checked onclick="autoRotateY = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
         <button class="jump-btn" onclick="setCameraY(cameraRotationY - Math.PI/2)">«</button>
@@ -124,8 +141,9 @@
         <button onclick="setCameraY(cameraRotationY + keyboardStep)">▶</button>
         <button class="jump-btn" onclick="setCameraY(cameraRotationY + Math.PI/2)">»</button>
     </div>
-    <div class="control">
+    <div class="camera-label-row">
         <span class="label">cameraZ (q/e)</span>
+        <label><input type="checkbox" id="autoRotateZ" checked onclick="autoRotateZ = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
         <button class="jump-btn" onclick="setCameraZ(cameraRotationZ - Math.PI/2)">«</button>

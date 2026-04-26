@@ -189,6 +189,15 @@ body.light #panel-bottom-right {
     background: #4a6585;
 }
 
+.camera-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.camera-label-row .label {
+    width: auto;
+}
 .camera-row {
     display: flex;
     align-items: center;

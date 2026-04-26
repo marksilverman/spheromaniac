@@ -1,27 +1,31 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
-var x_turns = 0, x_period = 1;
-var y_turns = 0, y_period = 1;
-var z_turns = 0, z_period = 1;
-var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
-var lineWidth = 3, offset = 0.1, maxOffset = 4.0, loops = 10, raf = 0;
+var x_twists = 0, x_period = 1;
+var y_twists = 0, y_period = 1;
+var z_twists = 0, z_period = 1;
+var offsetX = -1.0, offsetY = -1.0, offsetZ = -1.0;
+var speedOffX = 0.0, speedOffY = 0.0, speedOffZ = 0.0;
+var speedOffXSign = 1, speedOffYSign = 1, speedOffZSign = 1;
+var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
 var customColor = '#00ffff';
-var autoRotate = true;
+var autoRotateX = true, autoRotateY = true, autoRotateZ = true;
 var cameraRotationX = 0.0, cameraRotationY = 0.0, cameraRotationZ = 0.0;
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 
-var xTurnsInput, xPeriodInput;
-var yTurnsInput, yPeriodInput;
-var zTurnsInput, zPeriodInput;
+var xTwistsInput, xPeriodInput;
+var yTwistsInput, yPeriodInput;
+var zTwistsInput, zPeriodInput;
 var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
-var scaleSlider, offsetSlider;
-var autoRotateCheck, inColorCheck, lightModeCheck;
+var scaleSlider;
+var offsetXSlider, offsetYSlider, offsetZSlider;
+var speedOffXSlider, speedOffYSlider, speedOffZSlider;
+var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
 var colorPickerInput;
 
 canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
@@ -49,8 +53,12 @@ canvas.addEventListener('mousedown', function(e)
     activeMouseButton = e.button;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
-    autoRotate = false;
-    autoRotateCheck.checked = false;
+    autoRotateX = false;
+    autoRotateY = false;
+    autoRotateZ = false;
+    autoRotateXCheck.checked = false;
+    autoRotateYCheck.checked = false;
+    autoRotateZCheck.checked = false;
 });
 
 canvas.addEventListener('mousemove', function(e)
@@ -137,8 +145,12 @@ document.addEventListener('keydown', function(e)
     }
     if (handled)
     {
-        autoRotate = false;
-        autoRotateCheck.checked = false;
+        autoRotateX = false;
+        autoRotateY = false;
+        autoRotateZ = false;
+        autoRotateXCheck.checked = false;
+        autoRotateYCheck.checked = false;
+        autoRotateZCheck.checked = false;
         e.preventDefault();
     }
 });
@@ -161,8 +173,8 @@ function setLoops(value)
 
 function adjustX(amount)
 {
-    x_turns += amount;
-    x_rotation = x_turns / x_period;
+    x_twists += amount;
+    x_rotation = x_twists / x_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -170,15 +182,15 @@ function adjustX(amount)
 function adjustXPeriod(amount)
 {
     x_period = Math.max(1, x_period + amount);
-    x_rotation = x_turns / x_period;
+    x_rotation = x_twists / x_period;
     updateDisplay();
     autoSetLoops();
 }
 
-function setXTurns()
+function setXTwists()
 {
-    x_turns = parseInt(xTurnsInput.value) || 0;
-    x_rotation = x_turns / x_period;
+    x_twists = parseInt(xTwistsInput.value) || 0;
+    x_rotation = x_twists / x_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -186,15 +198,15 @@ function setXTurns()
 function setXPeriod()
 {
     x_period = Math.max(1, parseInt(xPeriodInput.value) || 1);
-    x_rotation = x_turns / x_period;
+    x_rotation = x_twists / x_period;
     updateDisplay();
     autoSetLoops();
 }
 
 function adjustY(amount)
 {
-    y_turns += amount;
-    y_rotation = y_turns / y_period;
+    y_twists += amount;
+    y_rotation = y_twists / y_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -202,15 +214,15 @@ function adjustY(amount)
 function adjustYPeriod(amount)
 {
     y_period = Math.max(1, y_period + amount);
-    y_rotation = y_turns / y_period;
+    y_rotation = y_twists / y_period;
     updateDisplay();
     autoSetLoops();
 }
 
-function setYTurns()
+function setYTwists()
 {
-    y_turns = parseInt(yTurnsInput.value) || 0;
-    y_rotation = y_turns / y_period;
+    y_twists = parseInt(yTwistsInput.value) || 0;
+    y_rotation = y_twists / y_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -218,15 +230,15 @@ function setYTurns()
 function setYPeriod()
 {
     y_period = Math.max(1, parseInt(yPeriodInput.value) || 1);
-    y_rotation = y_turns / y_period;
+    y_rotation = y_twists / y_period;
     updateDisplay();
     autoSetLoops();
 }
 
 function adjustZ(amount)
 {
-    z_turns += amount;
-    z_rotation = z_turns / z_period;
+    z_twists += amount;
+    z_rotation = z_twists / z_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -234,15 +246,15 @@ function adjustZ(amount)
 function adjustZPeriod(amount)
 {
     z_period = Math.max(1, z_period + amount);
-    z_rotation = z_turns / z_period;
+    z_rotation = z_twists / z_period;
     updateDisplay();
     autoSetLoops();
 }
 
-function setZTurns()
+function setZTwists()
 {
-    z_turns = parseInt(zTurnsInput.value) || 0;
-    z_rotation = z_turns / z_period;
+    z_twists = parseInt(zTwistsInput.value) || 0;
+    z_rotation = z_twists / z_period;
     updateDisplay();
     autoSetLoops();
 }
@@ -250,30 +262,29 @@ function setZTurns()
 function setZPeriod()
 {
     z_period = Math.max(1, parseInt(zPeriodInput.value) || 1);
-    z_rotation = z_turns / z_period;
+    z_rotation = z_twists / z_period;
     updateDisplay();
     autoSetLoops();
 }
 
-
 function updateDisplay()
 {
-    xTurnsInput.value = x_turns;
+    xTwistsInput.value = x_twists;
     xPeriodInput.value = x_period;
-    yTurnsInput.value = y_turns;
+    yTwistsInput.value = y_twists;
     yPeriodInput.value = y_period;
-    zTurnsInput.value = z_turns;
+    zTwistsInput.value = z_twists;
     zPeriodInput.value = z_period;
 }
 
 function autoSetLoops()
 {
     var periods = [];
-    if (x_turns !== 0)
+    if (x_twists !== 0)
         periods.push(x_period);
-    if (y_turns !== 0)
+    if (y_twists !== 0)
         periods.push(y_period);
-    if (z_turns !== 0)
+    if (z_twists !== 0)
         periods.push(z_period);
     if (periods.length === 0)
     {
@@ -336,11 +347,11 @@ function main()
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    xTurnsInput  = document.getElementById('x_turns');
+    xTwistsInput = document.getElementById('x_twists');
     xPeriodInput = document.getElementById('x_period');
-    yTurnsInput  = document.getElementById('y_turns');
+    yTwistsInput = document.getElementById('y_twists');
     yPeriodInput = document.getElementById('y_period');
-    zTurnsInput  = document.getElementById('z_turns');
+    zTwistsInput = document.getElementById('z_twists');
     zPeriodInput = document.getElementById('z_period');
     loopsSlider  = document.getElementById('loops');
     loopsInput   = document.getElementById('loops_num');
@@ -348,8 +359,15 @@ function main()
     cameraYSlider   = document.getElementById('cameraRotationY');
     cameraZSlider   = document.getElementById('cameraRotationZ');
     scaleSlider     = document.getElementById('scale');
-    offsetSlider    = document.getElementById('offset');
-    autoRotateCheck = document.getElementById('autoRotate');
+    offsetXSlider   = document.getElementById('offset_x');
+    offsetYSlider   = document.getElementById('offset_y');
+    offsetZSlider   = document.getElementById('offset_z');
+    speedOffXSlider = document.getElementById('speed_off_x');
+    speedOffYSlider = document.getElementById('speed_off_y');
+    speedOffZSlider = document.getElementById('speed_off_z');
+    autoRotateXCheck = document.getElementById('autoRotateX');
+    autoRotateYCheck = document.getElementById('autoRotateY');
+    autoRotateZCheck = document.getElementById('autoRotateZ');
     inColorCheck    = document.getElementById('inColor');
     lightModeCheck  = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
@@ -357,9 +375,14 @@ function main()
     colorMgr.randomize();
     updateDisplay();
     autoSetLoops();
-    autoRotateCheck.checked = autoRotate;
+    autoRotateXCheck.checked = autoRotateX;
+    autoRotateYCheck.checked = autoRotateY;
+    autoRotateZCheck.checked = autoRotateZ;
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
+    offsetXSlider.value = offsetX;
+    offsetYSlider.value = offsetY;
+    offsetZSlider.value = offsetZ;
     initPanelPositions();
     drawScene();
 }
@@ -376,22 +399,15 @@ function drawScene()
     let increment = 2 * Math.PI / 360;
     for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
     {
-        // start with a circle
-        // let x = scale * (offset + Math.cos(angle));
-        // let y = scale * Math.sin(angle);
-        let x = scale;
-        let y = 0;
-	let z = 0;
-        let xyz = [ x, y, z ];
+        let xyz = [scale * offsetX, scale * offsetY, scale * offsetZ];
 
         vec3.rotateZ(xyz, xyz, center, angle * z_rotation);
         vec3.rotateX(xyz, xyz, center, angle * x_rotation);
         vec3.rotateY(xyz, xyz, center, angle * y_rotation);
 
-        // account for rotation of the camera
         vec3.transformMat4(xyz, xyz, viewMat);
 
-        if (angle == 0)
+        if (angle === 0)
             ctx.moveTo(xyz[0], xyz[1]);
         else
             ctx.lineTo(xyz[0], xyz[1]);
@@ -401,29 +417,65 @@ function drawScene()
     ctx.stroke();
     ctx.restore();
 
-    if (speedOff)
+    if (speedOffX !== 0)
     {
-        if (offset > maxOffset)
+        if (offsetX > 1.0)
         {
-            offset = maxOffset;
-            speedOffSign = -1;
+            offsetX = 1.0;
+            speedOffXSign = -1;
         }
-        if (offset < -1 * maxOffset)
+        if (offsetX < -1.0)
         {
-            offset = -1 * maxOffset;
-            speedOffSign = 1;
+            offsetX = -1.0;
+            speedOffXSign = 1;
         }
-        offset += speedOffSign * speedOff;
-        offsetSlider.value = offset;
+        offsetX += speedOffXSign * speedOffX;
+        offsetXSlider.value = offsetX;
+    }
+    if (speedOffY !== 0)
+    {
+        if (offsetY > 1.0)
+        {
+            offsetY = 1.0;
+            speedOffYSign = -1;
+        }
+        if (offsetY < -1.0)
+        {
+            offsetY = -1.0;
+            speedOffYSign = 1;
+        }
+        offsetY += speedOffYSign * speedOffY;
+        offsetYSlider.value = offsetY;
+    }
+    if (speedOffZ !== 0)
+    {
+        if (offsetZ > 1.0)
+        {
+            offsetZ = 1.0;
+            speedOffZSign = -1;
+        }
+        if (offsetZ < -1.0)
+        {
+            offsetZ = -1.0;
+            speedOffZSign = 1;
+        }
+        offsetZ += speedOffZSign * speedOffZ;
+        offsetZSlider.value = offsetZ;
     }
 
-    if (autoRotate)
+    if (autoRotateX)
     {
         mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), 0.005), viewMat);
-        mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), 0.003), viewMat);
-        mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), 0.002), viewMat);
         cameraRotationX = wrapAngle(cameraRotationX + 0.005);
+    }
+    if (autoRotateY)
+    {
+        mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), 0.003), viewMat);
         cameraRotationY = wrapAngle(cameraRotationY + 0.003);
+    }
+    if (autoRotateZ)
+    {
+        mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), 0.002), viewMat);
         cameraRotationZ = wrapAngle(cameraRotationZ + 0.002);
     }
 
@@ -473,46 +525,50 @@ function randomize()
     if (lcm > 60)
         denomB = denomA;
 
-    var turnsA = randomIrreducibleFraction(denomA);
-    var turnsB = randomIrreducibleFraction(denomB);
+    var twistsA = randomIrreducibleFraction(denomA);
+    var twistsB = randomIrreducibleFraction(denomB);
     var zeroAxis = Math.floor(Math.random() * 3);
     if (zeroAxis === 0)
     {
-        x_turns = 0;
+        x_twists = 0;
         x_period = denomA;
-        y_turns = turnsA;
+        y_twists = twistsA;
         y_period = denomA;
-        z_turns = turnsB;
+        z_twists = twistsB;
         z_period = denomB;
     }
     else if (zeroAxis === 1)
     {
-        x_turns = turnsA;
+        x_twists = twistsA;
         x_period = denomA;
-        y_turns = 0;
+        y_twists = 0;
         y_period = denomA;
-        z_turns = turnsB;
+        z_twists = twistsB;
         z_period = denomB;
     }
     else
     {
-        x_turns = turnsA;
+        x_twists = twistsA;
         x_period = denomA;
-        y_turns = turnsB;
+        y_twists = twistsB;
         y_period = denomB;
-        z_turns = 0;
+        z_twists = 0;
         z_period = denomB;
     }
-    x_rotation = x_turns / x_period;
-    y_rotation = y_turns / y_period;
-    z_rotation = z_turns / z_period;
+    x_rotation = x_twists / x_period;
+    y_rotation = y_twists / y_period;
+    z_rotation = z_twists / z_period;
 
     var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.4);
     scale = 100 + Math.floor(Math.random() * Math.max(1, maxScale - 100));
-    offset = Math.random() * ((canvas.width / 2) / scale - 1);
+    offsetX = 0.3 + Math.random() * 0.7;
+    offsetY = 0.0;
+    offsetZ = 0.0;
 
     scaleSlider.value = scale;
-    offsetSlider.value = offset;
+    offsetXSlider.value = offsetX;
+    offsetYSlider.value = offsetY;
+    offsetZSlider.value = offsetZ;
     autoSetLoops();
     customColor = randomColor();
     updateDisplay();
