@@ -255,6 +255,33 @@ function setZPeriod()
     autoSetLoops();
 }
 
+function zeroX()
+{
+    x_turns = 0;
+    x_period = 1;
+    x_rotation = 0;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function zeroY()
+{
+    y_turns = 0;
+    y_period = 1;
+    y_rotation = 0;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function zeroZ()
+{
+    z_turns = 0;
+    z_period = 1;
+    z_rotation = 0;
+    updateDisplay();
+    autoSetLoops();
+}
+
 function updateDisplay()
 {
     xTurnsInput.value = x_turns;
@@ -519,6 +546,7 @@ function randomize()
 
 function resetCamera()
 {
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     mat4.identity(viewMat);
     cameraRotationX = cameraRotationY = cameraRotationZ = 0.0;
 }
@@ -533,7 +561,7 @@ function rebuildViewMat()
 
 function setCameraX(value)
 {
-    cameraRotationX = parseFloat(value);
+    cameraRotationX = wrapAngle(parseFloat(value));
     rebuildViewMat();
     autoRotate = false;
     autoRotateCheck.checked = false;
@@ -541,7 +569,7 @@ function setCameraX(value)
 
 function setCameraY(value)
 {
-    cameraRotationY = parseFloat(value);
+    cameraRotationY = wrapAngle(parseFloat(value));
     rebuildViewMat();
     autoRotate = false;
     autoRotateCheck.checked = false;
@@ -549,7 +577,7 @@ function setCameraY(value)
 
 function setCameraZ(value)
 {
-    cameraRotationZ = parseFloat(value);
+    cameraRotationZ = wrapAngle(parseFloat(value));
     rebuildViewMat();
     autoRotate = false;
     autoRotateCheck.checked = false;

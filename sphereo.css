@@ -23,27 +23,47 @@ canvas {
     height: 100%;
 }
 
+#title {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    letter-spacing: 2px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
 #panel-left, #panel-right {
     position: absolute;
     top: 20px;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    border-radius: 10px;
 }
 
 #panel-left {
     left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.axis-panel {
+    background: rgba(10, 20, 50, 0.88);
+    padding: 15px 20px;
+    border-radius: 10px;
 }
 
 #panel-right {
     right: 20px;
+    background: rgba(10, 20, 50, 0.88);
+    padding: 20px;
+    border-radius: 10px;
 }
 
 #panel-bottom-right {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(10, 20, 50, 0.88);
     padding: 15px 20px;
     border-radius: 10px;
 }
@@ -53,7 +73,7 @@ canvas {
 }
 
 body.light #panel-bottom-right {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(220, 225, 255, 0.88);
 }
 
 #panel-bottom {
@@ -61,7 +81,7 @@ body.light #panel-bottom-right {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(10, 20, 50, 0.88);
     padding: 15px 30px;
     border-radius: 10px;
     display: flex;
@@ -84,11 +104,22 @@ body.light #panel-bottom-right {
     white-space: nowrap;
 }
 
+.axis-label {
+    display: inline-block;
+    width: 140px;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
 .btn-row {
     display: flex;
     align-items: center;
     gap: 6px;
     margin-bottom: 15px;
+}
+
+.axis-panel .btn-row:last-child {
+    margin-bottom: 0;
 }
 
 .btn-row .label {
@@ -115,7 +146,7 @@ body.light #panel-bottom-right {
     border: none;
     width: 60px;
     height: 50px;
-    font-size: 22px;
+    font-size: 30px;
     font-family: inherit;
     cursor: pointer;
     border-radius: 5px;
@@ -128,6 +159,69 @@ body.light #panel-bottom-right {
 
 .btn-row button:active {
     background: #999;
+}
+
+.btn-row button.zero-btn {
+    background: #5a3535;
+}
+
+.btn-row button.zero-btn:hover {
+    background: #7a4545;
+}
+
+.btn-row button.zero-btn:active {
+    background: #9a5555;
+}
+
+.btn-row button.jump-btn {
+    background: #2a4055;
+}
+
+.btn-row button.jump-btn:hover {
+    background: #3a5570;
+}
+
+.btn-row button.jump-btn:active {
+    background: #4a6585;
+}
+
+.camera-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.camera-row button {
+    background: #555;
+    color: white;
+    border: none;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.camera-row button:hover {
+    background: #777;
+}
+
+.camera-row button:active {
+    background: #999;
+}
+
+.camera-row button.jump-btn {
+    background: #2a4055;
+}
+
+.camera-row button.jump-btn:hover {
+    background: #3a5570;
+}
+
+.camera-row button.jump-btn:active {
+    background: #4a6585;
 }
 
 input[type="range"] {
@@ -189,10 +283,14 @@ body.light {
     color: black;
 }
 
-body.light #panel-left,
+body.light #title {
+    color: black;
+}
+
+body.light .axis-panel,
 body.light #panel-right,
 body.light #panel-bottom {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(220, 225, 255, 0.88);
 }
 
 body.light button {

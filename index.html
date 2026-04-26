@@ -8,38 +8,54 @@
 
 <body>
 <div id="container">
+<div id="title">Spheromaniac</div>
 <canvas id="canvas" width="1024" height="768"></canvas>
 
 <div id="panel-left">
-    <div class="control btn-row">
-        <span class="label">X</span>
-        <button onclick="adjustX(-1)">‹</button>
-        <input type="number" id="x_turns" value="0" onchange="setXTurns()">
-        <button onclick="adjustX(1)">›</button>
-        <span>/</span>
-        <button onclick="adjustXPeriod(-1)">‹</button>
-        <input type="number" id="x_period" value="1" min="1" onchange="setXPeriod()">
-        <button onclick="adjustXPeriod(1)">›</button>
+    <div class="axis-panel">
+        <div class="control btn-row">
+            <span class="axis-label">x-axis turns:</span>
+            <button onclick="adjustX(-1)">◀</button>
+            <input type="number" id="x_turns" value="0" oninput="setXTurns()">
+            <button onclick="adjustX(1)">▶</button>
+            <button class="zero-btn" onclick="zeroX()">⊘</button>
+        </div>
+        <div class="control btn-row">
+            <span class="axis-label">x-axis period:</span>
+            <button onclick="adjustXPeriod(-1)">◀</button>
+            <input type="number" id="x_period" value="1" min="1" oninput="setXPeriod()">
+            <button onclick="adjustXPeriod(1)">▶</button>
+        </div>
     </div>
-    <div class="control btn-row">
-        <span class="label">Y</span>
-        <button onclick="adjustY(-1)">‹</button>
-        <input type="number" id="y_turns" value="0" onchange="setYTurns()">
-        <button onclick="adjustY(1)">›</button>
-        <span>/</span>
-        <button onclick="adjustYPeriod(-1)">‹</button>
-        <input type="number" id="y_period" value="1" min="1" onchange="setYPeriod()">
-        <button onclick="adjustYPeriod(1)">›</button>
+    <div class="axis-panel">
+        <div class="control btn-row">
+            <span class="axis-label">y-axis turns:</span>
+            <button onclick="adjustY(-1)">◀</button>
+            <input type="number" id="y_turns" value="0" oninput="setYTurns()">
+            <button onclick="adjustY(1)">▶</button>
+            <button class="zero-btn" onclick="zeroY()">⊘</button>
+        </div>
+        <div class="control btn-row">
+            <span class="axis-label">y-axis period:</span>
+            <button onclick="adjustYPeriod(-1)">◀</button>
+            <input type="number" id="y_period" value="1" min="1" oninput="setYPeriod()">
+            <button onclick="adjustYPeriod(1)">▶</button>
+        </div>
     </div>
-    <div class="control btn-row">
-        <span class="label">Z</span>
-        <button onclick="adjustZ(-1)">‹</button>
-        <input type="number" id="z_turns" value="0" onchange="setZTurns()">
-        <button onclick="adjustZ(1)">›</button>
-        <span>/</span>
-        <button onclick="adjustZPeriod(-1)">‹</button>
-        <input type="number" id="z_period" value="1" min="1" onchange="setZPeriod()">
-        <button onclick="adjustZPeriod(1)">›</button>
+    <div class="axis-panel">
+        <div class="control btn-row">
+            <span class="axis-label">z-axis turns:</span>
+            <button onclick="adjustZ(-1)">◀</button>
+            <input type="number" id="z_turns" value="0" oninput="setZTurns()">
+            <button onclick="adjustZ(1)">▶</button>
+            <button class="zero-btn" onclick="zeroZ()">⊘</button>
+        </div>
+        <div class="control btn-row">
+            <span class="axis-label">z-axis period:</span>
+            <button onclick="adjustZPeriod(-1)">◀</button>
+            <input type="number" id="z_period" value="1" min="1" oninput="setZPeriod()">
+            <button onclick="adjustZPeriod(1)">▶</button>
+        </div>
     </div>
 </div>
 
@@ -51,7 +67,7 @@
             onchange="setLoops(this.value)">
     </div>
     <div class="control">
-        <input type="range" id="loops" value=10 min=1 max=200 step=1
+        <input type="range" id="loops" value=10 min=1 max=60 step=1
             oninput="setLoops(this.value)">
     </div>
     <div class="control">
@@ -86,18 +102,36 @@
     </div>
     <div class="control">
         <span class="label">cameraX (w/s)</span>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraX(cameraRotationX - Math.PI/2)">«</button>
+        <button onclick="setCameraX(cameraRotationX - keyboardStep)">◀</button>
         <input type="range" id="cameraRotationX" value=0 min=0 max=6.28 step=0.001
             oninput="setCameraX(this.value)">
+        <button onclick="setCameraX(cameraRotationX + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraX(cameraRotationX + Math.PI/2)">»</button>
     </div>
     <div class="control">
         <span class="label">cameraY (a/d)</span>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraY(cameraRotationY - Math.PI/2)">«</button>
+        <button onclick="setCameraY(cameraRotationY - keyboardStep)">◀</button>
         <input type="range" id="cameraRotationY" value=0 min=0 max=6.28 step=0.001
             oninput="setCameraY(this.value)">
+        <button onclick="setCameraY(cameraRotationY + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraY(cameraRotationY + Math.PI/2)">»</button>
     </div>
     <div class="control">
         <span class="label">cameraZ (q/e)</span>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ - Math.PI/2)">«</button>
+        <button onclick="setCameraZ(cameraRotationZ - keyboardStep)">◀</button>
         <input type="range" id="cameraRotationZ" value=0 min=0 max=6.28 step=0.001
             oninput="setCameraZ(this.value)">
+        <button onclick="setCameraZ(cameraRotationZ + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ + Math.PI/2)">»</button>
     </div>
 </div>
 
@@ -109,7 +143,7 @@
     </label>
     <label>
         <input type="checkbox" id="lightMode" onclick="toggleLight();">
-        light
+        light mode
     </label>
     <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
     <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
