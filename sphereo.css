@@ -68,7 +68,7 @@ canvas {
     border-radius: 10px;
 }
 
-#panel-bottom-right button {
+#panel-bottom-right > button {
     margin-bottom: 15px;
 }
 
@@ -121,7 +121,6 @@ body.light #panel-bottom-right {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 15px;
 }
 
 .axis-panel .btn-row:last-child {
@@ -140,13 +139,19 @@ body.light #panel-bottom-right {
     -moz-appearance: textfield;
 }
 
+#loops_num {
+    width: 60px;
+    font-size: 20px;
+    padding: 4px;
+}
+
 .btn-row input[type="number"]::-webkit-inner-spin-button,
 .btn-row input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.btn-row button {
+.btn-row button, .camera-row button {
     background: #555;
     color: white;
     border: none;
@@ -159,24 +164,23 @@ body.light #panel-bottom-right {
     padding: 2px;
 }
 
-.btn-row button:hover {
+.btn-row button:hover, .camera-row button:hover {
     background: #777;
 }
 
-.btn-row button:active {
+.btn-row button:active, .camera-row button:active {
     background: #999;
 }
 
-
-.btn-row button.jump-btn {
+.btn-row button.jump-btn, .camera-row button.jump-btn {
     background: #2a4055;
 }
 
-.btn-row button.jump-btn:hover {
+.btn-row button.jump-btn:hover, .camera-row button.jump-btn:hover {
     background: #3a5570;
 }
 
-.btn-row button.jump-btn:active {
+.btn-row button.jump-btn:active, .camera-row button.jump-btn:active {
     background: #4a6585;
 }
 
@@ -184,39 +188,6 @@ body.light #panel-bottom-right {
     display: flex;
     align-items: center;
     gap: 4px;
-}
-
-.camera-row button {
-    background: #555;
-    color: white;
-    border: none;
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
-    font-family: inherit;
-    cursor: pointer;
-    border-radius: 5px;
-    padding: 2px;
-}
-
-.camera-row button:hover {
-    background: #777;
-}
-
-.camera-row button:active {
-    background: #999;
-}
-
-.camera-row button.jump-btn {
-    background: #2a4055;
-}
-
-.camera-row button.jump-btn:hover {
-    background: #3a5570;
-}
-
-.camera-row button.jump-btn:active {
-    background: #4a6585;
 }
 
 input[type="range"] {
@@ -275,10 +246,6 @@ input[type="color"] {
 
 body.light {
     background: white;
-    color: black;
-}
-
-body.light #title {
     color: black;
 }
 

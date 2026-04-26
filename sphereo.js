@@ -520,7 +520,6 @@ function randomize()
 
 function resetCamera()
 {
-    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     mat4.identity(viewMat);
     cameraRotationX = cameraRotationY = cameraRotationZ = 0.0;
 }
