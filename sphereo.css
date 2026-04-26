@@ -100,6 +100,13 @@ body.light #panel-bottom-right {
     width: 75px;
     font-size: 20px;
     padding: 5px;
+    -moz-appearance: textfield;
+}
+
+.btn-row input[type="number"]::-webkit-inner-spin-button,
+.btn-row input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .btn-row button {

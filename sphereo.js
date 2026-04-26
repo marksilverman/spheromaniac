@@ -1,6 +1,9 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
+var x_turns = 0, x_period = 1;
+var y_turns = 0, y_period = 1;
+var z_turns = 0, z_period = 1;
 var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
 var lineWidth = 3, offset = 0.1, maxOffset = 4.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
@@ -12,25 +15,48 @@ var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 
+var xTurnsInput, xPeriodInput;
+var yTurnsInput, yPeriodInput;
+var zTurnsInput, zPeriodInput;
+var loopsSlider, loopsInput;
+var cameraXSlider, cameraYSlider, cameraZSlider;
+var scaleSlider, offsetSlider;
+var autoRotateCheck, inColorCheck, lightModeCheck;
+var colorPickerInput;
+
 canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-window.addEventListener('resize', function() {
+canvas.addEventListener('wheel', function(e)
+{
+    e.preventDefault();
+    scale -= e.deltaY * 0.5;
+    if (scale < 10)
+        scale = 10;
+    if (scale > 400)
+        scale = 400;
+    scaleSlider.value = scale;
+}, { passive: false });
+
+window.addEventListener('resize', function()
+{
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 });
 
-canvas.addEventListener('mousedown', function(e) {
+canvas.addEventListener('mousedown', function(e)
+{
     isDragging = true;
     activeMouseButton = e.button;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
     autoRotate = false;
-    document.getElementById('autoRotate').checked = false;
+    autoRotateCheck.checked = false;
 });
 
-canvas.addEventListener('mousemove', function(e) {
+canvas.addEventListener('mousemove', function(e)
+{
     if (!isDragging)
-	return;
+        return;
     var deltaX = e.clientX - lastMouseX;
     var deltaY = e.clientY - lastMouseY;
     if (activeMouseButton === 0)
@@ -53,7 +79,8 @@ canvas.addEventListener('mousemove', function(e) {
     lastMouseY = e.clientY;
 });
 
-function stopDrag() {
+function stopDrag()
+{
     isDragging = false;
     activeMouseButton = -1;
 }
@@ -63,8 +90,9 @@ canvas.addEventListener('mouseleave', stopDrag);
 
 var keyboardStep = 0.05;
 
-document.addEventListener('keydown', function(e) {
-    if (document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text')
+document.addEventListener('keydown', function(e)
+{
+    if (document.activeElement.tagName === 'INPUT')
         return;
     if (e.ctrlKey || e.metaKey)
         return;
@@ -110,7 +138,7 @@ document.addEventListener('keydown', function(e) {
     if (handled)
     {
         autoRotate = false;
-        document.getElementById('autoRotate').checked = false;
+        autoRotateCheck.checked = false;
         e.preventDefault();
     }
 });
@@ -127,54 +155,141 @@ function wrapAngle(angle)
 function setLoops(value)
 {
     loops = Math.round(parseFloat(value));
-    document.getElementById('loops').value = loops;
-    document.getElementById('loops_num').value = loops;
+    loopsSlider.value = loops;
+    loopsInput.value = loops;
 }
 
 function adjustX(amount)
 {
-    x_rotation += amount;
+    x_turns += amount;
+    x_rotation = x_turns / x_period;
     updateDisplay();
+    autoSetLoops();
+}
+
+function adjustXPeriod(amount)
+{
+    x_period = Math.max(1, x_period + amount);
+    x_rotation = x_turns / x_period;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setXTurns()
+{
+    x_turns = parseInt(xTurnsInput.value) || 0;
+    x_rotation = x_turns / x_period;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setXPeriod()
+{
+    x_period = Math.max(1, parseInt(xPeriodInput.value) || 1);
+    x_rotation = x_turns / x_period;
+    updateDisplay();
+    autoSetLoops();
 }
 
 function adjustY(amount)
 {
-    y_rotation += amount;
+    y_turns += amount;
+    y_rotation = y_turns / y_period;
     updateDisplay();
+    autoSetLoops();
+}
+
+function adjustYPeriod(amount)
+{
+    y_period = Math.max(1, y_period + amount);
+    y_rotation = y_turns / y_period;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setYTurns()
+{
+    y_turns = parseInt(yTurnsInput.value) || 0;
+    y_rotation = y_turns / y_period;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setYPeriod()
+{
+    y_period = Math.max(1, parseInt(yPeriodInput.value) || 1);
+    y_rotation = y_turns / y_period;
+    updateDisplay();
+    autoSetLoops();
 }
 
 function adjustZ(amount)
 {
-    z_rotation += amount;
+    z_turns += amount;
+    z_rotation = z_turns / z_period;
     updateDisplay();
+    autoSetLoops();
 }
 
-function safeEval(str)
+function adjustZPeriod(amount)
 {
-    if (!/^[\d\s+\-*/().]+$/.test(str))
-	return 0;
+    z_period = Math.max(1, z_period + amount);
+    z_rotation = z_turns / z_period;
+    updateDisplay();
+    autoSetLoops();
+}
 
-    try {
-	return Function('"use strict"; return (' + str + ')')();
-    } catch {
-	return 0;
-    }
+function setZTurns()
+{
+    z_turns = parseInt(zTurnsInput.value) || 0;
+    z_rotation = z_turns / z_period;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setZPeriod()
+{
+    z_period = Math.max(1, parseInt(zPeriodInput.value) || 1);
+    z_rotation = z_turns / z_period;
+    updateDisplay();
+    autoSetLoops();
 }
 
 function updateDisplay()
 {
-    document.getElementById('x_rotation_num').value = x_rotation.toFixed(6);
-    document.getElementById('x_rotation_slide').value = x_rotation;
-    document.getElementById('y_rotation_num').value = y_rotation.toFixed(6);
-    document.getElementById('y_rotation_slide').value = y_rotation;
-    document.getElementById('z_rotation_num').value = z_rotation.toFixed(6);
-    document.getElementById('z_rotation_slide').value = z_rotation;
+    xTurnsInput.value = x_turns;
+    xPeriodInput.value = x_period;
+    yTurnsInput.value = y_turns;
+    yPeriodInput.value = y_period;
+    zTurnsInput.value = z_turns;
+    zPeriodInput.value = z_period;
+}
+
+function autoSetLoops()
+{
+    var periods = [];
+    if (x_turns !== 0)
+        periods.push(x_period);
+    if (y_turns !== 0)
+        periods.push(y_period);
+    if (z_turns !== 0)
+        periods.push(z_period);
+    if (periods.length === 0)
+    {
+        setLoops(1);
+        return;
+    }
+    var lcm = periods.reduce(function(a, b)
+    {
+        return a * b / greatestCommonDivisor(a, b);
+    });
+    setLoops(Math.min(lcm, 60));
 }
 
 var colorMgr =
 {
     red: 100, green: 200, blue: 50, radd: 2, gadd: -2, badd: 2, inColor: false, fgColor: '',
-    randomize: function ()
+    randomize: function()
     {
         this.red = 100 + Math.floor(Math.random() * 100);
         this.green = 100 + Math.floor(Math.random() * 100);
@@ -187,11 +302,13 @@ var colorMgr =
     add: function(color, adder)
     {
         color += adder;
-        if (color > 255) {
+        if (color > 255)
+        {
             color = 255;
             adder *= -1;
         }
-        if (color < 100) {
+        if (color < 100)
+        {
             color = 100;
             adder *= -1;
         }
@@ -204,7 +321,7 @@ var colorMgr =
         [this.red, this.radd] = this.add(this.red, this.radd);
         [this.green, this.gadd] = this.add(this.green, this.gadd);
         [this.blue, this.badd] = this.add(this.blue, this.badd);
-        this.fgColor='rgba(' + this.red + ',' + this.green + ',' + this.blue + ')';
+        this.fgColor = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ')';
     }
 }
 
@@ -214,14 +331,34 @@ function main()
 {
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
+
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
+
+    xTurnsInput  = document.getElementById('x_turns');
+    xPeriodInput = document.getElementById('x_period');
+    yTurnsInput  = document.getElementById('y_turns');
+    yPeriodInput = document.getElementById('y_period');
+    zTurnsInput  = document.getElementById('z_turns');
+    zPeriodInput = document.getElementById('z_period');
+    loopsSlider  = document.getElementById('loops');
+    loopsInput   = document.getElementById('loops_num');
+    cameraXSlider   = document.getElementById('cameraRotationX');
+    cameraYSlider   = document.getElementById('cameraRotationY');
+    cameraZSlider   = document.getElementById('cameraRotationZ');
+    scaleSlider     = document.getElementById('scale');
+    offsetSlider    = document.getElementById('offset');
+    autoRotateCheck = document.getElementById('autoRotate');
+    inColorCheck    = document.getElementById('inColor');
+    lightModeCheck  = document.getElementById('lightMode');
+    colorPickerInput = document.getElementById('colorPicker');
+
     colorMgr.randomize();
     updateDisplay();
-    setLoops(loops);
-    document.getElementById('autoRotate').checked = autoRotate;
-    document.getElementById('inColor').checked = colorMgr.inColor;
-    document.getElementById('lightMode').checked = false;
+    autoSetLoops();
+    autoRotateCheck.checked = autoRotate;
+    inColorCheck.checked = colorMgr.inColor;
+    lightModeCheck.checked = false;
     drawScene();
 }
 
@@ -238,8 +375,8 @@ function drawScene()
     for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
     {
         // start with a circle
-	let x = scale * (offset + Math.cos(angle));
-	let y = scale * Math.sin(angle);
+        let x = scale * (offset + Math.cos(angle));
+        let y = scale * Math.sin(angle);
         let xyz = [ x, y, 0.0 ];
 
         // rotate around Z to create a basic spirograph
@@ -275,7 +412,7 @@ function drawScene()
             speedOffSign = 1;
         }
         offset += speedOffSign * speedOff;
-        document.getElementById("offset").value = offset;
+        offsetSlider.value = offset;
     }
 
     if (autoRotate)
@@ -288,9 +425,9 @@ function drawScene()
         cameraRotationZ = wrapAngle(cameraRotationZ + 0.002);
     }
 
-    document.getElementById('cameraRotationX').value = cameraRotationX;
-    document.getElementById('cameraRotationY').value = cameraRotationY;
-    document.getElementById('cameraRotationZ').value = cameraRotationZ;
+    cameraXSlider.value = cameraRotationX;
+    cameraYSlider.value = cameraRotationY;
+    cameraZSlider.value = cameraRotationZ;
 
     raf = window.requestAnimationFrame(drawScene);
 }
@@ -321,7 +458,7 @@ function randomIrreducibleFraction(denom)
         if (greatestCommonDivisor(n, denom) === 1)
             numerators.push(n);
     }
-    return numerators[Math.floor(Math.random() * numerators.length)] / denom;
+    return numerators[Math.floor(Math.random() * numerators.length)];
 }
 
 function randomize()
@@ -331,45 +468,54 @@ function randomize()
     var denomA = denomPool[Math.floor(Math.random() * denomPool.length)];
     var denomB = denomPool[Math.floor(Math.random() * denomPool.length)];
     var lcm = denomA * denomB / greatestCommonDivisor(denomA, denomB);
-    if (lcm > 40)
-    {
+    if (lcm > 60)
         denomB = denomA;
-        lcm = denomA;
-    }
-    loops = lcm;
 
+    var turnsA = randomIrreducibleFraction(denomA);
+    var turnsB = randomIrreducibleFraction(denomB);
     var zeroAxis = Math.floor(Math.random() * 3);
     if (zeroAxis === 0)
     {
-        x_rotation = 0;
-        y_rotation = randomIrreducibleFraction(denomA);
-        z_rotation = randomIrreducibleFraction(denomB);
+        x_turns = 0;
+        x_period = denomA;
+        y_turns = turnsA;
+        y_period = denomA;
+        z_turns = turnsB;
+        z_period = denomB;
     }
     else if (zeroAxis === 1)
     {
-        x_rotation = randomIrreducibleFraction(denomA);
-        y_rotation = 0;
-        z_rotation = randomIrreducibleFraction(denomB);
+        x_turns = turnsA;
+        x_period = denomA;
+        y_turns = 0;
+        y_period = denomA;
+        z_turns = turnsB;
+        z_period = denomB;
     }
     else
     {
-        x_rotation = randomIrreducibleFraction(denomA);
-        y_rotation = randomIrreducibleFraction(denomB);
-        z_rotation = 0;
+        x_turns = turnsA;
+        x_period = denomA;
+        y_turns = turnsB;
+        y_period = denomB;
+        z_turns = 0;
+        z_period = denomB;
     }
+    x_rotation = x_turns / x_period;
+    y_rotation = y_turns / y_period;
+    z_rotation = z_turns / z_period;
 
     var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.4);
     scale = 100 + Math.floor(Math.random() * Math.max(1, maxScale - 100));
     offset = Math.random() * ((canvas.width / 2) / scale - 1);
 
-    document.getElementById('scale').value = scale;
-    document.getElementById('offset').value = offset;
-    setLoops(loops);
+    scaleSlider.value = scale;
+    offsetSlider.value = offset;
+    autoSetLoops();
     customColor = randomColor();
     updateDisplay();
     colorMgr.randomize();
 }
-
 
 function resetCamera()
 {
@@ -390,7 +536,7 @@ function setCameraX(value)
     cameraRotationX = parseFloat(value);
     rebuildViewMat();
     autoRotate = false;
-    document.getElementById('autoRotate').checked = false;
+    autoRotateCheck.checked = false;
 }
 
 function setCameraY(value)
@@ -398,7 +544,7 @@ function setCameraY(value)
     cameraRotationY = parseFloat(value);
     rebuildViewMat();
     autoRotate = false;
-    document.getElementById('autoRotate').checked = false;
+    autoRotateCheck.checked = false;
 }
 
 function setCameraZ(value)
@@ -406,13 +552,12 @@ function setCameraZ(value)
     cameraRotationZ = parseFloat(value);
     rebuildViewMat();
     autoRotate = false;
-    document.getElementById('autoRotate').checked = false;
+    autoRotateCheck.checked = false;
 }
 
 function toggleLight()
 {
     document.body.classList.toggle('light');
     customColor = document.body.classList.contains('light') ? '#000000' : '#00ffff';
-    document.getElementById('colorPicker').value = customColor;
+    colorPickerInput.value = customColor;
 }
-
