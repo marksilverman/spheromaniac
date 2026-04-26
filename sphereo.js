@@ -2,7 +2,7 @@ var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
 var scale = 200.0, speedOff = 0.0, speedOffSign = 1.0;
-var lineWidth = 3, offset = 0.1, maxOffset = 2.0, loops = 10, raf = 0;
+var lineWidth = 3, offset = 0.1, maxOffset = 4.0, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
 var customColor = '#00ffff';
@@ -13,6 +13,11 @@ var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 
 canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+window.addEventListener('resize', function() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+});
 
 canvas.addEventListener('mousedown', function(e) {
     isDragging = true;
@@ -119,6 +124,13 @@ function wrapAngle(angle)
     return angle;
 }
 
+function setLoops(value)
+{
+    loops = Math.round(parseFloat(value));
+    document.getElementById('loops').value = loops;
+    document.getElementById('loops_num').value = loops;
+}
+
 function adjustX(amount)
 {
     x_rotation += amount;
@@ -202,8 +214,11 @@ function main()
 {
     if (!ctx)
         return alert("Your browser doesn\'t support something.");
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
     colorMgr.randomize();
     updateDisplay();
+    setLoops(loops);
     document.getElementById('autoRotate').checked = autoRotate;
     document.getElementById('inColor').checked = colorMgr.inColor;
     document.getElementById('lightMode').checked = false;
@@ -287,30 +302,69 @@ function randomColor()
     return 'hsl(' + hue + ', 100%, ' + lightness + '%)';
 }
 
-function randomFraction()
+function greatestCommonDivisor(a, b)
 {
-    var denom = 2 + Math.floor(Math.random() * 8);
-    var numer = 1 + Math.floor(Math.random() * (denom - 1));
-    return numer / denom;
+    while (b > 0)
+    {
+        var t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+function randomIrreducibleFraction(denom)
+{
+    var numerators = [];
+    for (var n = 1; n < 2 * denom; n++)
+    {
+        if (greatestCommonDivisor(n, denom) === 1)
+            numerators.push(n);
+    }
+    return numerators[Math.floor(Math.random() * numerators.length)] / denom;
 }
 
 function randomize()
 {
-    x_rotation = randomFraction();
-    y_rotation = randomFraction();
-    z_rotation = randomFraction();
+    var denomPool = [3, 4, 5, 7, 8, 9];
+
+    var denomA = denomPool[Math.floor(Math.random() * denomPool.length)];
+    var denomB = denomPool[Math.floor(Math.random() * denomPool.length)];
+    var lcm = denomA * denomB / greatestCommonDivisor(denomA, denomB);
+    if (lcm > 40)
+    {
+        denomB = denomA;
+        lcm = denomA;
+    }
+    loops = lcm;
 
     var zeroAxis = Math.floor(Math.random() * 3);
-    if (zeroAxis === 0) x_rotation = 0;
-    else if (zeroAxis === 1) y_rotation = 0;
-    else z_rotation = 0;
+    if (zeroAxis === 0)
+    {
+        x_rotation = 0;
+        y_rotation = randomIrreducibleFraction(denomA);
+        z_rotation = randomIrreducibleFraction(denomB);
+    }
+    else if (zeroAxis === 1)
+    {
+        x_rotation = randomIrreducibleFraction(denomA);
+        y_rotation = 0;
+        z_rotation = randomIrreducibleFraction(denomB);
+    }
+    else
+    {
+        x_rotation = randomIrreducibleFraction(denomA);
+        y_rotation = randomIrreducibleFraction(denomB);
+        z_rotation = 0;
+    }
 
-    scale = 100 + Math.floor(Math.random() * 201);
+    var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.4);
+    scale = 100 + Math.floor(Math.random() * Math.max(1, maxScale - 100));
     offset = Math.random() * ((canvas.width / 2) / scale - 1);
 
     document.getElementById('scale').value = scale;
     document.getElementById('offset').value = offset;
-
+    setLoops(loops);
     customColor = randomColor();
     updateDisplay();
     colorMgr.randomize();
