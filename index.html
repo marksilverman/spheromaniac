@@ -13,45 +13,45 @@
 
 <div id="panel-left">
     <div class="axis-panel">
+        <div class="axis-panel-header">X-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">x-axis turns:</span>
+            <span class="axis-label">turns:</span>
             <button onclick="adjustX(-1)">◀</button>
             <input type="number" id="x_turns" value="0" oninput="setXTurns()">
             <button onclick="adjustX(1)">▶</button>
-            <button class="zero-btn" onclick="zeroX()">⊘</button>
         </div>
         <div class="control btn-row">
-            <span class="axis-label">x-axis period:</span>
+            <span class="axis-label">period:</span>
             <button onclick="adjustXPeriod(-1)">◀</button>
             <input type="number" id="x_period" value="1" min="1" oninput="setXPeriod()">
             <button onclick="adjustXPeriod(1)">▶</button>
         </div>
     </div>
     <div class="axis-panel">
+        <div class="axis-panel-header">Y-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">y-axis turns:</span>
+            <span class="axis-label">turns:</span>
             <button onclick="adjustY(-1)">◀</button>
             <input type="number" id="y_turns" value="0" oninput="setYTurns()">
             <button onclick="adjustY(1)">▶</button>
-            <button class="zero-btn" onclick="zeroY()">⊘</button>
         </div>
         <div class="control btn-row">
-            <span class="axis-label">y-axis period:</span>
+            <span class="axis-label">period:</span>
             <button onclick="adjustYPeriod(-1)">◀</button>
             <input type="number" id="y_period" value="1" min="1" oninput="setYPeriod()">
             <button onclick="adjustYPeriod(1)">▶</button>
         </div>
     </div>
     <div class="axis-panel">
+        <div class="axis-panel-header">Z-axis</div>
         <div class="control btn-row">
-            <span class="axis-label">z-axis turns:</span>
+            <span class="axis-label">turns:</span>
             <button onclick="adjustZ(-1)">◀</button>
             <input type="number" id="z_turns" value="0" oninput="setZTurns()">
             <button onclick="adjustZ(1)">▶</button>
-            <button class="zero-btn" onclick="zeroZ()">⊘</button>
         </div>
         <div class="control btn-row">
-            <span class="axis-label">z-axis period:</span>
+            <span class="axis-label">period:</span>
             <button onclick="adjustZPeriod(-1)">◀</button>
             <input type="number" id="z_period" value="1" min="1" oninput="setZPeriod()">
             <button onclick="adjustZPeriod(1)">▶</button>

@@ -106,9 +106,15 @@ body.light #panel-bottom-right {
 
 .axis-label {
     display: inline-block;
-    width: 140px;
+    width: 60px;
     font-size: 18px;
     white-space: nowrap;
+}
+
+.axis-panel-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
 .btn-row {
@@ -128,7 +134,7 @@ body.light #panel-bottom-right {
 }
 
 .btn-row input[type="number"] {
-    width: 75px;
+    width: 50px;
     font-size: 20px;
     padding: 5px;
     -moz-appearance: textfield;
@@ -144,9 +150,9 @@ body.light #panel-bottom-right {
     background: #555;
     color: white;
     border: none;
-    width: 60px;
-    height: 50px;
-    font-size: 30px;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
     font-family: inherit;
     cursor: pointer;
     border-radius: 5px;
@@ -161,17 +167,6 @@ body.light #panel-bottom-right {
     background: #999;
 }
 
-.btn-row button.zero-btn {
-    background: #5a3535;
-}
-
-.btn-row button.zero-btn:hover {
-    background: #7a4545;
-}
-
-.btn-row button.zero-btn:active {
-    background: #9a5555;
-}
 
 .btn-row button.jump-btn {
     background: #2a4055;

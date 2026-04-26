@@ -255,32 +255,6 @@ function setZPeriod()
     autoSetLoops();
 }
 
-function zeroX()
-{
-    x_turns = 0;
-    x_period = 1;
-    x_rotation = 0;
-    updateDisplay();
-    autoSetLoops();
-}
-
-function zeroY()
-{
-    y_turns = 0;
-    y_period = 1;
-    y_rotation = 0;
-    updateDisplay();
-    autoSetLoops();
-}
-
-function zeroZ()
-{
-    z_turns = 0;
-    z_period = 1;
-    z_rotation = 0;
-    updateDisplay();
-    autoSetLoops();
-}
 
 function updateDisplay()
 {
