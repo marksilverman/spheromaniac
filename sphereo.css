@@ -39,6 +39,23 @@ canvas {
     right: 20px;
 }
 
+#panel-bottom-right {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
+    border-radius: 10px;
+}
+
+#panel-bottom-right button {
+    margin-bottom: 15px;
+}
+
+body.light #panel-bottom-right {
+    background: rgba(255, 255, 255, 0.85);
+}
+
 #panel-bottom {
     position: absolute;
     bottom: 20px;
@@ -64,6 +81,7 @@ canvas {
     display: inline-block;
     width: 80px;
     font-size: 18px;
+    white-space: nowrap;
 }
 
 .btn-row {

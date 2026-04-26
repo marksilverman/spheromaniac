@@ -18,9 +18,9 @@
 	       onchange="x_rotation=safeEval(this.value); updateDisplay()">
     </div>
     <div class="control">
-        <input type="range" id="x_rotation_slide" value=0 min="0" max="1" step=0.000001
+        <input type="range" id="x_rotation_slide" value=0 min="0" max="2" step=0.000001
                style="width:400px"
-	       oninput="x_rotation=parseFloat(this.value);document.getElementById('x_rotation_num').value=x_rotation">
+	       oninput="x_rotation=parseFloat(this.value); updateDisplay()">
     </div>
     <div class="control btn-row">
         <button onclick="adjustX(-0.1)">◀</button>
@@ -44,8 +44,8 @@
             style="width:100px;font-size:20px;padding:4px" onchange="y_rotation=safeEval(this.value); updateDisplay()">
     </div>
     <div class="control">
-        <input type="range" id="y_rotation_slide" value=0 min="0" max="1" step=0.000001
-            style="width:400px" oninput="y_rotation=parseFloat(this.value);document.getElementById('y_rotation_num').value=y_rotation">
+        <input type="range" id="y_rotation_slide" value=0 min="0" max="2" step=0.000001
+            style="width:400px" oninput="y_rotation=parseFloat(this.value); updateDisplay()">
     </div>
     <div class="control btn-row">
         <button onclick="adjustY(-0.1)">◀</button>
@@ -70,9 +70,9 @@
 	       onchange="z_rotation=safeEval(this.value); updateDisplay()">
     </div>
     <div class="control">
-        <input type="range" id="z_rotation_slide" value=0 min="0" max="1" step=0.000001
+        <input type="range" id="z_rotation_slide" value=0 min="0" max="2" step=0.000001
                style="width:400px"
-	       oninput="z_rotation=parseFloat(this.value);document.getElementById('z_rotation_num').value=z_rotation">
+	       oninput="z_rotation=parseFloat(this.value); updateDisplay()">
     </div>
     <div class="control btn-row">
         <button onclick="adjustZ(-0.1)">◀</button>
@@ -119,13 +119,33 @@
     </div>
 </div>
 
+<div id="panel-bottom-right">
+    <button onclick="resetCamera()">[r]eset camera</button>
+    <div class="control">
+        <label>
+            <input type="checkbox" id="autoRotate" checked onclick="autoRotate = this.checked;">
+            auto-rotate
+        </label>
+    </div>
+    <div class="control">
+        <span class="label">cameraX (w/s)</span>
+        <input type="range" id="cameraRotationX" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraX(this.value)">
+    </div>
+    <div class="control">
+        <span class="label">cameraY (a/d)</span>
+        <input type="range" id="cameraRotationY" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraY(this.value)">
+    </div>
+    <div class="control">
+        <span class="label">cameraZ (q/e)</span>
+        <input type="range" id="cameraRotationZ" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraZ(this.value)">
+    </div>
+</div>
+
 <div id="panel-bottom">
-    <button onclick="pause()">pause</button>
     <button onclick="randomize()">randomize</button>
-    <label>
-        <input type="checkbox" id="autoRotate" checked onclick="autoRotate = this.checked;">
-        rotate
-    </label>
     <label>
         <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
         cycle color

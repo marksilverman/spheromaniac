@@ -7,6 +7,7 @@ var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
 var customColor = '#00ffff';
 var autoRotate = true;
+var cameraRotationX = 0.0, cameraRotationY = 0.0, cameraRotationZ = 0.0;
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
@@ -34,11 +35,14 @@ canvas.addEventListener('mousemove', function(e) {
         var temp = mat4.create();
         mat4.multiply(temp, rotY, viewMat);
         mat4.multiply(viewMat, rotX, temp);
+        cameraRotationY = wrapAngle(cameraRotationY + deltaX * dragSensitivity);
+        cameraRotationX = wrapAngle(cameraRotationX + deltaY * dragSensitivity);
     }
     else if (activeMouseButton === 2)
     {
         var rotZ = mat4.fromZRotation(mat4.create(), deltaY * dragSensitivity);
         mat4.multiply(viewMat, rotZ, viewMat);
+        cameraRotationZ = wrapAngle(cameraRotationZ + deltaY * dragSensitivity);
     }
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
@@ -51,6 +55,69 @@ function stopDrag() {
 
 canvas.addEventListener('mouseup', stopDrag);
 canvas.addEventListener('mouseleave', stopDrag);
+
+var keyboardStep = 0.05;
+
+document.addEventListener('keydown', function(e) {
+    if (document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text')
+        return;
+    if (e.ctrlKey || e.metaKey)
+        return;
+    var handled = true;
+    if (e.key === 'a' || e.key === 'ArrowLeft')
+    {
+        mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), keyboardStep), viewMat);
+        cameraRotationY = wrapAngle(cameraRotationY + keyboardStep);
+    }
+    else if (e.key === 'd' || e.key === 'ArrowRight')
+    {
+        mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), -keyboardStep), viewMat);
+        cameraRotationY = wrapAngle(cameraRotationY - keyboardStep);
+    }
+    else if (e.key === 's' || (e.key === 'ArrowDown' && !e.shiftKey))
+    {
+        mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), keyboardStep), viewMat);
+        cameraRotationX = wrapAngle(cameraRotationX + keyboardStep);
+    }
+    else if (e.key === 'w' || (e.key === 'ArrowUp' && !e.shiftKey))
+    {
+        mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), -keyboardStep), viewMat);
+        cameraRotationX = wrapAngle(cameraRotationX - keyboardStep);
+    }
+    else if (e.key === 'q' || (e.key === 'ArrowUp' && e.shiftKey))
+    {
+        mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), keyboardStep), viewMat);
+        cameraRotationZ = wrapAngle(cameraRotationZ + keyboardStep);
+    }
+    else if (e.key === 'e' || (e.key === 'ArrowDown' && e.shiftKey))
+    {
+        mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), -keyboardStep), viewMat);
+        cameraRotationZ = wrapAngle(cameraRotationZ - keyboardStep);
+    }
+    else if (e.key === 'r')
+    {
+        resetCamera();
+    }
+    else
+    {
+        handled = false;
+    }
+    if (handled)
+    {
+        autoRotate = false;
+        document.getElementById('autoRotate').checked = false;
+        e.preventDefault();
+    }
+});
+
+function wrapAngle(angle)
+{
+    if (angle < 0)
+        angle += 2 * Math.PI;
+    if (angle > 2 * Math.PI)
+        angle -= 2 * Math.PI;
+    return angle;
+}
 
 function adjustX(amount)
 {
@@ -137,6 +204,9 @@ function main()
         return alert("Your browser doesn\'t support something.");
     colorMgr.randomize();
     updateDisplay();
+    document.getElementById('autoRotate').checked = autoRotate;
+    document.getElementById('inColor').checked = colorMgr.inColor;
+    document.getElementById('lightMode').checked = false;
     drawScene();
 }
 
@@ -198,7 +268,14 @@ function drawScene()
         mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), 0.005), viewMat);
         mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), 0.003), viewMat);
         mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), 0.002), viewMat);
+        cameraRotationX = wrapAngle(cameraRotationX + 0.005);
+        cameraRotationY = wrapAngle(cameraRotationY + 0.003);
+        cameraRotationZ = wrapAngle(cameraRotationZ + 0.002);
     }
+
+    document.getElementById('cameraRotationX').value = cameraRotationX;
+    document.getElementById('cameraRotationY').value = cameraRotationY;
+    document.getElementById('cameraRotationZ').value = cameraRotationZ;
 
     raf = window.requestAnimationFrame(drawScene);
 }
@@ -237,7 +314,45 @@ function randomize()
     customColor = randomColor();
     updateDisplay();
     colorMgr.randomize();
-    if (!raf) pause();
+}
+
+
+function resetCamera()
+{
+    mat4.identity(viewMat);
+    cameraRotationX = cameraRotationY = cameraRotationZ = 0.0;
+}
+
+function rebuildViewMat()
+{
+    mat4.identity(viewMat);
+    mat4.multiply(viewMat, mat4.fromXRotation(mat4.create(), cameraRotationX), viewMat);
+    mat4.multiply(viewMat, mat4.fromYRotation(mat4.create(), cameraRotationY), viewMat);
+    mat4.multiply(viewMat, mat4.fromZRotation(mat4.create(), cameraRotationZ), viewMat);
+}
+
+function setCameraX(value)
+{
+    cameraRotationX = parseFloat(value);
+    rebuildViewMat();
+    autoRotate = false;
+    document.getElementById('autoRotate').checked = false;
+}
+
+function setCameraY(value)
+{
+    cameraRotationY = parseFloat(value);
+    rebuildViewMat();
+    autoRotate = false;
+    document.getElementById('autoRotate').checked = false;
+}
+
+function setCameraZ(value)
+{
+    cameraRotationZ = parseFloat(value);
+    rebuildViewMat();
+    autoRotate = false;
+    document.getElementById('autoRotate').checked = false;
 }
 
 function toggleLight()
@@ -247,17 +362,3 @@ function toggleLight()
     document.getElementById('colorPicker').value = customColor;
 }
 
-function pause()
-{
-    if (document.getElementById("pause").innerHTML == "pause")
-    {
-        window.cancelAnimationFrame(raf);
-        document.getElementById("pause").innerHTML = "unpause";
-        raf = 0;
-    }
-    else
-    {
-        document.getElementById("pause").innerHTML =  "pause";
-        drawScene();
-    }
-}
