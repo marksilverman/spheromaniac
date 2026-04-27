@@ -1,16 +1,9 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 
-var x_rotation1 = 0.0, x_rotation2 = 0.0;
-var y_rotation1 = 0.0, y_rotation2 = 0.0;
-var z_rotation1 = 0.0, z_rotation2 = 0.0;
-
-var x_twists1 = 0, x_period1 = 1, x_radius1 = 0.0;
-var x_twists2 = 0, x_period2 = 1, x_radius2 = 0.0;
-var y_twists1 = 0, y_period1 = 1, y_radius1 = 0.0;
-var y_twists2 = 0, y_period2 = 1, y_radius2 = 0.0;
-var z_twists1 = 0, z_period1 = 1, z_radius1 = 1.0;
-var z_twists2 = 0, z_period2 = 1, z_radius2 = 0.0;
+var x_radius1 = 0.0, x_radius2 = 0.0, x_distance = 0.0;
+var y_radius1 = 0.0, y_radius2 = 0.0, y_distance = 0.0;
+var z_radius1 = 5.0, z_radius2 = 3.0, z_distance = 5.0;
 
 var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
 var viewMat = mat4.create();
@@ -21,18 +14,18 @@ var cameraRotationX = 0.0, cameraRotationY = 0.0, cameraRotationZ = 0.0;
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
+var animating = false, animAngle = 0.0, animSpeed = 0.05;
 
-var xTwists1Input, xPeriod1Input, xRadius1Slider;
-var xTwists2Input, xPeriod2Input, xRadius2Slider;
-var yTwists1Input, yPeriod1Input, yRadius1Slider;
-var yTwists2Input, yPeriod2Input, yRadius2Slider;
-var zTwists1Input, zPeriod1Input, zRadius1Slider;
-var zTwists2Input, zPeriod2Input, zRadius2Slider;
+var xRadius1Input, xRadius2Input, xDistanceInput;
+var yRadius1Input, yRadius2Input, yDistanceInput;
+var zRadius1Input, zRadius2Input, zDistanceInput;
 var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
 var scaleSlider;
 var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
-var colorPickerInput;
+var colorPickerInput, animateCheck;
+var previewXCanvas, previewYCanvas, previewZCanvas, axesIndicatorCanvas;
+var xDistanceSlider, yDistanceSlider, zDistanceSlider;
 
 canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
@@ -167,223 +160,231 @@ function setLoops(value)
     loopsInput.value = loops;
 }
 
-function adjustX1(amount)
+function adjustXRadius1(amount)
 {
-    x_twists1 += amount;
-    x_rotation1 = x_twists1 / x_period1;
+    x_radius1 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustX1Period(amount)
+function adjustXRadius2(amount)
 {
-    x_period1 = Math.max(1, x_period1 + amount);
-    x_rotation1 = x_twists1 / x_period1;
+    x_radius2 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setX1Twists()
+function adjustXDistance(amount)
 {
-    x_twists1 = parseInt(xTwists1Input.value) || 0;
-    x_rotation1 = x_twists1 / x_period1;
+    x_distance += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setX1Period()
+function adjustYRadius1(amount)
 {
-    x_period1 = Math.max(1, parseInt(xPeriod1Input.value) || 1);
-    x_rotation1 = x_twists1 / x_period1;
+    y_radius1 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustX2(amount)
+function adjustYRadius2(amount)
 {
-    x_twists2 += amount;
-    x_rotation2 = x_twists2 / x_period2;
+    y_radius2 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustX2Period(amount)
+function adjustYDistance(amount)
 {
-    x_period2 = Math.max(1, x_period2 + amount);
-    x_rotation2 = x_twists2 / x_period2;
+    y_distance += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setX2Twists()
+function adjustZRadius1(amount)
 {
-    x_twists2 = parseInt(xTwists2Input.value) || 0;
-    x_rotation2 = x_twists2 / x_period2;
+    z_radius1 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setX2Period()
+function adjustZRadius2(amount)
 {
-    x_period2 = Math.max(1, parseInt(xPeriod2Input.value) || 1);
-    x_rotation2 = x_twists2 / x_period2;
+    z_radius2 += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustY1(amount)
+function adjustZDistance(amount)
 {
-    y_twists1 += amount;
-    y_rotation1 = y_twists1 / y_period1;
+    z_distance += amount;
     updateDisplay();
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustY1Period(amount)
+function setXRadius1()
 {
-    y_period1 = Math.max(1, y_period1 + amount);
-    y_rotation1 = y_twists1 / y_period1;
-    updateDisplay();
+    x_radius1 = parseFloat(xRadius1Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setY1Twists()
+function setXRadius2()
 {
-    y_twists1 = parseInt(yTwists1Input.value) || 0;
-    y_rotation1 = y_twists1 / y_period1;
-    updateDisplay();
+    x_radius2 = parseFloat(xRadius2Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setY1Period()
+function setXDistance()
 {
-    y_period1 = Math.max(1, parseInt(yPeriod1Input.value) || 1);
-    y_rotation1 = y_twists1 / y_period1;
-    updateDisplay();
+    x_distance = parseFloat(xDistanceInput.value) || 0;
+    xDistanceSlider.value = x_distance;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustY2(amount)
+function setYRadius1()
 {
-    y_twists2 += amount;
-    y_rotation2 = y_twists2 / y_period2;
-    updateDisplay();
+    y_radius1 = parseFloat(yRadius1Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustY2Period(amount)
+function setYRadius2()
 {
-    y_period2 = Math.max(1, y_period2 + amount);
-    y_rotation2 = y_twists2 / y_period2;
-    updateDisplay();
+    y_radius2 = parseFloat(yRadius2Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setY2Twists()
+function setYDistance()
 {
-    y_twists2 = parseInt(yTwists2Input.value) || 0;
-    y_rotation2 = y_twists2 / y_period2;
-    updateDisplay();
+    y_distance = parseFloat(yDistanceInput.value) || 0;
+    yDistanceSlider.value = y_distance;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setY2Period()
+function setZRadius1()
 {
-    y_period2 = Math.max(1, parseInt(yPeriod2Input.value) || 1);
-    y_rotation2 = y_twists2 / y_period2;
-    updateDisplay();
+    z_radius1 = parseFloat(zRadius1Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustZ1(amount)
+function setZRadius2()
 {
-    z_twists1 += amount;
-    z_rotation1 = z_twists1 / z_period1;
-    updateDisplay();
+    z_radius2 = parseFloat(zRadius2Input.value) || 0;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustZ1Period(amount)
+function setZDistance()
 {
-    z_period1 = Math.max(1, z_period1 + amount);
-    z_rotation1 = z_twists1 / z_period1;
-    updateDisplay();
+    z_distance = parseFloat(zDistanceInput.value) || 0;
+    zDistanceSlider.value = z_distance;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setZ1Twists()
+function setXDistanceFromSlider()
 {
-    z_twists1 = parseInt(zTwists1Input.value) || 0;
-    z_rotation1 = z_twists1 / z_period1;
-    updateDisplay();
+    x_distance = parseFloat(xDistanceSlider.value) || 0;
+    xDistanceInput.value = x_distance;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function setZ1Period()
+function setYDistanceFromSlider()
 {
-    z_period1 = Math.max(1, parseInt(zPeriod1Input.value) || 1);
-    z_rotation1 = z_twists1 / z_period1;
-    updateDisplay();
+    y_distance = parseFloat(yDistanceSlider.value) || 0;
+    yDistanceInput.value = y_distance;
     autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
-function adjustZ2(amount)
+function setZDistanceFromSlider()
 {
-    z_twists2 += amount;
-    z_rotation2 = z_twists2 / z_period2;
-    updateDisplay();
+    z_distance = parseFloat(zDistanceSlider.value) || 0;
+    zDistanceInput.value = z_distance;
     autoSetLoops();
-}
-
-function adjustZ2Period(amount)
-{
-    z_period2 = Math.max(1, z_period2 + amount);
-    z_rotation2 = z_twists2 / z_period2;
-    updateDisplay();
-    autoSetLoops();
-}
-
-function setZ2Twists()
-{
-    z_twists2 = parseInt(zTwists2Input.value) || 0;
-    z_rotation2 = z_twists2 / z_period2;
-    updateDisplay();
-    autoSetLoops();
-}
-
-function setZ2Period()
-{
-    z_period2 = Math.max(1, parseInt(zPeriod2Input.value) || 1);
-    z_rotation2 = z_twists2 / z_period2;
-    updateDisplay();
-    autoSetLoops();
+    animAngle = 0;
+    updatePreviews();
 }
 
 function updateDisplay()
 {
-    xTwists1Input.value = x_twists1;
-    xPeriod1Input.value = x_period1;
-    xTwists2Input.value = x_twists2;
-    xPeriod2Input.value = x_period2;
-    yTwists1Input.value = y_twists1;
-    yPeriod1Input.value = y_period1;
-    yTwists2Input.value = y_twists2;
-    yPeriod2Input.value = y_period2;
-    zTwists1Input.value = z_twists1;
-    zPeriod1Input.value = z_period1;
-    zTwists2Input.value = z_twists2;
-    zPeriod2Input.value = z_period2;
+    xRadius1Input.value = x_radius1;
+    xRadius2Input.value = x_radius2;
+    xDistanceInput.value = x_distance;
+    xDistanceSlider.value = x_distance;
+    yRadius1Input.value = y_radius1;
+    yRadius2Input.value = y_radius2;
+    yDistanceInput.value = y_distance;
+    yDistanceSlider.value = y_distance;
+    zRadius1Input.value = z_radius1;
+    zRadius2Input.value = z_radius2;
+    zDistanceInput.value = z_distance;
+    zDistanceSlider.value = z_distance;
 }
 
 function autoSetLoops()
 {
     var periods = [];
-    if (x_radius1 > 0 && x_twists1 !== 0) periods.push(x_period1);
-    if (x_radius2 > 0 && x_twists2 !== 0) periods.push(x_period2);
-    if (y_radius1 > 0 && y_twists1 !== 0) periods.push(y_period1);
-    if (y_radius2 > 0 && y_twists2 !== 0) periods.push(y_period2);
-    if (z_radius1 > 0 && z_twists1 !== 0) periods.push(z_period1);
-    if (z_radius2 > 0 && z_twists2 !== 0) periods.push(z_period2);
+
+    if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+    {
+        var zR1 = Math.abs(Math.round(z_radius1));
+        var zR2 = Math.abs(Math.round(z_radius2));
+        if (zR1 > 0 && zR2 > 0)
+            periods.push(zR2 / greatestCommonDivisor(zR1, zR2));
+    }
+    if (x_radius1 !== 0 && x_radius2 !== 0 && x_distance !== 0)
+    {
+        var xR1 = Math.abs(Math.round(x_radius1));
+        var xR2 = Math.abs(Math.round(x_radius2));
+        if (xR1 > 0 && xR2 > 0)
+            periods.push(xR2 / greatestCommonDivisor(xR1, xR2));
+    }
+    if (y_radius1 !== 0 && y_radius2 !== 0 && y_distance !== 0)
+    {
+        var yR1 = Math.abs(Math.round(y_radius1));
+        var yR2 = Math.abs(Math.round(y_radius2));
+        if (yR1 > 0 && yR2 > 0)
+            periods.push(yR2 / greatestCommonDivisor(yR1, yR2));
+    }
+
     if (periods.length === 0)
     {
         setLoops(1);
@@ -445,26 +446,18 @@ function main()
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    xTwists1Input  = document.getElementById('x_twists1');
-    xPeriod1Input  = document.getElementById('x_period1');
-    xRadius1Slider = document.getElementById('x_radius1');
-    xTwists2Input  = document.getElementById('x_twists2');
-    xPeriod2Input  = document.getElementById('x_period2');
-    xRadius2Slider = document.getElementById('x_radius2');
-
-    yTwists1Input  = document.getElementById('y_twists1');
-    yPeriod1Input  = document.getElementById('y_period1');
-    yRadius1Slider = document.getElementById('y_radius1');
-    yTwists2Input  = document.getElementById('y_twists2');
-    yPeriod2Input  = document.getElementById('y_period2');
-    yRadius2Slider = document.getElementById('y_radius2');
-
-    zTwists1Input  = document.getElementById('z_twists1');
-    zPeriod1Input  = document.getElementById('z_period1');
-    zRadius1Slider = document.getElementById('z_radius1');
-    zTwists2Input  = document.getElementById('z_twists2');
-    zPeriod2Input  = document.getElementById('z_period2');
-    zRadius2Slider = document.getElementById('z_radius2');
+    xRadius1Input  = document.getElementById('x_radius1');
+    xRadius2Input  = document.getElementById('x_radius2');
+    xDistanceInput = document.getElementById('x_distance');
+    xDistanceSlider = document.getElementById('x_distance_slider');
+    yRadius1Input  = document.getElementById('y_radius1');
+    yRadius2Input  = document.getElementById('y_radius2');
+    yDistanceInput = document.getElementById('y_distance');
+    yDistanceSlider = document.getElementById('y_distance_slider');
+    zRadius1Input  = document.getElementById('z_radius1');
+    zRadius2Input  = document.getElementById('z_radius2');
+    zDistanceInput = document.getElementById('z_distance');
+    zDistanceSlider = document.getElementById('z_distance_slider');
 
     loopsSlider      = document.getElementById('loops');
     loopsInput       = document.getElementById('loops_num');
@@ -478,6 +471,11 @@ function main()
     inColorCheck     = document.getElementById('inColor');
     lightModeCheck   = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
+    animateCheck     = document.getElementById('animateDrawing');
+    previewXCanvas   = document.getElementById('preview_x');
+    previewYCanvas   = document.getElementById('preview_y');
+    previewZCanvas   = document.getElementById('preview_z');
+    axesIndicatorCanvas = document.getElementById('axes-indicator');
 
     colorMgr.randomize();
     updateDisplay();
@@ -487,12 +485,8 @@ function main()
     autoRotateZCheck.checked = autoRotateZ;
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
-    xRadius1Slider.value = x_radius1;
-    xRadius2Slider.value = x_radius2;
-    yRadius1Slider.value = y_radius1;
-    yRadius2Slider.value = y_radius2;
-    zRadius1Slider.value = z_radius1;
-    zRadius2Slider.value = z_radius2;
+    animateCheck.checked = false;
+    updatePreviews();
     initPanelPositions();
     drawScene();
 }
@@ -506,31 +500,51 @@ function drawScene()
     ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
     ctx.beginPath();
 
-    let increment = 2 * Math.PI / 360;
-    for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
+    var drawUpTo = animating ? animAngle : (loops * 2 * Math.PI);
+    var increment = 2 * Math.PI / 360;
+
+    for (let angle = 0.0; angle < drawUpTo; angle += increment)
     {
-        let z_arm1 = [scale * z_radius1, 0, 0];
-        vec3.rotateZ(z_arm1, z_arm1, center, angle * z_rotation1);
+        let zContribX = 0;
+        let zContribY = 0;
+        if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+        {
+            let zArmRadius = z_radius1 - z_radius2;
+            let zRollingRatio = zArmRadius / z_radius2;
+            let zPenAngle = zRollingRatio * angle;
+            let zNorm = scale / z_radius1;
+            zContribX = zNorm * (zArmRadius * Math.cos(angle) + z_distance * Math.cos(zPenAngle));
+            zContribY = zNorm * (zArmRadius * Math.sin(angle) - z_distance * Math.sin(zPenAngle));
+        }
 
-        let z_arm2 = [scale * z_radius2, 0, 0];
-        vec3.rotateZ(z_arm2, z_arm2, center, angle * z_rotation2);
+        let xContribY = 0;
+        let xContribZ = 0;
+        if (x_radius1 !== 0 && x_radius2 !== 0 && x_distance !== 0)
+        {
+            let xArmRadius = x_radius1 - x_radius2;
+            let xRollingRatio = xArmRadius / x_radius2;
+            let xPenAngle = xRollingRatio * angle;
+            let xNorm = scale / x_radius1;
+            xContribY = xNorm * (xArmRadius * Math.cos(angle) + x_distance * Math.cos(xPenAngle));
+            xContribZ = xNorm * (xArmRadius * Math.sin(angle) - x_distance * Math.sin(xPenAngle));
+        }
 
-        let x_arm1 = [0, scale * x_radius1, 0];
-        vec3.rotateX(x_arm1, x_arm1, center, angle * x_rotation1);
-
-        let x_arm2 = [0, scale * x_radius2, 0];
-        vec3.rotateX(x_arm2, x_arm2, center, angle * x_rotation2);
-
-        let y_arm1 = [0, 0, scale * y_radius1];
-        vec3.rotateY(y_arm1, y_arm1, center, angle * y_rotation1);
-
-        let y_arm2 = [0, 0, scale * y_radius2];
-        vec3.rotateY(y_arm2, y_arm2, center, angle * y_rotation2);
+        let yContribX = 0;
+        let yContribZ = 0;
+        if (y_radius1 !== 0 && y_radius2 !== 0 && y_distance !== 0)
+        {
+            let yArmRadius = y_radius1 - y_radius2;
+            let yRollingRatio = yArmRadius / y_radius2;
+            let yPenAngle = yRollingRatio * angle;
+            let yNorm = scale / y_radius1;
+            yContribZ = yNorm * (yArmRadius * Math.cos(angle) + y_distance * Math.cos(yPenAngle));
+            yContribX = yNorm * (yArmRadius * Math.sin(angle) - y_distance * Math.sin(yPenAngle));
+        }
 
         let xyz = [
-            z_arm1[0] + z_arm2[0] + x_arm1[0] + x_arm2[0] + y_arm1[0] + y_arm2[0],
-            z_arm1[1] + z_arm2[1] + x_arm1[1] + x_arm2[1] + y_arm1[1] + y_arm2[1],
-            z_arm1[2] + z_arm2[2] + x_arm1[2] + x_arm2[2] + y_arm1[2] + y_arm2[2]
+            zContribX + yContribX,
+            zContribY + xContribY,
+            xContribZ + yContribZ
         ];
 
         vec3.transformMat4(xyz, xyz, viewMat);
@@ -540,10 +554,18 @@ function drawScene()
         else
             ctx.lineTo(xyz[0], xyz[1]);
     }
+
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
     ctx.stroke();
     ctx.restore();
+
+    if (animating)
+    {
+        animAngle += animSpeed;
+        if (animAngle >= loops * 2 * Math.PI)
+            animAngle = loops * 2 * Math.PI;
+    }
 
     if (autoRotateX)
     {
@@ -565,7 +587,110 @@ function drawScene()
     cameraYSlider.value = cameraRotationY;
     cameraZSlider.value = cameraRotationZ;
 
+    drawAxesIndicator();
+
     raf = window.requestAnimationFrame(drawScene);
+}
+
+function drawPlanePreview(previewCanvas, radius1, radius2, distance)
+{
+    var previewCtx = previewCanvas.getContext('2d');
+    var size = previewCanvas.width;
+
+    previewCtx.clearRect(0, 0, size, size);
+
+    if (radius1 === 0 || radius2 === 0 || distance === 0)
+        return;
+
+    var r1 = Math.abs(Math.round(radius1));
+    var r2 = Math.abs(Math.round(radius2));
+    if (r1 === 0 || r2 === 0)
+        return;
+
+    var planeLoops = r2 / greatestCommonDivisor(r1, r2);
+    planeLoops = Math.min(planeLoops, 60);
+
+    var armRadius = radius1 - radius2;
+    var rollingRatio = armRadius / radius2;
+    var maxExtent = Math.abs(armRadius) + Math.abs(distance);
+
+    if (maxExtent === 0)
+        return;
+
+    var halfSize = size / 2;
+    var previewScale = (halfSize - 4) / maxExtent;
+
+    previewCtx.save();
+    previewCtx.translate(halfSize, halfSize);
+    previewCtx.beginPath();
+
+    var increment = 2 * Math.PI / 360;
+    for (let angle = 0.0; angle < planeLoops * 2 * Math.PI; angle += increment)
+    {
+        let penAngle = rollingRatio * angle;
+        let px = previewScale * (armRadius * Math.cos(angle) + distance * Math.cos(penAngle));
+        let py = previewScale * (armRadius * Math.sin(angle) - distance * Math.sin(penAngle));
+
+        if (angle === 0)
+            previewCtx.moveTo(px, py);
+        else
+            previewCtx.lineTo(px, py);
+    }
+
+    previewCtx.lineWidth = 1;
+    previewCtx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
+    previewCtx.stroke();
+    previewCtx.restore();
+}
+
+function updatePreviews()
+{
+    drawPlanePreview(previewXCanvas, x_radius1, x_radius2, x_distance);
+    drawPlanePreview(previewYCanvas, y_radius1, y_radius2, y_distance);
+    drawPlanePreview(previewZCanvas, z_radius1, z_radius2, z_distance);
+}
+
+function drawAxesIndicator()
+{
+    var axesCtx = axesIndicatorCanvas.getContext('2d');
+    var size = axesIndicatorCanvas.width;
+    var centerX = size / 2;
+    var centerY = size / 2;
+    var axisLength = size * 0.38;
+
+    axesCtx.clearRect(0, 0, size, size);
+
+    var xAxis = [1, 0, 0];
+    var yAxis = [0, 1, 0];
+    var zAxis = [0, 0, 1];
+
+    vec3.transformMat4(xAxis, xAxis, viewMat);
+    vec3.transformMat4(yAxis, yAxis, viewMat);
+    vec3.transformMat4(zAxis, zAxis, viewMat);
+
+    var axes = [
+        { transformed: xAxis, color: '#ff4444', label: 'X' },
+        { transformed: yAxis, color: '#44cc44', label: 'Y' },
+        { transformed: zAxis, color: '#4488ff', label: 'Z' }
+    ];
+
+    for (var i = 0; i < axes.length; i++)
+    {
+        var axis = axes[i];
+        var tipX = centerX + axis.transformed[0] * axisLength;
+        var tipY = centerY + axis.transformed[1] * axisLength;
+
+        axesCtx.beginPath();
+        axesCtx.moveTo(centerX, centerY);
+        axesCtx.lineTo(tipX, tipY);
+        axesCtx.lineWidth = 2;
+        axesCtx.strokeStyle = axis.color;
+        axesCtx.stroke();
+
+        axesCtx.fillStyle = axis.color;
+        axesCtx.font = '14px monospace';
+        axesCtx.fillText(axis.label, tipX + 2, tipY + 4);
+    }
 }
 
 function randomColor()
@@ -586,88 +711,73 @@ function greatestCommonDivisor(a, b)
     return a;
 }
 
-function randomIrreducibleFraction(denom)
-{
-    var numerators = [];
-    for (var n = 1; n < 2 * denom; n++)
-    {
-        if (greatestCommonDivisor(n, denom) === 1)
-            numerators.push(n);
-    }
-    return numerators[Math.floor(Math.random() * numerators.length)];
-}
-
 function randomize()
 {
-    var denomPool = [3, 4, 5, 7, 8, 9];
+    var outerRadiusChoices = [5, 7, 8, 9, 10, 12];
+    var innerRadiusChoices = [2, 3, 4, 5, 6, 7];
 
-    function randomDenom()
+    function pickInnerRadius(outerRadius)
     {
-        return denomPool[Math.floor(Math.random() * denomPool.length)];
+        var validChoices = innerRadiusChoices.filter(function(r) { return r < outerRadius; });
+        return validChoices[Math.floor(Math.random() * validChoices.length)];
     }
 
-    x_twists1 = 0; x_period1 = 1; x_radius1 = 0.0; x_rotation1 = 0.0;
-    x_twists2 = 0; x_period2 = 1; x_radius2 = 0.0; x_rotation2 = 0.0;
-    y_twists1 = 0; y_period1 = 1; y_radius1 = 0.0; y_rotation1 = 0.0;
-    y_twists2 = 0; y_period2 = 1; y_radius2 = 0.0; y_rotation2 = 0.0;
-    z_twists1 = 0; z_period1 = 1; z_radius1 = 1.0; z_rotation1 = 0.0;
-    z_twists2 = 0; z_period2 = 1; z_radius2 = 0.0; z_rotation2 = 0.0;
+    x_radius1 = 0; x_radius2 = 0; x_distance = 0;
+    y_radius1 = 0; y_radius2 = 0; y_distance = 0;
+    z_radius1 = 0; z_radius2 = 0; z_distance = 0;
 
-    var denomA = randomDenom();
-    z_twists1 = randomIrreducibleFraction(denomA);
-    z_period1 = denomA;
-    z_rotation1 = z_twists1 / z_period1;
-
-    var denomB = randomDenom();
-    while (denomA * denomB / greatestCommonDivisor(denomA, denomB) > 60)
-        denomB = randomDenom();
-
-    var twistsB = randomIrreducibleFraction(denomB);
+    z_radius1 = outerRadiusChoices[Math.floor(Math.random() * outerRadiusChoices.length)];
+    z_radius2 = pickInnerRadius(z_radius1);
+    z_distance = 1 + Math.floor(Math.random() * z_radius1);
 
     if (Math.random() < 0.5)
     {
-        z_radius1 = 0.5 + Math.random() * 0.4;
-        z_twists2 = twistsB;
-        z_period2 = denomB;
-        z_rotation2 = z_twists2 / z_period2;
-        z_radius2 = 1.0 - z_radius1;
-    }
-    else
-    {
-        z_radius1 = 0.6 + Math.random() * 0.4;
-        var secondPlane = Math.floor(Math.random() * 2);
-        var radiusB = 0.3 + Math.random() * 0.4;
-        if (secondPlane === 0)
+        var secondPlaneIndex = Math.floor(Math.random() * 2);
+        var secondOuterRadius = outerRadiusChoices[Math.floor(Math.random() * outerRadiusChoices.length)];
+        var secondInnerRadius = pickInnerRadius(secondOuterRadius);
+        var secondDistance = 1 + Math.floor(Math.random() * secondOuterRadius);
+
+        if (secondPlaneIndex === 0)
         {
-            x_twists1 = twistsB;
-            x_period1 = denomB;
-            x_rotation1 = x_twists1 / x_period1;
-            x_radius1 = radiusB;
+            x_radius1 = secondOuterRadius;
+            x_radius2 = secondInnerRadius;
+            x_distance = secondDistance;
         }
         else
         {
-            y_twists1 = twistsB;
-            y_period1 = denomB;
-            y_rotation1 = y_twists1 / y_period1;
-            y_radius1 = radiusB;
+            y_radius1 = secondOuterRadius;
+            y_radius2 = secondInnerRadius;
+            y_distance = secondDistance;
         }
     }
 
     var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.35);
     scale = 80 + Math.floor(Math.random() * Math.max(1, maxScale - 80));
-
     scaleSlider.value = scale;
-    xRadius1Slider.value = x_radius1;
-    xRadius2Slider.value = x_radius2;
-    yRadius1Slider.value = y_radius1;
-    yRadius2Slider.value = y_radius2;
-    zRadius1Slider.value = z_radius1;
-    zRadius2Slider.value = z_radius2;
 
     autoSetLoops();
     customColor = randomColor();
-    updateDisplay();
     colorMgr.randomize();
+    updateDisplay();
+    animAngle = 0;
+    updatePreviews();
+}
+
+function toggleAllAutoRotate()
+{
+    var anyOn = autoRotateX || autoRotateY || autoRotateZ;
+    autoRotateX = !anyOn;
+    autoRotateY = !anyOn;
+    autoRotateZ = !anyOn;
+    autoRotateXCheck.checked = autoRotateX;
+    autoRotateYCheck.checked = autoRotateY;
+    autoRotateZCheck.checked = autoRotateZ;
+}
+
+function toggleAnimate()
+{
+    animating = animateCheck.checked;
+    animAngle = 0;
 }
 
 function makeDraggable(panel, handle)
@@ -689,8 +799,12 @@ function makeDraggable(panel, handle)
     {
         if (!panelDragging)
             return;
-        panel.style.left = (e.clientX - dragOffsetX) + 'px';
-        panel.style.top = (e.clientY - dragOffsetY) + 'px';
+        var newLeft = e.clientX - dragOffsetX;
+        var newTop = e.clientY - dragOffsetY;
+        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - panel.offsetWidth));
+        newTop = Math.max(0, Math.min(newTop, window.innerHeight - panel.offsetHeight));
+        panel.style.left = newLeft + 'px';
+        panel.style.top = newTop + 'px';
     });
 
     window.addEventListener('mouseup', function()
@@ -701,13 +815,20 @@ function makeDraggable(panel, handle)
 
 function initPanelPositions()
 {
-    var panelLeft = document.getElementById('panel-left');
+    var panelX = document.getElementById('panel-x');
+    var panelY = document.getElementById('panel-y');
+    var panelZ = document.getElementById('panel-z');
     var panelRight = document.getElementById('panel-right');
     var panelBottomRight = document.getElementById('panel-bottom-right');
     var panelBottom = document.getElementById('panel-bottom');
+    var panelAxes = document.getElementById('panel-axes');
 
-    panelLeft.style.top = '20px';
-    panelLeft.style.left = '20px';
+    panelX.style.top = '20px';
+    panelX.style.left = '20px';
+    panelY.style.top = (20 + panelX.offsetHeight + 10) + 'px';
+    panelY.style.left = '20px';
+    panelZ.style.top = (20 + panelX.offsetHeight + 10 + panelY.offsetHeight + 10) + 'px';
+    panelZ.style.left = '20px';
 
     panelRight.style.right = '';
     panelRight.style.top = '20px';
@@ -723,10 +844,16 @@ function initPanelPositions()
     panelBottom.style.top = (window.innerHeight - panelBottom.offsetHeight - 20) + 'px';
     panelBottom.style.left = ((window.innerWidth - panelBottom.offsetWidth) / 2) + 'px';
 
-    makeDraggable(panelLeft, panelLeft.querySelector('.drag-handle'));
+    panelAxes.style.top = '20px';
+    panelAxes.style.left = Math.floor((window.innerWidth - panelAxes.offsetWidth) * 0.75) + 'px';
+
+    makeDraggable(panelX, panelX.querySelector('.drag-handle'));
+    makeDraggable(panelY, panelY.querySelector('.drag-handle'));
+    makeDraggable(panelZ, panelZ.querySelector('.drag-handle'));
     makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
     makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
     makeDraggable(panelBottom, panelBottom.querySelector('.drag-handle'));
+    makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));
 }
 
 function resetCamera()

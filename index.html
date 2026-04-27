@@ -11,125 +11,88 @@
 <div id="title">Spheromaniac</div>
 <canvas id="canvas" width="1024" height="768"></canvas>
 
-<div id="panel-left">
+<div id="panel-x" class="axis-panel">
     <div class="drag-handle">⠿</div>
-    <div class="axis-panel">
-        <div class="axis-panel-header">X-axis</div>
-        <div class="arm-header">arm 1</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustX1(-1)">◀</button>
-            <input type="number" id="x_twists1" value="0" oninput="setX1Twists()">
-            <button onclick="adjustX1(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustX1Period(-1)">◀</button>
-            <input type="number" id="x_period1" value="1" min="1" oninput="setX1Period()">
-            <button onclick="adjustX1Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="x_radius1" value=0 min=0 max=1 step=0.01
-                oninput="x_radius1 = parseFloat(this.value); autoSetLoops();">
-        </div>
-        <div class="arm-header">arm 2</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustX2(-1)">◀</button>
-            <input type="number" id="x_twists2" value="0" oninput="setX2Twists()">
-            <button onclick="adjustX2(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustX2Period(-1)">◀</button>
-            <input type="number" id="x_period2" value="1" min="1" oninput="setX2Period()">
-            <button onclick="adjustX2Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="x_radius2" value=0 min=0 max=1 step=0.01
-                oninput="x_radius2 = parseFloat(this.value); autoSetLoops();">
-        </div>
+    <div class="axis-panel-header">X-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustXRadius1(-1)">◀</button>
+        <input type="number" id="x_radius1" value="0" oninput="setXRadius1()">
+        <button onclick="adjustXRadius1(1)">▶</button>
     </div>
-    <div class="axis-panel">
-        <div class="axis-panel-header">Y-axis</div>
-        <div class="arm-header">arm 1</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustY1(-1)">◀</button>
-            <input type="number" id="y_twists1" value="0" oninput="setY1Twists()">
-            <button onclick="adjustY1(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustY1Period(-1)">◀</button>
-            <input type="number" id="y_period1" value="1" min="1" oninput="setY1Period()">
-            <button onclick="adjustY1Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="y_radius1" value=0 min=0 max=1 step=0.01
-                oninput="y_radius1 = parseFloat(this.value); autoSetLoops();">
-        </div>
-        <div class="arm-header">arm 2</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustY2(-1)">◀</button>
-            <input type="number" id="y_twists2" value="0" oninput="setY2Twists()">
-            <button onclick="adjustY2(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustY2Period(-1)">◀</button>
-            <input type="number" id="y_period2" value="1" min="1" oninput="setY2Period()">
-            <button onclick="adjustY2Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="y_radius2" value=0 min=0 max=1 step=0.01
-                oninput="y_radius2 = parseFloat(this.value); autoSetLoops();">
-        </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustXRadius2(-1)">◀</button>
+        <input type="number" id="x_radius2" value="0" oninput="setXRadius2()">
+        <button onclick="adjustXRadius2(1)">▶</button>
     </div>
-    <div class="axis-panel">
-        <div class="axis-panel-header">Z-axis</div>
-        <div class="arm-header">arm 1</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustZ1(-1)">◀</button>
-            <input type="number" id="z_twists1" value="0" oninput="setZ1Twists()">
-            <button onclick="adjustZ1(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustZ1Period(-1)">◀</button>
-            <input type="number" id="z_period1" value="1" min="1" oninput="setZ1Period()">
-            <button onclick="adjustZ1Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="z_radius1" value=1 min=0 max=1 step=0.01
-                oninput="z_radius1 = parseFloat(this.value); autoSetLoops();">
-        </div>
-        <div class="arm-header">arm 2</div>
-        <div class="control btn-row">
-            <span class="axis-label">twists:</span>
-            <button onclick="adjustZ2(-1)">◀</button>
-            <input type="number" id="z_twists2" value="0" oninput="setZ2Twists()">
-            <button onclick="adjustZ2(1)">▶</button>
-        </div>
-        <div class="control btn-row">
-            <span class="axis-label">period:</span>
-            <button onclick="adjustZ2Period(-1)">◀</button>
-            <input type="number" id="z_period2" value="1" min="1" oninput="setZ2Period()">
-            <button onclick="adjustZ2Period(1)">▶</button>
-        </div>
-        <div class="control">
-            <span class="axis-label">radius:</span>
-            <input type="range" id="z_radius2" value=0 min=0 max=1 step=0.01
-                oninput="z_radius2 = parseFloat(this.value); autoSetLoops();">
-        </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustXDistance(-1)">◀</button>
+        <input type="number" id="x_distance" value="0" oninput="setXDistance()">
+        <button onclick="adjustXDistance(1)">▶</button>
     </div>
+    <div class="control">
+        <input type="range" id="x_distance_slider" value=0 min=0 max=20 step=0.01
+            oninput="setXDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_x" width="100" height="100"></canvas>
+</div>
+
+<div id="panel-y" class="axis-panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">Y-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustYRadius1(-1)">◀</button>
+        <input type="number" id="y_radius1" value="0" oninput="setYRadius1()">
+        <button onclick="adjustYRadius1(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustYRadius2(-1)">◀</button>
+        <input type="number" id="y_radius2" value="0" oninput="setYRadius2()">
+        <button onclick="adjustYRadius2(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustYDistance(-1)">◀</button>
+        <input type="number" id="y_distance" value="0" oninput="setYDistance()">
+        <button onclick="adjustYDistance(1)">▶</button>
+    </div>
+    <div class="control">
+        <input type="range" id="y_distance_slider" value=0 min=0 max=20 step=0.01
+            oninput="setYDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_y" width="100" height="100"></canvas>
+</div>
+
+<div id="panel-z" class="axis-panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">Z-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustZRadius1(-1)">◀</button>
+        <input type="number" id="z_radius1" value="5" oninput="setZRadius1()">
+        <button onclick="adjustZRadius1(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustZRadius2(-1)">◀</button>
+        <input type="number" id="z_radius2" value="3" oninput="setZRadius2()">
+        <button onclick="adjustZRadius2(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustZDistance(-1)">◀</button>
+        <input type="number" id="z_distance" value="5" oninput="setZDistance()">
+        <button onclick="adjustZDistance(1)">▶</button>
+    </div>
+    <div class="control">
+        <input type="range" id="z_distance_slider" value=5 min=0 max=20 step=0.01
+            oninput="setZDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_z" width="100" height="100"></canvas>
 </div>
 
 <div id="panel-right">
@@ -159,6 +122,7 @@
 <div id="panel-bottom-right">
     <div class="drag-handle">⠿</div>
     <button onclick="resetCamera()">[r]eset camera</button>
+    <button onclick="toggleAllAutoRotate()">auto-rotate</button>
     <div class="control btn-row">
         <button onclick="setCameraPlaneXY()">XY</button>
         <button onclick="setCameraPlaneXZ()">XZ</button>
@@ -214,10 +178,19 @@
             <input type="checkbox" id="lightMode" onclick="toggleLight();">
             light mode
         </label>
+        <label>
+            <input type="checkbox" id="animateDrawing" onclick="toggleAnimate();">
+            animate
+        </label>
         <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
         <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
     </div>
 </div>
+</div>
+
+<div id="panel-axes">
+    <div class="drag-handle">⠿</div>
+    <canvas id="axes-indicator" width="160" height="160"></canvas>
 </div>
 
 <script src="gl-matrix-min.js"></script>
