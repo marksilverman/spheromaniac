@@ -1,122 +1,204 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Sphereomaniac</title>
+    <title>Spheromaniac</title>
     <link rel="stylesheet" href="sphereo.css" type="text/css">
-    <script src="gl-matrix-min.js" defer></script>
-    <script src="sphereo.js" defer></script>
 </head>
 
 <body>
+<div id="container">
+<div id="title">Spheromaniac</div>
+<canvas id="canvas" width="1024" height="768"></canvas>
 
-<div class="container" style="display: flex; height: 100%;">
-<canvas id="canvas" width=1024 height=768 style="width: 60%"></canvas>
-<div style="flex-grow: 1; background: gray;">
-<div id="controls">
-<div>
-</div>
-Spheromaniac! by <a href=https://github.com/marksilverman/spheromaniac.git>Mark Silverman</a>
-<div>
-
-
-<div id="section1">
-
-<label>rotateX</label>
-<input tabindex="2" type="number" id="proXdisp" value=0.28 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proX = document.getElementById('proX').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proX" value=0.28 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proX = document.getElementById('proXdisp').value = parseFloat(value); })();">
-<br>
-
-<label>rotateY</label>
-<input tabindex="2" type="number" id="proYdisp" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proY = document.getElementById('proY').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proY" value=0.0 min=0.0 max=2.0 step=0.01
-    oninput="(function () { proY = document.getElementById('proYdisp').value = parseFloat(value); })();">
-<br>
-
-<label>rotateZ</label>
-<input tabindex="2" type="number" id="proZdisp" value=-0.3333 min=-1.0 max=1.0 step=0.01
-    oninput="(function () { proZ = document.getElementById('proZ').value = parseFloat(value); })();">
-<input tabindex="1" type="range" id="proZ" value=-0.3333 min=-1.0 max=1.0 step=0.1 class="slider"
-    oninput="(function () { proZ = document.getElementById('proZdisp').value = parseFloat(value); })();">
-<br>
-
+<div id="panel-x" class="axis-panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">X-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustXRadius1(-1)">◀</button>
+        <input type="number" id="x_radius1" value="0" oninput="setXRadius1()">
+        <button onclick="adjustXRadius1(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustXRadius2(-1)">◀</button>
+        <input type="number" id="x_radius2" value="0" oninput="setXRadius2()">
+        <button onclick="adjustXRadius2(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustXDistance(-1)">◀</button>
+        <input type="number" id="x_distance" value="0" oninput="setXDistance()">
+        <button onclick="adjustXDistance(1)">▶</button>
+    </div>
+    <div class="control">
+        <input type="range" id="x_distance_slider" value=0 min=0 max=20 step=0.01
+            oninput="setXDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_x" width="100" height="100"></canvas>
 </div>
 
-<div id="section2">
-<label>offset:</label>
-<input type="range" min=-4.0 max=4.0 step=0.05 value="2.5" class="slider" id="offset"
-    oninput="(function(){ offset = parseFloat(value); })();">
-<label>animate:</label>
-<input type="range" min=0 max=0.05 value=0.0 step=0.0005 class="slider" id="speedOff"
-    oninput="(function() { speedOff = Number.parseFloat(value); })();">
+<div id="panel-y" class="axis-panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">Y-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustYRadius1(-1)">◀</button>
+        <input type="number" id="y_radius1" value="0" oninput="setYRadius1()">
+        <button onclick="adjustYRadius1(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustYRadius2(-1)">◀</button>
+        <input type="number" id="y_radius2" value="0" oninput="setYRadius2()">
+        <button onclick="adjustYRadius2(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustYDistance(-1)">◀</button>
+        <input type="number" id="y_distance" value="0" oninput="setYDistance()">
+        <button onclick="adjustYDistance(1)">▶</button>
+    </div>
+    <div class="control">
+        <input type="range" id="y_distance_slider" value=0 min=0 max=20 step=0.01
+            oninput="setYDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_y" width="100" height="100"></canvas>
 </div>
 
-<div id="section1">
-<label>number of loops:</label>
-<input type="range" min="1.0" max="100.0" value="60.0" step=0.01 class="slider" id="loops"
-    oninput="(function() { loops = parseFloat(value);})();">
-<br>
-
-<label>line width:</label>
-<input type="range" min="1" max="20" value="3" class="slider" id="lineWidth"
-    oninput="(function() { lineWidth = parseFloat(value);})();">
-<br>
-
-<label>scale:</label>
-<input type="range" min=0.0 max=200.0 value=60.0 step=1 class="slider" id="scale"
-    oninput="(function() { scale = parseFloat(value); })();">
-<br>
-</div>
-<div id="section2">
-
-<label>cameraX:</label>
-<input tabindex="1" type="range" id="camX" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camX = parseFloat(value); })();">
-<label>speedX:</label>
-<input tabindex="1" type="range" id="speedX" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedX = parseFloat(value); })();">
-<br>
-
-<label>cameraY:</label>
-<input tabindex="1" type="range" id="camY" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camY = parseFloat(value); })();">
-<label>speedY:</label>
-<input tabindex="1" type="range" id="speedY" value=0.01 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedY = parseFloat(value); })();">
-<br>
-
-<label>cameraZ:</label>
-<input tabindex="1" type="range" id="camZ" value=0.0 min=0.0 max=6.28 step=.001 class="slider"
-    oninput="(function () { camZ = parseFloat(value); })();">
-<label>speedZ:</label>
-<input tabindex="1" type="range" id="speedZ" value=0.0 min=0.0 max=0.1 step=.001 class="slider"
-    oninput="(function () { speedZ = parseFloat(value); })();">
-<br>
-
+<div id="panel-z" class="axis-panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">Z-axis</div>
+    <div class="control btn-row">
+        <span class="axis-label">radius1:</span>
+        <button onclick="adjustZRadius1(-1)">◀</button>
+        <input type="number" id="z_radius1" value="5" oninput="setZRadius1()">
+        <button onclick="adjustZRadius1(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">radius2:</span>
+        <button onclick="adjustZRadius2(-1)">◀</button>
+        <input type="number" id="z_radius2" value="3" oninput="setZRadius2()">
+        <button onclick="adjustZRadius2(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">distance:</span>
+        <button onclick="adjustZDistance(-1)">◀</button>
+        <input type="number" id="z_distance" value="5" oninput="setZDistance()">
+        <button onclick="adjustZDistance(1)">▶</button>
+    </div>
+    <div class="control">
+        <input type="range" id="z_distance_slider" value=5 min=0 max=20 step=0.01
+            oninput="setZDistanceFromSlider()">
+    </div>
+    <canvas class="plane-preview" id="preview_z" width="100" height="100"></canvas>
 </div>
 
-<div id="section1">
-
-<button id="pause" onclick="pause()">pause</button>
-<button onclick="randomize()">randomize</button>
-
-<label>color shift</label>
-<input type="checkbox" id="inColor" checked onclick="(function(){ colorMgr.flip(); })();">
-<br>
-
+<div id="panel-right">
+    <div class="drag-handle">⠿</div>
+    <div class="control btn-row">
+        <span class="label">loops</span>
+        <input type="text" id="loops_num" value="10"
+            oninput="setLoops(this.value)">
+    </div>
+    <div class="control">
+        <input type="range" id="loops" value=10 min=1 max=60 step=1
+            oninput="setLoops(this.value)">
+    </div>
+    <div class="control">
+        <span class="label">line width</span>
+        <input type="range" id="lineWidth" value=3 min=1 max=20 step=1
+            oninput="lineWidth = parseInt(this.value);">
+    </div>
+    <div class="control">
+        <span class="label">scale</span>
+        <input type="range" id="scale" value=200 min=10 max=400 step=1
+            oninput="scale = parseFloat(this.value);">
+    </div>
 </div>
 
+
+<div id="panel-bottom-right">
+    <div class="drag-handle">⠿</div>
+    <button onclick="resetCamera()">[r]eset camera</button>
+    <button onclick="toggleAllAutoRotate()">auto-rotate</button>
+    <div class="control btn-row">
+        <button onclick="setCameraPlaneXY()">XY</button>
+        <button onclick="setCameraPlaneXZ()">XZ</button>
+        <button onclick="setCameraPlaneYZ()">YZ</button>
+    </div>
+    <div class="camera-label-row">
+        <span class="label">cameraX (w/s)</span>
+        <label><input type="checkbox" id="autoRotateX" checked onclick="autoRotateX = this.checked;"> auto</label>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraX(cameraRotationX - Math.PI/2)">«</button>
+        <button onclick="setCameraX(cameraRotationX - keyboardStep)">◀</button>
+        <input type="range" id="cameraRotationX" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraX(this.value)">
+        <button onclick="setCameraX(cameraRotationX + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraX(cameraRotationX + Math.PI/2)">»</button>
+    </div>
+    <div class="camera-label-row">
+        <span class="label">cameraY (a/d)</span>
+        <label><input type="checkbox" id="autoRotateY" checked onclick="autoRotateY = this.checked;"> auto</label>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraY(cameraRotationY - Math.PI/2)">«</button>
+        <button onclick="setCameraY(cameraRotationY - keyboardStep)">◀</button>
+        <input type="range" id="cameraRotationY" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraY(this.value)">
+        <button onclick="setCameraY(cameraRotationY + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraY(cameraRotationY + Math.PI/2)">»</button>
+    </div>
+    <div class="camera-label-row">
+        <span class="label">cameraZ (q/e)</span>
+        <label><input type="checkbox" id="autoRotateZ" checked onclick="autoRotateZ = this.checked;"> auto</label>
+    </div>
+    <div class="control camera-row">
+        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ - Math.PI/2)">«</button>
+        <button onclick="setCameraZ(cameraRotationZ - keyboardStep)">◀</button>
+        <input type="range" id="cameraRotationZ" value=0 min=0 max=6.28 step=0.001
+            oninput="setCameraZ(this.value)">
+        <button onclick="setCameraZ(cameraRotationZ + keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ + Math.PI/2)">»</button>
+    </div>
 </div>
-</div>
+
+<div id="panel-bottom">
+    <div class="drag-handle">⠿</div>
+    <div class="panel-row">
+        <button onclick="randomize()">randomize</button>
+        <label>
+            <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
+            cycle color
+        </label>
+        <label>
+            <input type="checkbox" id="lightMode" onclick="toggleLight();">
+            light mode
+        </label>
+        <label>
+            <input type="checkbox" id="animateDrawing" onclick="toggleAnimate();">
+            animate
+        </label>
+        <label>
+            <input type="checkbox" id="showAxes" onclick="showAxes = this.checked;">
+            axes
+        </label>
+        <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
+        <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
+    </div>
 </div>
 </div>
 
-<div id="msg"></div>
+<div id="panel-axes">
+    <div class="drag-handle">⠿</div>
+    <canvas id="axes-indicator" width="160" height="160"></canvas>
+</div>
+
+<script src="gl-matrix-min.js"></script>
+<script src="sphereo.js"></script>
 
 </body>
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Spheromaniac</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/marksilverman/spheromaniac" property="cc:attributionName" rel="cc:attributionURL">Mark Silverman</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </html>
