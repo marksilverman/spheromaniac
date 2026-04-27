@@ -1,12 +1,17 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
-var x_rotation = 0.0, y_rotation = 0.0, z_rotation = 0.0;
-var x_twists = 0, x_period = 1;
-var y_twists = 0, y_period = 1;
-var z_twists = 0, z_period = 1;
-var offsetX = 1.0, offsetY = 0.0, offsetZ = 0.0;
-var speedOffX = 0.0, speedOffY = 0.0, speedOffZ = 0.0;
-var speedOffXSign = 1, speedOffYSign = 1, speedOffZSign = 1;
+
+var x_rotation1 = 0.0, x_rotation2 = 0.0;
+var y_rotation1 = 0.0, y_rotation2 = 0.0;
+var z_rotation1 = 0.0, z_rotation2 = 0.0;
+
+var x_twists1 = 0, x_period1 = 1, x_radius1 = 0.0;
+var x_twists2 = 0, x_period2 = 1, x_radius2 = 0.0;
+var y_twists1 = 0, y_period1 = 1, y_radius1 = 0.0;
+var y_twists2 = 0, y_period2 = 1, y_radius2 = 0.0;
+var z_twists1 = 0, z_period1 = 1, z_radius1 = 1.0;
+var z_twists2 = 0, z_period2 = 1, z_radius2 = 0.0;
+
 var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
 var viewMat = mat4.create();
 var center = [0.0, 0.0, 0.0];
@@ -17,14 +22,15 @@ var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 
-var xTwistsInput, xPeriodInput;
-var yTwistsInput, yPeriodInput;
-var zTwistsInput, zPeriodInput;
+var xTwists1Input, xPeriod1Input, xRadius1Slider;
+var xTwists2Input, xPeriod2Input, xRadius2Slider;
+var yTwists1Input, yPeriod1Input, yRadius1Slider;
+var yTwists2Input, yPeriod2Input, yRadius2Slider;
+var zTwists1Input, zPeriod1Input, zRadius1Slider;
+var zTwists2Input, zPeriod2Input, zRadius2Slider;
 var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
 var scaleSlider;
-var offsetXSlider, offsetYSlider, offsetZSlider;
-var speedOffXSlider, speedOffYSlider, speedOffZSlider;
 var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
 var colorPickerInput;
 
@@ -161,121 +167,223 @@ function setLoops(value)
     loopsInput.value = loops;
 }
 
-function adjustX(amount)
+function adjustX1(amount)
 {
-    x_twists += amount;
-    x_rotation = x_twists / x_period;
+    x_twists1 += amount;
+    x_rotation1 = x_twists1 / x_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function adjustXPeriod(amount)
+function adjustX1Period(amount)
 {
-    x_period = Math.max(1, x_period + amount);
-    x_rotation = x_twists / x_period;
+    x_period1 = Math.max(1, x_period1 + amount);
+    x_rotation1 = x_twists1 / x_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function setXTwists()
+function setX1Twists()
 {
-    x_twists = parseInt(xTwistsInput.value) || 0;
-    x_rotation = x_twists / x_period;
+    x_twists1 = parseInt(xTwists1Input.value) || 0;
+    x_rotation1 = x_twists1 / x_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function setXPeriod()
+function setX1Period()
 {
-    x_period = Math.max(1, parseInt(xPeriodInput.value) || 1);
-    x_rotation = x_twists / x_period;
+    x_period1 = Math.max(1, parseInt(xPeriod1Input.value) || 1);
+    x_rotation1 = x_twists1 / x_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function adjustY(amount)
+function adjustX2(amount)
 {
-    y_twists += amount;
-    y_rotation = y_twists / y_period;
+    x_twists2 += amount;
+    x_rotation2 = x_twists2 / x_period2;
     updateDisplay();
     autoSetLoops();
 }
 
-function adjustYPeriod(amount)
+function adjustX2Period(amount)
 {
-    y_period = Math.max(1, y_period + amount);
-    y_rotation = y_twists / y_period;
+    x_period2 = Math.max(1, x_period2 + amount);
+    x_rotation2 = x_twists2 / x_period2;
     updateDisplay();
     autoSetLoops();
 }
 
-function setYTwists()
+function setX2Twists()
 {
-    y_twists = parseInt(yTwistsInput.value) || 0;
-    y_rotation = y_twists / y_period;
+    x_twists2 = parseInt(xTwists2Input.value) || 0;
+    x_rotation2 = x_twists2 / x_period2;
     updateDisplay();
     autoSetLoops();
 }
 
-function setYPeriod()
+function setX2Period()
 {
-    y_period = Math.max(1, parseInt(yPeriodInput.value) || 1);
-    y_rotation = y_twists / y_period;
+    x_period2 = Math.max(1, parseInt(xPeriod2Input.value) || 1);
+    x_rotation2 = x_twists2 / x_period2;
     updateDisplay();
     autoSetLoops();
 }
 
-function adjustZ(amount)
+function adjustY1(amount)
 {
-    z_twists += amount;
-    z_rotation = z_twists / z_period;
+    y_twists1 += amount;
+    y_rotation1 = y_twists1 / y_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function adjustZPeriod(amount)
+function adjustY1Period(amount)
 {
-    z_period = Math.max(1, z_period + amount);
-    z_rotation = z_twists / z_period;
+    y_period1 = Math.max(1, y_period1 + amount);
+    y_rotation1 = y_twists1 / y_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function setZTwists()
+function setY1Twists()
 {
-    z_twists = parseInt(zTwistsInput.value) || 0;
-    z_rotation = z_twists / z_period;
+    y_twists1 = parseInt(yTwists1Input.value) || 0;
+    y_rotation1 = y_twists1 / y_period1;
     updateDisplay();
     autoSetLoops();
 }
 
-function setZPeriod()
+function setY1Period()
 {
-    z_period = Math.max(1, parseInt(zPeriodInput.value) || 1);
-    z_rotation = z_twists / z_period;
+    y_period1 = Math.max(1, parseInt(yPeriod1Input.value) || 1);
+    y_rotation1 = y_twists1 / y_period1;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustY2(amount)
+{
+    y_twists2 += amount;
+    y_rotation2 = y_twists2 / y_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustY2Period(amount)
+{
+    y_period2 = Math.max(1, y_period2 + amount);
+    y_rotation2 = y_twists2 / y_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setY2Twists()
+{
+    y_twists2 = parseInt(yTwists2Input.value) || 0;
+    y_rotation2 = y_twists2 / y_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setY2Period()
+{
+    y_period2 = Math.max(1, parseInt(yPeriod2Input.value) || 1);
+    y_rotation2 = y_twists2 / y_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustZ1(amount)
+{
+    z_twists1 += amount;
+    z_rotation1 = z_twists1 / z_period1;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustZ1Period(amount)
+{
+    z_period1 = Math.max(1, z_period1 + amount);
+    z_rotation1 = z_twists1 / z_period1;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setZ1Twists()
+{
+    z_twists1 = parseInt(zTwists1Input.value) || 0;
+    z_rotation1 = z_twists1 / z_period1;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setZ1Period()
+{
+    z_period1 = Math.max(1, parseInt(zPeriod1Input.value) || 1);
+    z_rotation1 = z_twists1 / z_period1;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustZ2(amount)
+{
+    z_twists2 += amount;
+    z_rotation2 = z_twists2 / z_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function adjustZ2Period(amount)
+{
+    z_period2 = Math.max(1, z_period2 + amount);
+    z_rotation2 = z_twists2 / z_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setZ2Twists()
+{
+    z_twists2 = parseInt(zTwists2Input.value) || 0;
+    z_rotation2 = z_twists2 / z_period2;
+    updateDisplay();
+    autoSetLoops();
+}
+
+function setZ2Period()
+{
+    z_period2 = Math.max(1, parseInt(zPeriod2Input.value) || 1);
+    z_rotation2 = z_twists2 / z_period2;
     updateDisplay();
     autoSetLoops();
 }
 
 function updateDisplay()
 {
-    xTwistsInput.value = x_twists;
-    xPeriodInput.value = x_period;
-    yTwistsInput.value = y_twists;
-    yPeriodInput.value = y_period;
-    zTwistsInput.value = z_twists;
-    zPeriodInput.value = z_period;
+    xTwists1Input.value = x_twists1;
+    xPeriod1Input.value = x_period1;
+    xTwists2Input.value = x_twists2;
+    xPeriod2Input.value = x_period2;
+    yTwists1Input.value = y_twists1;
+    yPeriod1Input.value = y_period1;
+    yTwists2Input.value = y_twists2;
+    yPeriod2Input.value = y_period2;
+    zTwists1Input.value = z_twists1;
+    zPeriod1Input.value = z_period1;
+    zTwists2Input.value = z_twists2;
+    zPeriod2Input.value = z_period2;
 }
 
 function autoSetLoops()
 {
     var periods = [];
-    if (x_twists !== 0)
-        periods.push(x_period);
-    if (y_twists !== 0)
-        periods.push(y_period);
-    if (z_twists !== 0)
-        periods.push(z_period);
+    if (x_radius1 > 0 && x_twists1 !== 0) periods.push(x_period1);
+    if (x_radius2 > 0 && x_twists2 !== 0) periods.push(x_period2);
+    if (y_radius1 > 0 && y_twists1 !== 0) periods.push(y_period1);
+    if (y_radius2 > 0 && y_twists2 !== 0) periods.push(y_period2);
+    if (z_radius1 > 0 && z_twists1 !== 0) periods.push(z_period1);
+    if (z_radius2 > 0 && z_twists2 !== 0) periods.push(z_period2);
     if (periods.length === 0)
     {
         setLoops(1);
@@ -337,29 +445,38 @@ function main()
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    xTwistsInput = document.getElementById('x_twists');
-    xPeriodInput = document.getElementById('x_period');
-    yTwistsInput = document.getElementById('y_twists');
-    yPeriodInput = document.getElementById('y_period');
-    zTwistsInput = document.getElementById('z_twists');
-    zPeriodInput = document.getElementById('z_period');
-    loopsSlider  = document.getElementById('loops');
-    loopsInput   = document.getElementById('loops_num');
-    cameraXSlider   = document.getElementById('cameraRotationX');
-    cameraYSlider   = document.getElementById('cameraRotationY');
-    cameraZSlider   = document.getElementById('cameraRotationZ');
-    scaleSlider     = document.getElementById('scale');
-    offsetXSlider   = document.getElementById('offset_x');
-    offsetYSlider   = document.getElementById('offset_y');
-    offsetZSlider   = document.getElementById('offset_z');
-    speedOffXSlider = document.getElementById('speed_off_x');
-    speedOffYSlider = document.getElementById('speed_off_y');
-    speedOffZSlider = document.getElementById('speed_off_z');
+    xTwists1Input  = document.getElementById('x_twists1');
+    xPeriod1Input  = document.getElementById('x_period1');
+    xRadius1Slider = document.getElementById('x_radius1');
+    xTwists2Input  = document.getElementById('x_twists2');
+    xPeriod2Input  = document.getElementById('x_period2');
+    xRadius2Slider = document.getElementById('x_radius2');
+
+    yTwists1Input  = document.getElementById('y_twists1');
+    yPeriod1Input  = document.getElementById('y_period1');
+    yRadius1Slider = document.getElementById('y_radius1');
+    yTwists2Input  = document.getElementById('y_twists2');
+    yPeriod2Input  = document.getElementById('y_period2');
+    yRadius2Slider = document.getElementById('y_radius2');
+
+    zTwists1Input  = document.getElementById('z_twists1');
+    zPeriod1Input  = document.getElementById('z_period1');
+    zRadius1Slider = document.getElementById('z_radius1');
+    zTwists2Input  = document.getElementById('z_twists2');
+    zPeriod2Input  = document.getElementById('z_period2');
+    zRadius2Slider = document.getElementById('z_radius2');
+
+    loopsSlider      = document.getElementById('loops');
+    loopsInput       = document.getElementById('loops_num');
+    cameraXSlider    = document.getElementById('cameraRotationX');
+    cameraYSlider    = document.getElementById('cameraRotationY');
+    cameraZSlider    = document.getElementById('cameraRotationZ');
+    scaleSlider      = document.getElementById('scale');
     autoRotateXCheck = document.getElementById('autoRotateX');
     autoRotateYCheck = document.getElementById('autoRotateY');
     autoRotateZCheck = document.getElementById('autoRotateZ');
-    inColorCheck    = document.getElementById('inColor');
-    lightModeCheck  = document.getElementById('lightMode');
+    inColorCheck     = document.getElementById('inColor');
+    lightModeCheck   = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
 
     colorMgr.randomize();
@@ -370,9 +487,12 @@ function main()
     autoRotateZCheck.checked = autoRotateZ;
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
-    offsetXSlider.value = offsetX;
-    offsetYSlider.value = offsetY;
-    offsetZSlider.value = offsetZ;
+    xRadius1Slider.value = x_radius1;
+    xRadius2Slider.value = x_radius2;
+    yRadius1Slider.value = y_radius1;
+    yRadius2Slider.value = y_radius2;
+    zRadius1Slider.value = z_radius1;
+    zRadius2Slider.value = z_radius2;
     initPanelPositions();
     drawScene();
 }
@@ -389,11 +509,29 @@ function drawScene()
     let increment = 2 * Math.PI / 360;
     for (let angle = 0.0; angle < loops * 2 * Math.PI; angle += increment)
     {
-        let xyz = [scale * offsetX, scale * offsetY, scale * offsetZ];
+        let z_arm1 = [scale * z_radius1, 0, 0];
+        vec3.rotateZ(z_arm1, z_arm1, center, angle * z_rotation1);
 
-        vec3.rotateZ(xyz, xyz, center, angle * z_rotation);
-        vec3.rotateX(xyz, xyz, center, angle * x_rotation);
-        vec3.rotateY(xyz, xyz, center, angle * y_rotation);
+        let z_arm2 = [scale * z_radius2, 0, 0];
+        vec3.rotateZ(z_arm2, z_arm2, center, angle * z_rotation2);
+
+        let x_arm1 = [0, scale * x_radius1, 0];
+        vec3.rotateX(x_arm1, x_arm1, center, angle * x_rotation1);
+
+        let x_arm2 = [0, scale * x_radius2, 0];
+        vec3.rotateX(x_arm2, x_arm2, center, angle * x_rotation2);
+
+        let y_arm1 = [0, 0, scale * y_radius1];
+        vec3.rotateY(y_arm1, y_arm1, center, angle * y_rotation1);
+
+        let y_arm2 = [0, 0, scale * y_radius2];
+        vec3.rotateY(y_arm2, y_arm2, center, angle * y_rotation2);
+
+        let xyz = [
+            z_arm1[0] + z_arm2[0] + x_arm1[0] + x_arm2[0] + y_arm1[0] + y_arm2[0],
+            z_arm1[1] + z_arm2[1] + x_arm1[1] + x_arm2[1] + y_arm1[1] + y_arm2[1],
+            z_arm1[2] + z_arm2[2] + x_arm1[2] + x_arm2[2] + y_arm1[2] + y_arm2[2]
+        ];
 
         vec3.transformMat4(xyz, xyz, viewMat);
 
@@ -406,52 +544,6 @@ function drawScene()
     ctx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
     ctx.stroke();
     ctx.restore();
-
-    if (speedOffX !== 0)
-    {
-        if (offsetX > 1.0)
-        {
-            offsetX = 1.0;
-            speedOffXSign = -1;
-        }
-        if (offsetX < 0.0)
-        {
-            offsetX = 0.0;
-            speedOffXSign = 1;
-        }
-        offsetX += speedOffXSign * speedOffX;
-        offsetXSlider.value = offsetX;
-    }
-    if (speedOffY !== 0)
-    {
-        if (offsetY > 1.0)
-        {
-            offsetY = 1.0;
-            speedOffYSign = -1;
-        }
-        if (offsetY < 0.0)
-        {
-            offsetY = 0.0;
-            speedOffYSign = 1;
-        }
-        offsetY += speedOffYSign * speedOffY;
-        offsetYSlider.value = offsetY;
-    }
-    if (speedOffZ !== 0)
-    {
-        if (offsetZ > 1.0)
-        {
-            offsetZ = 1.0;
-            speedOffZSign = -1;
-        }
-        if (offsetZ < 0.0)
-        {
-            offsetZ = 0.0;
-            speedOffZSign = 1;
-        }
-        offsetZ += speedOffZSign * speedOffZ;
-        offsetZSlider.value = offsetZ;
-    }
 
     if (autoRotateX)
     {
@@ -509,56 +601,69 @@ function randomize()
 {
     var denomPool = [3, 4, 5, 7, 8, 9];
 
-    var denomA = denomPool[Math.floor(Math.random() * denomPool.length)];
-    var denomB = denomPool[Math.floor(Math.random() * denomPool.length)];
-    var lcm = denomA * denomB / greatestCommonDivisor(denomA, denomB);
-    if (lcm > 60)
-        denomB = denomA;
-
-    var twistsA = randomIrreducibleFraction(denomA);
-    var twistsB = randomIrreducibleFraction(denomB);
-    var zeroAxis = Math.floor(Math.random() * 3);
-    if (zeroAxis === 0)
+    function randomDenom()
     {
-        x_twists = 0;
-        x_period = denomA;
-        y_twists = twistsA;
-        y_period = denomA;
-        z_twists = twistsB;
-        z_period = denomB;
+        return denomPool[Math.floor(Math.random() * denomPool.length)];
     }
-    else if (zeroAxis === 1)
+
+    x_twists1 = 0; x_period1 = 1; x_radius1 = 0.0; x_rotation1 = 0.0;
+    x_twists2 = 0; x_period2 = 1; x_radius2 = 0.0; x_rotation2 = 0.0;
+    y_twists1 = 0; y_period1 = 1; y_radius1 = 0.0; y_rotation1 = 0.0;
+    y_twists2 = 0; y_period2 = 1; y_radius2 = 0.0; y_rotation2 = 0.0;
+    z_twists1 = 0; z_period1 = 1; z_radius1 = 1.0; z_rotation1 = 0.0;
+    z_twists2 = 0; z_period2 = 1; z_radius2 = 0.0; z_rotation2 = 0.0;
+
+    var denomA = randomDenom();
+    z_twists1 = randomIrreducibleFraction(denomA);
+    z_period1 = denomA;
+    z_rotation1 = z_twists1 / z_period1;
+
+    var denomB = randomDenom();
+    while (denomA * denomB / greatestCommonDivisor(denomA, denomB) > 60)
+        denomB = randomDenom();
+
+    var twistsB = randomIrreducibleFraction(denomB);
+
+    if (Math.random() < 0.5)
     {
-        x_twists = twistsA;
-        x_period = denomA;
-        y_twists = 0;
-        y_period = denomA;
-        z_twists = twistsB;
-        z_period = denomB;
+        z_radius1 = 0.5 + Math.random() * 0.4;
+        z_twists2 = twistsB;
+        z_period2 = denomB;
+        z_rotation2 = z_twists2 / z_period2;
+        z_radius2 = 1.0 - z_radius1;
     }
     else
     {
-        x_twists = twistsA;
-        x_period = denomA;
-        y_twists = twistsB;
-        y_period = denomB;
-        z_twists = 0;
-        z_period = denomB;
+        z_radius1 = 0.6 + Math.random() * 0.4;
+        var secondPlane = Math.floor(Math.random() * 2);
+        var radiusB = 0.3 + Math.random() * 0.4;
+        if (secondPlane === 0)
+        {
+            x_twists1 = twistsB;
+            x_period1 = denomB;
+            x_rotation1 = x_twists1 / x_period1;
+            x_radius1 = radiusB;
+        }
+        else
+        {
+            y_twists1 = twistsB;
+            y_period1 = denomB;
+            y_rotation1 = y_twists1 / y_period1;
+            y_radius1 = radiusB;
+        }
     }
-    x_rotation = x_twists / x_period;
-    y_rotation = y_twists / y_period;
-    z_rotation = z_twists / z_period;
 
-    var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.4);
-    scale = 100 + Math.floor(Math.random() * Math.max(1, maxScale - 100));
-    offsetX = 0.3 + Math.random() * 0.7;
-    offsetY = 0.0;
-    offsetZ = 0.0;
+    var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.35);
+    scale = 80 + Math.floor(Math.random() * Math.max(1, maxScale - 80));
 
     scaleSlider.value = scale;
-    offsetXSlider.value = offsetX;
-    offsetYSlider.value = offsetY;
-    offsetZSlider.value = offsetZ;
+    xRadius1Slider.value = x_radius1;
+    xRadius2Slider.value = x_radius2;
+    yRadius1Slider.value = y_radius1;
+    yRadius2Slider.value = y_radius2;
+    zRadius1Slider.value = z_radius1;
+    zRadius2Slider.value = z_radius2;
+
     autoSetLoops();
     customColor = randomColor();
     updateDisplay();
