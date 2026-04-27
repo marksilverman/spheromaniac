@@ -15,6 +15,7 @@ var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 var animating = false, animAngle = 0.0, animSpeed = 0.05;
+var showAxes = false;
 
 var xRadius1Input, xRadius2Input, xDistanceInput;
 var yRadius1Input, yRadius2Input, yDistanceInput;
@@ -23,7 +24,7 @@ var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
 var scaleSlider;
 var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
-var colorPickerInput, animateCheck;
+var colorPickerInput, animateCheck, showAxesCheck;
 var previewXCanvas, previewYCanvas, previewZCanvas, axesIndicatorCanvas;
 var xDistanceSlider, yDistanceSlider, zDistanceSlider;
 
@@ -472,6 +473,7 @@ function main()
     lightModeCheck   = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
     animateCheck     = document.getElementById('animateDrawing');
+    showAxesCheck    = document.getElementById('showAxes');
     previewXCanvas   = document.getElementById('preview_x');
     previewYCanvas   = document.getElementById('preview_y');
     previewZCanvas   = document.getElementById('preview_z');
@@ -486,6 +488,7 @@ function main()
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
     animateCheck.checked = false;
+    showAxesCheck.checked = false;
     updatePreviews();
     initPanelPositions();
     drawScene();
@@ -558,6 +561,10 @@ function drawScene()
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
     ctx.stroke();
+
+    if (animating || showAxes)
+        drawMechanismOnMain(ctx);
+
     ctx.restore();
 
     if (animating)
@@ -565,6 +572,7 @@ function drawScene()
         animAngle += animSpeed;
         if (animAngle >= loops * 2 * Math.PI)
             animAngle = loops * 2 * Math.PI;
+        updatePreviews();
     }
 
     if (autoRotateX)
@@ -624,8 +632,9 @@ function drawPlanePreview(previewCanvas, radius1, radius2, distance)
     previewCtx.translate(halfSize, halfSize);
     previewCtx.beginPath();
 
+    var drawUpTo = animating ? animAngle : (planeLoops * 2 * Math.PI);
     var increment = 2 * Math.PI / 360;
-    for (let angle = 0.0; angle < planeLoops * 2 * Math.PI; angle += increment)
+    for (let angle = 0.0; angle < drawUpTo; angle += increment)
     {
         let penAngle = rollingRatio * angle;
         let px = previewScale * (armRadius * Math.cos(angle) + distance * Math.cos(penAngle));
@@ -640,6 +649,52 @@ function drawPlanePreview(previewCanvas, radius1, radius2, distance)
     previewCtx.lineWidth = 1;
     previewCtx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
     previewCtx.stroke();
+
+    if (animating)
+    {
+        var isLight = document.body.classList.contains('light');
+        var overlayStrokeFaint = isLight ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)';
+        var overlayStroke = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.65)';
+        var overlayArm = isLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
+        var overlayPen = colorMgr.inColor ? colorMgr.fgColor : customColor;
+
+        var mechanismAngle = animAngle % (planeLoops * 2 * Math.PI);
+
+        var outerCircleRadius = radius1 * previewScale;
+        var innerCircleRadius = Math.abs(radius2) * previewScale;
+
+        var rollingCenterX = armRadius * Math.cos(mechanismAngle) * previewScale;
+        var rollingCenterY = armRadius * Math.sin(mechanismAngle) * previewScale;
+
+        var penAngle = rollingRatio * mechanismAngle;
+        var penX = (armRadius * Math.cos(mechanismAngle) + distance * Math.cos(penAngle)) * previewScale;
+        var penY = (armRadius * Math.sin(mechanismAngle) - distance * Math.sin(penAngle)) * previewScale;
+
+        previewCtx.beginPath();
+        previewCtx.arc(0, 0, outerCircleRadius, 0, 2 * Math.PI);
+        previewCtx.strokeStyle = overlayStrokeFaint;
+        previewCtx.lineWidth = 1;
+        previewCtx.stroke();
+
+        previewCtx.beginPath();
+        previewCtx.arc(rollingCenterX, rollingCenterY, innerCircleRadius, 0, 2 * Math.PI);
+        previewCtx.strokeStyle = overlayStroke;
+        previewCtx.lineWidth = 1;
+        previewCtx.stroke();
+
+        previewCtx.beginPath();
+        previewCtx.moveTo(rollingCenterX, rollingCenterY);
+        previewCtx.lineTo(penX, penY);
+        previewCtx.strokeStyle = overlayArm;
+        previewCtx.lineWidth = 1;
+        previewCtx.stroke();
+
+        previewCtx.beginPath();
+        previewCtx.arc(penX, penY, 2, 0, 2 * Math.PI);
+        previewCtx.fillStyle = overlayPen;
+        previewCtx.fill();
+    }
+
     previewCtx.restore();
 }
 
@@ -648,6 +703,141 @@ function updatePreviews()
     drawPlanePreview(previewXCanvas, x_radius1, x_radius2, x_distance);
     drawPlanePreview(previewYCanvas, y_radius1, y_radius2, y_distance);
     drawPlanePreview(previewZCanvas, z_radius1, z_radius2, z_distance);
+}
+
+function strokePolyline3D(ctx, points, strokeStyle, lineWidth)
+{
+    ctx.beginPath();
+    for (let i = 0; i < points.length; i++)
+    {
+        let p = [points[i][0], points[i][1], points[i][2]];
+        vec3.transformMat4(p, p, viewMat);
+        if (i === 0)
+            ctx.moveTo(p[0], p[1]);
+        else
+            ctx.lineTo(p[0], p[1]);
+    }
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+}
+
+function fillDot3D(ctx, point, dotRadius, fillStyle)
+{
+    let p = [point[0], point[1], point[2]];
+    vec3.transformMat4(p, p, viewMat);
+    ctx.beginPath();
+    ctx.arc(p[0], p[1], dotRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = fillStyle;
+    ctx.fill();
+}
+
+function drawMechanismOnMain(ctx)
+{
+    var isLight = document.body.classList.contains('light');
+    var faintStroke = isLight ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)';
+    var mediumStroke = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.65)';
+    var armStroke = isLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
+    var penFill = colorMgr.inColor ? colorMgr.fgColor : customColor;
+    var segments = 48;
+
+    var axisExtent = 5000;
+    strokePolyline3D(ctx, [[-axisExtent, 0, 0], [axisExtent, 0, 0]], '#ff4444', 1);
+    strokePolyline3D(ctx, [[0, -axisExtent, 0], [0, axisExtent, 0]], '#44cc44', 1);
+    strokePolyline3D(ctx, [[0, 0, -axisExtent], [0, 0, axisExtent]], '#4466ff', 1);
+
+    if (!animating)
+        return;
+
+    if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+    {
+        var zR1 = Math.abs(Math.round(z_radius1));
+        var zR2 = Math.abs(Math.round(z_radius2));
+        var zPlaneLoops = zR2 / greatestCommonDivisor(zR1, zR2);
+        var zMechAngle = animAngle % (zPlaneLoops * 2 * Math.PI);
+        var zNorm = scale / z_radius1;
+        var zArmRadius = z_radius1 - z_radius2;
+        var zRollingRatio = zArmRadius / z_radius2;
+        var zPenAngle = zRollingRatio * zMechAngle;
+        var zInnerRadius = zNorm * Math.abs(z_radius2);
+        var zRcX = zNorm * zArmRadius * Math.cos(zMechAngle);
+        var zRcY = zNorm * zArmRadius * Math.sin(zMechAngle);
+        var zPenX = zNorm * (zArmRadius * Math.cos(zMechAngle) + z_distance * Math.cos(zPenAngle));
+        var zPenY = zNorm * (zArmRadius * Math.sin(zMechAngle) - z_distance * Math.sin(zPenAngle));
+
+        var zOuterPts = [];
+        var zInnerPts = [];
+        for (let i = 0; i <= segments; i++)
+        {
+            let t = i * 2 * Math.PI / segments;
+            zOuterPts.push([scale * Math.cos(t), scale * Math.sin(t), 0]);
+            zInnerPts.push([zRcX + zInnerRadius * Math.cos(t), zRcY + zInnerRadius * Math.sin(t), 0]);
+        }
+        strokePolyline3D(ctx, zOuterPts, faintStroke, 1);
+        strokePolyline3D(ctx, zInnerPts, mediumStroke, 1);
+        strokePolyline3D(ctx, [[zRcX, zRcY, 0], [zPenX, zPenY, 0]], armStroke, 1);
+        fillDot3D(ctx, [zPenX, zPenY, 0], 3, penFill);
+    }
+
+    if (x_radius1 !== 0 && x_radius2 !== 0 && x_distance !== 0)
+    {
+        var xR1 = Math.abs(Math.round(x_radius1));
+        var xR2 = Math.abs(Math.round(x_radius2));
+        var xPlaneLoops = xR2 / greatestCommonDivisor(xR1, xR2);
+        var xMechAngle = animAngle % (xPlaneLoops * 2 * Math.PI);
+        var xNorm = scale / x_radius1;
+        var xArmRadius = x_radius1 - x_radius2;
+        var xRollingRatio = xArmRadius / x_radius2;
+        var xPenAngle = xRollingRatio * xMechAngle;
+        var xInnerRadius = xNorm * Math.abs(x_radius2);
+        var xRcY = xNorm * xArmRadius * Math.cos(xMechAngle);
+        var xRcZ = xNorm * xArmRadius * Math.sin(xMechAngle);
+        var xPenY = xNorm * (xArmRadius * Math.cos(xMechAngle) + x_distance * Math.cos(xPenAngle));
+        var xPenZ = xNorm * (xArmRadius * Math.sin(xMechAngle) - x_distance * Math.sin(xPenAngle));
+
+        var xOuterPts = [];
+        var xInnerPts = [];
+        for (let i = 0; i <= segments; i++)
+        {
+            let t = i * 2 * Math.PI / segments;
+            xOuterPts.push([0, scale * Math.cos(t), scale * Math.sin(t)]);
+            xInnerPts.push([0, xRcY + xInnerRadius * Math.cos(t), xRcZ + xInnerRadius * Math.sin(t)]);
+        }
+        strokePolyline3D(ctx, xOuterPts, faintStroke, 1);
+        strokePolyline3D(ctx, xInnerPts, mediumStroke, 1);
+        strokePolyline3D(ctx, [[0, xRcY, xRcZ], [0, xPenY, xPenZ]], armStroke, 1);
+        fillDot3D(ctx, [0, xPenY, xPenZ], 3, penFill);
+    }
+
+    if (y_radius1 !== 0 && y_radius2 !== 0 && y_distance !== 0)
+    {
+        var yR1 = Math.abs(Math.round(y_radius1));
+        var yR2 = Math.abs(Math.round(y_radius2));
+        var yPlaneLoops = yR2 / greatestCommonDivisor(yR1, yR2);
+        var yMechAngle = animAngle % (yPlaneLoops * 2 * Math.PI);
+        var yNorm = scale / y_radius1;
+        var yArmRadius = y_radius1 - y_radius2;
+        var yRollingRatio = yArmRadius / y_radius2;
+        var yPenAngle = yRollingRatio * yMechAngle;
+        var yInnerRadius = yNorm * Math.abs(y_radius2);
+        var yRcZ = yNorm * yArmRadius * Math.cos(yMechAngle);
+        var yRcX = yNorm * yArmRadius * Math.sin(yMechAngle);
+        var yPenZ = yNorm * (yArmRadius * Math.cos(yMechAngle) + y_distance * Math.cos(yPenAngle));
+        var yPenX = yNorm * (yArmRadius * Math.sin(yMechAngle) - y_distance * Math.sin(yPenAngle));
+
+        var yOuterPts = [];
+        var yInnerPts = [];
+        for (let i = 0; i <= segments; i++)
+        {
+            let t = i * 2 * Math.PI / segments;
+            yOuterPts.push([scale * Math.sin(t), 0, scale * Math.cos(t)]);
+            yInnerPts.push([yRcX + yInnerRadius * Math.sin(t), 0, yRcZ + yInnerRadius * Math.cos(t)]);
+        }
+        strokePolyline3D(ctx, yOuterPts, faintStroke, 1);
+        strokePolyline3D(ctx, yInnerPts, mediumStroke, 1);
+        strokePolyline3D(ctx, [[yRcX, 0, yRcZ], [yPenX, 0, yPenZ]], armStroke, 1);
+        fillDot3D(ctx, [yPenX, 0, yPenZ], 3, penFill);
+    }
 }
 
 function drawAxesIndicator()
@@ -830,16 +1020,16 @@ function initPanelPositions()
     panelZ.style.top = (20 + panelX.offsetHeight + 10 + panelY.offsetHeight + 10) + 'px';
     panelZ.style.left = '20px';
 
-    panelRight.style.right = '';
+    panelRight.style.right = 'auto';
     panelRight.style.top = '20px';
     panelRight.style.left = (window.innerWidth - panelRight.offsetWidth - 20) + 'px';
 
-    panelBottomRight.style.bottom = '';
-    panelBottomRight.style.right = '';
+    panelBottomRight.style.bottom = 'auto';
+    panelBottomRight.style.right = 'auto';
     panelBottomRight.style.top = (window.innerHeight - panelBottomRight.offsetHeight - 20) + 'px';
     panelBottomRight.style.left = (window.innerWidth - panelBottomRight.offsetWidth - 20) + 'px';
 
-    panelBottom.style.bottom = '';
+    panelBottom.style.bottom = 'auto';
     panelBottom.style.transform = 'none';
     panelBottom.style.top = (window.innerHeight - panelBottom.offsetHeight - 20) + 'px';
     panelBottom.style.left = ((window.innerWidth - panelBottom.offsetWidth) / 2) + 'px';

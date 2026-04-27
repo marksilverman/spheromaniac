@@ -34,11 +34,6 @@ canvas {
     white-space: nowrap;
 }
 
-#panel-right {
-    position: absolute;
-    top: 20px;
-}
-
 .axis-panel {
     position: absolute;
     background: rgba(10, 20, 50, 0.88);
@@ -47,7 +42,7 @@ canvas {
 }
 
 #panel-right {
-    right: 20px;
+    position: absolute;
     background: rgba(10, 20, 50, 0.88);
     padding: 20px;
     border-radius: 10px;
@@ -55,8 +50,6 @@ canvas {
 
 #panel-bottom-right {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
     background: rgba(10, 20, 50, 0.88);
     padding: 15px 20px;
     border-radius: 10px;
@@ -72,9 +65,6 @@ body.light #panel-bottom-right {
 
 #panel-bottom {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     background: rgba(10, 20, 50, 0.88);
     padding: 15px 30px;
     border-radius: 10px;
