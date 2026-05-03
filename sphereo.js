@@ -1,9 +1,9 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 
-var x_turns = 4, x_period = 5;
-var y_turns = 1, y_period = 1;
-var z_radius1 = 8.0, z_radius2 = 6.0, z_distance = 12.0;
+var xTurns = 4, xPeriod = 5;
+var yTurns = 1, yPeriod = 1;
+var zRadius1 = 8.0, zRadius2 = 6.0, zDistance = 12.0;
 
 var scale = 200.0, lineWidth = 3, loops = 10;
 var viewMat = mat4.create();
@@ -14,7 +14,7 @@ var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 var lastPinchDistance = 0, lastTwistAngle = 0;
-var animating = false, animAngle = 0.0, animSpeed = 0.05;
+var animating = false, animationAngle = 0.0, animationSpeed = 0.05;
 var colorOffset = 0.0;
 var showAxes = false;
 
@@ -24,7 +24,7 @@ var zRadius1Input, zRadius2Input, zDistanceInput;
 var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
 var scaleSlider;
-var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
+var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, cycleColorCheck, lightModeCheck;
 var colorPickerInput, animateBtn, showAxesCheck;
 var previewZCanvas, axesIndicatorCanvas;
 var zDistanceSlider;
@@ -226,185 +226,185 @@ function setLoops(value)
 
 function adjustXTurns(amount)
 {
-    x_turns += amount;
+    xTurns += amount;
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function adjustXPeriod(amount)
 {
-    x_period = Math.max(0.1, x_period + amount);
+    xPeriod = Math.max(0, xPeriod + amount);
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function adjustYTurns(amount)
 {
-    y_turns += amount;
+    yTurns += amount;
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function adjustYPeriod(amount)
 {
-    y_period = Math.max(0.1, y_period + amount);
+    yPeriod = Math.max(0, yPeriod + amount);
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function adjustZRadius1(amount)
 {
-    z_radius1 += amount;
+    zRadius1 += amount;
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function adjustZRadius2(amount)
 {
-    z_radius2 += amount;
+    zRadius2 += amount;
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function adjustZDistance(amount)
 {
-    z_distance += amount;
+    zDistance += amount;
     updateDisplay();
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function setXTurns()
 {
-    x_turns = parseFloat(xTurnsInput.value) || 0;
-    xTurnsSlider.value = x_turns;
+    xTurns = parseFloat(xTurnsInput.value) || 0;
+    xTurnsSlider.value = xTurns;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setXTurnsFromSlider()
 {
-    x_turns = parseFloat(xTurnsSlider.value);
-    xTurnsInput.value = x_turns;
+    xTurns = parseFloat(xTurnsSlider.value);
+    xTurnsInput.value = xTurns;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setXPeriod()
 {
-    x_period = Math.max(0.1, parseFloat(xPeriodInput.value) || 0.1);
-    xPeriodSlider.value = x_period;
+    xPeriod = Math.max(0, parseFloat(xPeriodInput.value) || 0);
+    xPeriodSlider.value = xPeriod;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setXPeriodFromSlider()
 {
-    x_period = parseFloat(xPeriodSlider.value);
-    xPeriodInput.value = x_period;
+    xPeriod = parseFloat(xPeriodSlider.value);
+    xPeriodInput.value = xPeriod;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setYTurns()
 {
-    y_turns = parseFloat(yTurnsInput.value) || 0;
-    yTurnsSlider.value = y_turns;
+    yTurns = parseFloat(yTurnsInput.value) || 0;
+    yTurnsSlider.value = yTurns;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setYTurnsFromSlider()
 {
-    y_turns = parseFloat(yTurnsSlider.value);
-    yTurnsInput.value = y_turns;
+    yTurns = parseFloat(yTurnsSlider.value);
+    yTurnsInput.value = yTurns;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setYPeriod()
 {
-    y_period = Math.max(0.1, parseFloat(yPeriodInput.value) || 0.1);
-    yPeriodSlider.value = y_period;
+    yPeriod = Math.max(0, parseFloat(yPeriodInput.value) || 0);
+    yPeriodSlider.value = yPeriod;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setYPeriodFromSlider()
 {
-    y_period = parseFloat(yPeriodSlider.value);
-    yPeriodInput.value = y_period;
+    yPeriod = parseFloat(yPeriodSlider.value);
+    yPeriodInput.value = yPeriod;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
 }
 
 function setZRadius1()
 {
-    z_radius1 = parseFloat(zRadius1Input.value) || 0;
+    zRadius1 = parseFloat(zRadius1Input.value) || 0;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function setZRadius2()
 {
-    z_radius2 = parseFloat(zRadius2Input.value) || 0;
+    zRadius2 = parseFloat(zRadius2Input.value) || 0;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function setZDistance()
 {
-    z_distance = parseFloat(zDistanceInput.value) || 0;
-    zDistanceSlider.value = z_distance;
+    zDistance = parseFloat(zDistanceInput.value) || 0;
+    zDistanceSlider.value = zDistance;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 
 function setZDistanceFromSlider()
 {
-    z_distance = parseFloat(zDistanceSlider.value) || 0;
-    zDistanceInput.value = z_distance;
+    zDistance = parseFloat(zDistanceSlider.value) || 0;
+    zDistanceInput.value = zDistance;
     autoSetLoops();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
 function updateDisplay()
 {
-    xTurnsInput.value = x_turns;
-    xTurnsSlider.value = x_turns;
-    xPeriodInput.value = x_period;
-    xPeriodSlider.value = x_period;
-    yTurnsInput.value = y_turns;
-    yTurnsSlider.value = y_turns;
-    yPeriodInput.value = y_period;
-    yPeriodSlider.value = y_period;
-    zRadius1Input.value = z_radius1;
-    zRadius2Input.value = z_radius2;
-    zDistanceInput.value = z_distance;
-    zDistanceSlider.value = z_distance;
+    xTurnsInput.value = xTurns;
+    xTurnsSlider.value = xTurns;
+    xPeriodInput.value = xPeriod;
+    xPeriodSlider.value = xPeriod;
+    yTurnsInput.value = yTurns;
+    yTurnsSlider.value = yTurns;
+    yPeriodInput.value = yPeriod;
+    yPeriodSlider.value = yPeriod;
+    zRadius1Input.value = zRadius1;
+    zRadius2Input.value = zRadius2;
+    zDistanceInput.value = zDistance;
+    zDistanceSlider.value = zDistance;
 }
 
 function hasFractionalParams()
 {
-    if (z_radius1 % 1 !== 0 || z_radius2 % 1 !== 0)
+    if (zRadius1 % 1 !== 0 || zRadius2 % 1 !== 0)
         return true;
-    if (x_turns !== 0 && (x_turns % 1 !== 0 || x_period % 1 !== 0))
+    if (xTurns !== 0 && (xTurns % 1 !== 0 || xPeriod % 1 !== 0))
         return true;
-    if (y_turns !== 0 && (y_turns % 1 !== 0 || y_period % 1 !== 0))
+    if (yTurns !== 0 && (yTurns % 1 !== 0 || yPeriod % 1 !== 0))
         return true;
     return false;
 }
@@ -416,17 +416,17 @@ function autoSetLoops()
 
     var periods = [];
 
-    if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+    if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
     {
-        var zR1 = Math.abs(Math.round(z_radius1));
-        var zR2 = Math.abs(Math.round(z_radius2));
-        if (zR1 > 0 && zR2 > 0)
-            periods.push(zR2 / greatestCommonDivisor(zR1, zR2));
+        var r1 = Math.abs(Math.round(zRadius1));
+        var r2 = Math.abs(Math.round(zRadius2));
+        if (r1 > 0 && r2 > 0)
+            periods.push(r2 / greatestCommonDivisor(r1, r2));
     }
-    if (x_turns !== 0)
-        periods.push(Math.abs(x_period));
-    if (y_turns !== 0)
-        periods.push(Math.abs(y_period));
+    if (xTurns !== 0)
+        periods.push(Math.abs(xPeriod));
+    if (yTurns !== 0)
+        periods.push(Math.abs(yPeriod));
 
     if (periods.length === 0)
     {
@@ -511,7 +511,7 @@ function main()
     autoRotateXCheck = document.getElementById('autoRotateX');
     autoRotateYCheck = document.getElementById('autoRotateY');
     autoRotateZCheck = document.getElementById('autoRotateZ');
-    inColorCheck     = document.getElementById('inColor');
+    cycleColorCheck     = document.getElementById('inColor');
     lightModeCheck   = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
     animateBtn       = document.getElementById('animateBtn');
@@ -525,7 +525,7 @@ function main()
     autoRotateXCheck.checked = autoRotateX;
     autoRotateYCheck.checked = autoRotateY;
     autoRotateZCheck.checked = autoRotateZ;
-    inColorCheck.checked = colorMgr.inColor;
+    cycleColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
     showAxesCheck.checked = false;
     updatePreviews();
@@ -542,38 +542,42 @@ function drawScene()
     ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
 
     var totalAngle = loops * 2 * Math.PI;
-    var drawUpTo = animating ? animAngle : totalAngle;
+    var drawUpTo = animating ? animationAngle : totalAngle;
     var increment = 2 * Math.PI / 360;
     var colorHue = hexToHue(customColor);
     var prevX = 0, prevY = 0, hasPrev = false;
+    var steps = Math.ceil(drawUpTo / increment);
 
-    for (let angle = 0.0; angle < drawUpTo; angle += increment)
+    for (let i = 0; i <= steps; i++)
     {
-        let zContribX = 0;
-        let zContribY = 0;
-        if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+        let angle = (i < steps) ? i * increment : drawUpTo;
+        let penX = 0;
+        let penY = 0;
+        if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
         {
-            let zArmRadius = z_radius1 - z_radius2;
-            let zRollingRatio = zArmRadius / z_radius2;
-            let zPenAngle = zRollingRatio * angle;
-            let zNorm = scale / z_radius1;
-            zContribX = zNorm * (zArmRadius * Math.cos(angle) + z_distance * Math.cos(zPenAngle));
-            zContribY = zNorm * (zArmRadius * Math.sin(angle) - z_distance * Math.sin(zPenAngle));
+            let armRadius = zRadius1 - zRadius2;
+            let rollingRatio = armRadius / zRadius2;
+            let penAngle = rollingRatio * angle;
+            let normScale = scale / zRadius1;
+            penX = normScale * (armRadius * Math.cos(angle) + zDistance * Math.cos(penAngle));
+            penY = normScale * (armRadius * Math.sin(angle) - zDistance * Math.sin(penAngle));
         }
 
-        let rotX = (x_turns === 0) ? 0 : angle * x_turns / x_period;
-        let rotY = (y_turns === 0) ? 0 : angle * y_turns / y_period;
+        let rotX = (xTurns === 0) ? 0 : angle * xTurns / xPeriod;
+        let rotY = (yTurns === 0) ? 0 : angle * yTurns / yPeriod;
         let modelMat = mat4.create();
         mat4.rotateX(modelMat, modelMat, rotX);
         mat4.rotateY(modelMat, modelMat, rotY);
 
-        let xyz = [zContribX, zContribY, 0];
+        let xyz = [penX, penY, 0];
         vec3.transformMat4(xyz, xyz, modelMat);
         vec3.transformMat4(xyz, xyz, viewMat);
 
         if (hasPrev)
         {
-            let depth = Math.max(0, Math.min(1, (xyz[2] + scale) / (2 * scale)));
+            let depth = (xyz[2] + scale) / (2 * scale);
+            if (depth < 0) depth = 0;
+            if (depth > 1) depth = 1;
             ctx.beginPath();
             ctx.moveTo(prevX, prevY);
             ctx.lineTo(xyz[0], xyz[1]);
@@ -608,9 +612,9 @@ function drawScene()
 
     if (animating)
     {
-        animAngle += animSpeed;
-        if (animAngle >= loops * 2 * Math.PI)
-            animAngle = loops * 2 * Math.PI;
+        animationAngle += animationSpeed;
+        if (animationAngle >= loops * 2 * Math.PI)
+            animationAngle = loops * 2 * Math.PI;
         updatePreviews();
     }
 
@@ -674,7 +678,7 @@ function drawPlanePreview(previewCanvas, radius1, radius2, distance)
     previewCtx.translate(halfSize, halfSize);
     previewCtx.beginPath();
 
-    var drawUpTo = animating ? animAngle : (planeLoops * 2 * Math.PI);
+    var drawUpTo = animating ? animationAngle : (planeLoops * 2 * Math.PI);
     var increment = 2 * Math.PI / 360;
     for (let angle = 0.0; angle < drawUpTo; angle += increment)
     {
@@ -700,7 +704,7 @@ function drawPlanePreview(previewCanvas, radius1, radius2, distance)
         var overlayArm = isLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
         var overlayPen = colorMgr.inColor ? colorMgr.fgColor : customColor;
 
-        var mechanismAngle = animAngle % (planeLoops * 2 * Math.PI);
+        var mechanismAngle = animationAngle % (planeLoops * 2 * Math.PI);
 
         var outerCircleRadius = radius1 * previewScale;
         var innerCircleRadius = Math.abs(radius2) * previewScale;
@@ -742,7 +746,7 @@ function drawPlanePreview(previewCanvas, radius1, radius2, distance)
 
 function updatePreviews()
 {
-    drawPlanePreview(previewZCanvas, z_radius1, z_radius2, z_distance);
+    drawPlanePreview(previewZCanvas, zRadius1, zRadius2, zDistance);
 }
 
 function strokePolyline3D(ctx, points, strokeStyle, lineWidth)
@@ -789,21 +793,21 @@ function drawMechanismOnMain(ctx)
     if (!animating)
         return;
 
-    if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+    if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
     {
-        var zR1 = Math.abs(Math.round(z_radius1));
-        var zR2 = Math.abs(Math.round(z_radius2));
-        var zPlaneLoops = zR2 / greatestCommonDivisor(zR1, zR2);
-        var zMechAngle = animAngle % (zPlaneLoops * 2 * Math.PI);
-        var zNorm = scale / z_radius1;
-        var zArmRadius = z_radius1 - z_radius2;
-        var zRollingRatio = zArmRadius / z_radius2;
-        var zPenAngle = zRollingRatio * zMechAngle;
-        var zInnerRadius = zNorm * Math.abs(z_radius2);
-        var zRcX = zNorm * zArmRadius * Math.cos(zMechAngle);
-        var zRcY = zNorm * zArmRadius * Math.sin(zMechAngle);
-        var zPenX = zNorm * (zArmRadius * Math.cos(zMechAngle) + z_distance * Math.cos(zPenAngle));
-        var zPenY = zNorm * (zArmRadius * Math.sin(zMechAngle) - z_distance * Math.sin(zPenAngle));
+        var r1 = Math.abs(Math.round(zRadius1));
+        var r2 = Math.abs(Math.round(zRadius2));
+        var zPlaneLoops = r2 / greatestCommonDivisor(r1, r2);
+        var zMechAngle = animationAngle % (zPlaneLoops * 2 * Math.PI);
+        var normScale = scale / zRadius1;
+        var armRadius = zRadius1 - zRadius2;
+        var rollingRatio = armRadius / zRadius2;
+        var penAngle = rollingRatio * zMechAngle;
+        var zInnerRadius = normScale * Math.abs(zRadius2);
+        var zRcX = normScale * armRadius * Math.cos(zMechAngle);
+        var zRcY = normScale * armRadius * Math.sin(zMechAngle);
+        var zPenX = normScale * (armRadius * Math.cos(zMechAngle) + zDistance * Math.cos(penAngle));
+        var zPenY = normScale * (armRadius * Math.sin(zMechAngle) - zDistance * Math.sin(penAngle));
 
         var zOuterPts = [];
         var zInnerPts = [];
@@ -916,25 +920,25 @@ function randomize()
         return validChoices[Math.floor(Math.random() * validChoices.length)];
     }
 
-    z_radius1 = 0; z_radius2 = 0; z_distance = 0;
+    zRadius1 = 0; zRadius2 = 0; zDistance = 0;
 
-    z_radius1 = outerRadiusChoices[Math.floor(Math.random() * outerRadiusChoices.length)];
-    z_radius2 = pickInnerRadius(z_radius1);
-    z_distance = 1 + Math.floor(Math.random() * z_radius1);
+    zRadius1 = outerRadiusChoices[Math.floor(Math.random() * outerRadiusChoices.length)];
+    zRadius2 = pickInnerRadius(zRadius1);
+    zDistance = 1 + Math.floor(Math.random() * zRadius1);
 
     var rotationChoices = [3, 5, 7, 9];
-    x_turns = 0; x_period = 1;
-    y_turns = 0; y_period = 1;
+    xTurns = 0; xPeriod = 1;
+    yTurns = 0; yPeriod = 1;
     var activeRotations = Math.floor(Math.random() * 3);
     if (activeRotations >= 1)
     {
-        x_turns = 1;
-        x_period = rotationChoices[Math.floor(Math.random() * rotationChoices.length)];
+        xTurns = 1;
+        xPeriod = rotationChoices[Math.floor(Math.random() * rotationChoices.length)];
     }
     if (activeRotations >= 2)
     {
-        y_turns = 1;
-        y_period = rotationChoices[Math.floor(Math.random() * rotationChoices.length)];
+        yTurns = 1;
+        yPeriod = rotationChoices[Math.floor(Math.random() * rotationChoices.length)];
     }
 
     var maxScale = Math.floor(Math.min(canvas.width, canvas.height) * 0.35);
@@ -945,7 +949,7 @@ function randomize()
     customColor = randomColor();
     colorMgr.randomize();
     updateDisplay();
-    animAngle = 0;
+    animationAngle = 0;
     updatePreviews();
 }
 
@@ -970,25 +974,25 @@ function exportOBJ()
 
     for (let angle = 0.0; angle < totalAngle; angle += increment)
     {
-        let zContribX = 0;
-        let zContribY = 0;
-        if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+        let penX = 0;
+        let penY = 0;
+        if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
         {
-            let zArmRadius = z_radius1 - z_radius2;
-            let zRollingRatio = zArmRadius / z_radius2;
-            let zPenAngle = zRollingRatio * angle;
-            let zNorm = 1.0 / z_radius1;
-            zContribX = zNorm * (zArmRadius * Math.cos(angle) + z_distance * Math.cos(zPenAngle));
-            zContribY = zNorm * (zArmRadius * Math.sin(angle) - z_distance * Math.sin(zPenAngle));
+            let armRadius = zRadius1 - zRadius2;
+            let rollingRatio = armRadius / zRadius2;
+            let penAngle = rollingRatio * angle;
+            let normScale = 1.0 / zRadius1;
+            penX = normScale * (armRadius * Math.cos(angle) + zDistance * Math.cos(penAngle));
+            penY = normScale * (armRadius * Math.sin(angle) - zDistance * Math.sin(penAngle));
         }
 
-        let rotX = (x_turns === 0) ? 0 : angle * x_turns / x_period;
-        let rotY = (y_turns === 0) ? 0 : angle * y_turns / y_period;
+        let rotX = (xTurns === 0) ? 0 : angle * xTurns / xPeriod;
+        let rotY = (yTurns === 0) ? 0 : angle * yTurns / yPeriod;
         let modelMat = mat4.create();
         mat4.rotateX(modelMat, modelMat, rotX);
         mat4.rotateY(modelMat, modelMat, rotY);
 
-        let xyz = [zContribX, zContribY, 0];
+        let xyz = [penX, penY, 0];
         vec3.transformMat4(xyz, xyz, modelMat);
 
         lines.push('v ' + xyz[0].toFixed(6) + ' ' + xyz[1].toFixed(6) + ' ' + xyz[2].toFixed(6));
@@ -1009,7 +1013,7 @@ function exportOBJ()
 function toggleAnimate()
 {
     animating = !animating;
-    animAngle = 0;
+    animationAngle = 0;
     animateBtn.classList.toggle('btn-active', animating);
 }
 
@@ -1090,12 +1094,12 @@ function initPanelPositions()
     panelTitle.style.top = '20px';
     panelTitle.style.left = ((window.innerWidth - panelTitle.offsetWidth) / 2) + 'px';
 
-    panelX.style.top = '20px';
-    panelX.style.left = '20px';
-    panelY.style.top = (20 + panelX.offsetHeight + 10) + 'px';
-    panelY.style.left = '20px';
-    panelZ.style.top = (20 + panelX.offsetHeight + 10 + panelY.offsetHeight + 10) + 'px';
+    panelZ.style.top = '20px';
     panelZ.style.left = '20px';
+    panelX.style.top = (20 + panelZ.offsetHeight + 10) + 'px';
+    panelX.style.left = '20px';
+    panelY.style.top = (20 + panelZ.offsetHeight + 10 + panelX.offsetHeight + 10) + 'px';
+    panelY.style.left = '20px';
 
     panelRight.style.top = '20px';
     panelRight.style.left = (window.innerWidth - panelRight.offsetWidth - 20) + 'px';
