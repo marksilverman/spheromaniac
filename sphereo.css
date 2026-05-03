@@ -104,11 +104,17 @@ body.light #panel-bottom-right {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 12px;
+    text-align: center;
+}
+
+.axis-panel-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .plane-preview {
-    display: block;
-    margin-top: 12px;
+    flex-shrink: 0;
     border-radius: 5px;
     background: rgba(0, 0, 0, 0.25);
     width: 100px;
