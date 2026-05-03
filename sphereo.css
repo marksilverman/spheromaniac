@@ -115,7 +115,7 @@ body.light .panel {
     height: 100px;
 }
 
-#x_distance_slider, #y_distance_slider, #z_distance_slider {
+#z_distance_slider {
     width: 210px;
 }
 

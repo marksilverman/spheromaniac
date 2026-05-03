@@ -5,9 +5,8 @@ var x_turns = 0, x_period = 1;
 var y_turns = 0, y_period = 1;
 var z_radius1 = 8.0, z_radius2 = 3.0, z_distance = 7.0;
 
-var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
+var scale = 200.0, lineWidth = 3, loops = 10;
 var viewMat = mat4.create();
-var center = [0.0, 0.0, 0.0];
 var customColor = '#00ffff';
 var autoRotateX = true, autoRotateY = true, autoRotateZ = true;
 var cameraRotationX = 0.0, cameraRotationY = 0.0, cameraRotationZ = 0.0;
@@ -567,7 +566,7 @@ function drawScene()
 
     drawAxesIndicator();
 
-    raf = window.requestAnimationFrame(drawScene);
+    window.requestAnimationFrame(drawScene);
 }
 
 function drawPlanePreview(previewCanvas, radius1, radius2, distance)
