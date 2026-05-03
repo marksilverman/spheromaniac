@@ -115,7 +115,9 @@ body.light .panel {
     height: 100px;
 }
 
-#z_distance_slider {
+#z_distance_slider,
+#x_turns_slider, #x_period_slider,
+#y_turns_slider, #y_period_slider {
     width: 210px;
 }
 
@@ -269,8 +271,22 @@ body.light {
 }
 
 
+button.btn-active {
+    background: #446;
+    color: white;
+}
+
+button.btn-active:hover {
+    background: #558;
+}
+
 body.light button {
     background: #aaa;
+    color: black;
+}
+
+body.light button.btn-active {
+    background: #88c;
     color: black;
 }
 

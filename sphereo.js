@@ -1,9 +1,9 @@
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 
-var x_turns = 0, x_period = 1;
-var y_turns = 0, y_period = 1;
-var z_radius1 = 8.0, z_radius2 = 3.0, z_distance = 7.0;
+var x_turns = 4, x_period = 5;
+var y_turns = 1, y_period = 1;
+var z_radius1 = 8.0, z_radius2 = 6.0, z_distance = 5.0;
 
 var scale = 200.0, lineWidth = 3, loops = 10;
 var viewMat = mat4.create();
@@ -15,16 +15,17 @@ var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
 var lastPinchDistance = 0, lastTwistAngle = 0;
 var animating = false, animAngle = 0.0, animSpeed = 0.05;
+var colorOffset = 0.0;
 var showAxes = false;
 
-var xTurnsInput, xPeriodInput;
-var yTurnsInput, yPeriodInput;
+var xTurnsInput, xPeriodInput, xTurnsSlider, xPeriodSlider;
+var yTurnsInput, yPeriodInput, yTurnsSlider, yPeriodSlider;
 var zRadius1Input, zRadius2Input, zDistanceInput;
 var loopsSlider, loopsInput;
 var cameraXSlider, cameraYSlider, cameraZSlider;
 var scaleSlider;
 var autoRotateXCheck, autoRotateYCheck, autoRotateZCheck, inColorCheck, lightModeCheck;
-var colorPickerInput, animateCheck, showAxesCheck;
+var colorPickerInput, animateBtn, showAxesCheck;
 var previewZCanvas, axesIndicatorCanvas;
 var zDistanceSlider;
 
@@ -233,7 +234,7 @@ function adjustXTurns(amount)
 
 function adjustXPeriod(amount)
 {
-    x_period = Math.max(1, x_period + amount);
+    x_period = Math.max(0.1, x_period + amount);
     updateDisplay();
     autoSetLoops();
     animAngle = 0;
@@ -249,7 +250,7 @@ function adjustYTurns(amount)
 
 function adjustYPeriod(amount)
 {
-    y_period = Math.max(1, y_period + amount);
+    y_period = Math.max(0.1, y_period + amount);
     updateDisplay();
     autoSetLoops();
     animAngle = 0;
@@ -284,28 +285,64 @@ function adjustZDistance(amount)
 
 function setXTurns()
 {
-    x_turns = parseInt(xTurnsInput.value) || 0;
+    x_turns = parseFloat(xTurnsInput.value) || 0;
+    xTurnsSlider.value = x_turns;
+    autoSetLoops();
+    animAngle = 0;
+}
+
+function setXTurnsFromSlider()
+{
+    x_turns = parseFloat(xTurnsSlider.value);
+    xTurnsInput.value = x_turns;
     autoSetLoops();
     animAngle = 0;
 }
 
 function setXPeriod()
 {
-    x_period = Math.max(1, parseInt(xPeriodInput.value) || 1);
+    x_period = Math.max(0.1, parseFloat(xPeriodInput.value) || 0.1);
+    xPeriodSlider.value = x_period;
+    autoSetLoops();
+    animAngle = 0;
+}
+
+function setXPeriodFromSlider()
+{
+    x_period = parseFloat(xPeriodSlider.value);
+    xPeriodInput.value = x_period;
     autoSetLoops();
     animAngle = 0;
 }
 
 function setYTurns()
 {
-    y_turns = parseInt(yTurnsInput.value) || 0;
+    y_turns = parseFloat(yTurnsInput.value) || 0;
+    yTurnsSlider.value = y_turns;
+    autoSetLoops();
+    animAngle = 0;
+}
+
+function setYTurnsFromSlider()
+{
+    y_turns = parseFloat(yTurnsSlider.value);
+    yTurnsInput.value = y_turns;
     autoSetLoops();
     animAngle = 0;
 }
 
 function setYPeriod()
 {
-    y_period = Math.max(1, parseInt(yPeriodInput.value) || 1);
+    y_period = Math.max(0.1, parseFloat(yPeriodInput.value) || 0.1);
+    yPeriodSlider.value = y_period;
+    autoSetLoops();
+    animAngle = 0;
+}
+
+function setYPeriodFromSlider()
+{
+    y_period = parseFloat(yPeriodSlider.value);
+    yPeriodInput.value = y_period;
     autoSetLoops();
     animAngle = 0;
 }
@@ -348,25 +385,33 @@ function setZDistanceFromSlider()
 function updateDisplay()
 {
     xTurnsInput.value = x_turns;
+    xTurnsSlider.value = x_turns;
     xPeriodInput.value = x_period;
+    xPeriodSlider.value = x_period;
     yTurnsInput.value = y_turns;
+    yTurnsSlider.value = y_turns;
     yPeriodInput.value = y_period;
+    yPeriodSlider.value = y_period;
     zRadius1Input.value = z_radius1;
     zRadius2Input.value = z_radius2;
     zDistanceInput.value = z_distance;
     zDistanceSlider.value = z_distance;
 }
 
-function hasFractionalRadius()
+function hasFractionalParams()
 {
     if (z_radius1 % 1 !== 0 || z_radius2 % 1 !== 0)
+        return true;
+    if (x_turns !== 0 && (x_turns % 1 !== 0 || x_period % 1 !== 0))
+        return true;
+    if (y_turns !== 0 && (y_turns % 1 !== 0 || y_period % 1 !== 0))
         return true;
     return false;
 }
 
 function autoSetLoops()
 {
-    if (hasFractionalRadius())
+    if (hasFractionalParams())
         return;
 
     var periods = [];
@@ -444,10 +489,14 @@ function main()
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    xTurnsInput  = document.getElementById('x_turns');
-    xPeriodInput = document.getElementById('x_period');
-    yTurnsInput  = document.getElementById('y_turns');
-    yPeriodInput = document.getElementById('y_period');
+    xTurnsInput   = document.getElementById('x_turns');
+    xTurnsSlider  = document.getElementById('x_turns_slider');
+    xPeriodInput  = document.getElementById('x_period');
+    xPeriodSlider = document.getElementById('x_period_slider');
+    yTurnsInput   = document.getElementById('y_turns');
+    yTurnsSlider  = document.getElementById('y_turns_slider');
+    yPeriodInput  = document.getElementById('y_period');
+    yPeriodSlider = document.getElementById('y_period_slider');
     zRadius1Input  = document.getElementById('z_radius1');
     zRadius2Input  = document.getElementById('z_radius2');
     zDistanceInput = document.getElementById('z_distance');
@@ -465,7 +514,7 @@ function main()
     inColorCheck     = document.getElementById('inColor');
     lightModeCheck   = document.getElementById('lightMode');
     colorPickerInput = document.getElementById('colorPicker');
-    animateCheck     = document.getElementById('animateDrawing');
+    animateBtn       = document.getElementById('animateBtn');
     showAxesCheck    = document.getElementById('showAxes');
     previewZCanvas   = document.getElementById('preview_z');
     axesIndicatorCanvas = document.getElementById('axes-indicator');
@@ -478,7 +527,6 @@ function main()
     autoRotateZCheck.checked = autoRotateZ;
     inColorCheck.checked = colorMgr.inColor;
     lightModeCheck.checked = false;
-    animateCheck.checked = false;
     showAxesCheck.checked = false;
     updatePreviews();
     initPanelPositions();
@@ -493,9 +541,10 @@ function drawScene()
     ctx.save();
     ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
 
-    var drawUpTo = animating ? animAngle : (loops * 2 * Math.PI);
+    var totalAngle = loops * 2 * Math.PI;
+    var drawUpTo = animating ? animAngle : totalAngle;
     var increment = 2 * Math.PI / 360;
-    var baseColor = colorMgr.inColor ? colorMgr.fgColor : customColor;
+    var colorHue = hexToHue(customColor);
     var prevX = 0, prevY = 0, hasPrev = false;
 
     for (let angle = 0.0; angle < drawUpTo; angle += increment)
@@ -530,7 +579,16 @@ function drawScene()
             ctx.lineTo(xyz[0], xyz[1]);
             ctx.globalAlpha = 0.15 + 0.85 * depth;
             ctx.lineWidth = lineWidth * (0.5 + depth);
-            ctx.strokeStyle = baseColor;
+            if (colorMgr.inColor)
+            {
+                let hue = colorHue + colorOffset + (angle / totalAngle) * 60;
+                let lightness = 40 + 25 * Math.sin(angle);
+                ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + lightness + '%)';
+            }
+            else
+            {
+                ctx.strokeStyle = customColor;
+            }
             ctx.stroke();
         }
 
@@ -553,6 +611,9 @@ function drawScene()
             animAngle = loops * 2 * Math.PI;
         updatePreviews();
     }
+
+    if (colorMgr.inColor)
+        colorOffset = (colorOffset + 1.0) % 360;
 
     if (autoRotateX)
     {
@@ -801,6 +862,29 @@ function drawAxesIndicator()
     }
 }
 
+function hexToHue(hex)
+{
+    var r = parseInt(hex.slice(1, 3), 16) / 255;
+    var g = parseInt(hex.slice(3, 5), 16) / 255;
+    var b = parseInt(hex.slice(5, 7), 16) / 255;
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var delta = max - min;
+    if (delta === 0)
+        return 0;
+    var hue;
+    if (max === r)
+        hue = ((g - b) / delta) % 6;
+    else if (max === g)
+        hue = (b - r) / delta + 2;
+    else
+        hue = (r - g) / delta + 4;
+    hue = hue * 60;
+    if (hue < 0)
+        hue += 360;
+    return hue;
+}
+
 function randomColor()
 {
     var hue = Math.floor(Math.random() * 360);
@@ -876,8 +960,9 @@ function toggleAllAutoRotate()
 
 function toggleAnimate()
 {
-    animating = animateCheck.checked;
+    animating = !animating;
     animAngle = 0;
+    animateBtn.classList.toggle('btn-active', animating);
 }
 
 function makeDraggable(panel, handle)
