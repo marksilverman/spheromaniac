@@ -13,71 +13,41 @@
 
 <div id="panel-x" class="axis-panel panel">
     <div class="drag-handle">⠿</div>
-    <div class="axis-panel-header">X-axis</div>
-    <div class="axis-panel-body">
-        <div class="axis-controls">
-            <div class="control btn-row">
-                <span class="axis-label">radius1:</span>
-                <button onclick="adjustXRadius1(-1)">◀</button>
-                <input type="number" id="x_radius1" value="0" oninput="setXRadius1()">
-                <button onclick="adjustXRadius1(1)">▶</button>
-            </div>
-            <div class="control btn-row">
-                <span class="axis-label">radius2:</span>
-                <button onclick="adjustXRadius2(-1)">◀</button>
-                <input type="number" id="x_radius2" value="0" oninput="setXRadius2()">
-                <button onclick="adjustXRadius2(1)">▶</button>
-            </div>
-            <div class="control btn-row">
-                <span class="axis-label">distance:</span>
-                <button onclick="adjustXDistance(-1)">◀</button>
-                <input type="number" id="x_distance" value="0" oninput="setXDistance()">
-                <button onclick="adjustXDistance(1)">▶</button>
-            </div>
-            <div class="control">
-                <input type="range" id="x_distance_slider" value=0 min=0 max=20 step=0.01
-                    oninput="setXDistanceFromSlider()">
-            </div>
-        </div>
-        <canvas class="plane-preview" id="preview_x" width="100" height="100"></canvas>
+    <div class="axis-panel-header">X rotation</div>
+    <div class="control btn-row">
+        <span class="axis-label">turns:</span>
+        <button onclick="adjustXTurns(-1)">◀</button>
+        <input type="number" id="x_turns" value="0" oninput="setXTurns()">
+        <button onclick="adjustXTurns(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">period:</span>
+        <button onclick="adjustXPeriod(-1)">◀</button>
+        <input type="number" id="x_period" value="1" oninput="setXPeriod()">
+        <button onclick="adjustXPeriod(1)">▶</button>
     </div>
 </div>
 
 <div id="panel-y" class="axis-panel panel">
     <div class="drag-handle">⠿</div>
-    <div class="axis-panel-header">Y-axis</div>
-    <div class="axis-panel-body">
-        <div class="axis-controls">
-            <div class="control btn-row">
-                <span class="axis-label">radius1:</span>
-                <button onclick="adjustYRadius1(-1)">◀</button>
-                <input type="number" id="y_radius1" value="2" oninput="setYRadius1()">
-                <button onclick="adjustYRadius1(1)">▶</button>
-            </div>
-            <div class="control btn-row">
-                <span class="axis-label">radius2:</span>
-                <button onclick="adjustYRadius2(-1)">◀</button>
-                <input type="number" id="y_radius2" value="1" oninput="setYRadius2()">
-                <button onclick="adjustYRadius2(1)">▶</button>
-            </div>
-            <div class="control btn-row">
-                <span class="axis-label">distance:</span>
-                <button onclick="adjustYDistance(-1)">◀</button>
-                <input type="number" id="y_distance" value="2" oninput="setYDistance()">
-                <button onclick="adjustYDistance(1)">▶</button>
-            </div>
-            <div class="control">
-                <input type="range" id="y_distance_slider" value=2 min=0 max=20 step=0.01
-                    oninput="setYDistanceFromSlider()">
-            </div>
-        </div>
-        <canvas class="plane-preview" id="preview_y" width="100" height="100"></canvas>
+    <div class="axis-panel-header">Y rotation</div>
+    <div class="control btn-row">
+        <span class="axis-label">turns:</span>
+        <button onclick="adjustYTurns(-1)">◀</button>
+        <input type="number" id="y_turns" value="0" oninput="setYTurns()">
+        <button onclick="adjustYTurns(1)">▶</button>
+    </div>
+    <div class="control btn-row">
+        <span class="axis-label">period:</span>
+        <button onclick="adjustYPeriod(-1)">◀</button>
+        <input type="number" id="y_period" value="1" oninput="setYPeriod()">
+        <button onclick="adjustYPeriod(1)">▶</button>
     </div>
 </div>
 
 <div id="panel-z" class="axis-panel panel">
     <div class="drag-handle">⠿</div>
-    <div class="axis-panel-header">Z-axis</div>
+    <div class="axis-panel-header">spirograph</div>
     <div class="axis-panel-body">
         <div class="axis-controls">
             <div class="control btn-row">
