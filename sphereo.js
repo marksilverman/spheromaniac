@@ -423,8 +423,22 @@ function updateDisplay()
     zDistanceSlider.value = z_distance;
 }
 
+function hasFractionalRadius()
+{
+    if (z_radius1 % 1 !== 0 || z_radius2 % 1 !== 0)
+        return true;
+    if (x_radius1 % 1 !== 0 || x_radius2 % 1 !== 0)
+        return true;
+    if (y_radius1 % 1 !== 0 || y_radius2 % 1 !== 0)
+        return true;
+    return false;
+}
+
 function autoSetLoops()
 {
+    if (hasFractionalRadius())
+        return;
+
     var periods = [];
 
     if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
