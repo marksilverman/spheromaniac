@@ -492,10 +492,11 @@ function drawScene()
 
     ctx.save();
     ctx.translate(canvas.width * 0.5, canvas.height * 0.5);
-    ctx.beginPath();
 
     var drawUpTo = animating ? animAngle : (loops * 2 * Math.PI);
     var increment = 2 * Math.PI / 360;
+    var baseColor = colorMgr.inColor ? colorMgr.fgColor : customColor;
+    var prevX = 0, prevY = 0, hasPrev = false;
 
     for (let angle = 0.0; angle < drawUpTo; angle += increment)
     {
@@ -521,15 +522,24 @@ function drawScene()
         vec3.transformMat4(xyz, xyz, modelMat);
         vec3.transformMat4(xyz, xyz, viewMat);
 
-        if (angle === 0)
-            ctx.moveTo(xyz[0], xyz[1]);
-        else
+        if (hasPrev)
+        {
+            let depth = Math.max(0, Math.min(1, (xyz[2] + scale) / (2 * scale)));
+            ctx.beginPath();
+            ctx.moveTo(prevX, prevY);
             ctx.lineTo(xyz[0], xyz[1]);
+            ctx.globalAlpha = 0.15 + 0.85 * depth;
+            ctx.lineWidth = lineWidth * (0.5 + depth);
+            ctx.strokeStyle = baseColor;
+            ctx.stroke();
+        }
+
+        prevX = xyz[0];
+        prevY = xyz[1];
+        hasPrev = true;
     }
 
-    ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = colorMgr.inColor ? colorMgr.fgColor : customColor;
-    ctx.stroke();
+    ctx.globalAlpha = 1.0;
 
     if (animating || showAxes)
         drawMechanismOnMain(ctx);
