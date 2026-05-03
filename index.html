@@ -104,9 +104,9 @@
     <button onclick="resetCamera()">[r]eset camera</button>
     <button onclick="toggleAllAutoRotate()">auto-rotate</button>
     <div class="control btn-row">
-        <button onclick="setCameraPlaneXY()">XY</button>
-        <button onclick="setCameraPlaneXZ()">XZ</button>
-        <button onclick="setCameraPlaneYZ()">YZ</button>
+        <button onclick="setCameraPlane(0, 0, 0)">XY</button>
+        <button onclick="setCameraPlane(3*Math.PI/2, 0, 0)">XZ</button>
+        <button onclick="setCameraPlane(0, Math.PI/2, 0)">YZ</button>
     </div>
     <div class="camera-label-row">
         <span class="label">cameraX (w/s)</span>

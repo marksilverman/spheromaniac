@@ -551,17 +551,9 @@ function drawScene()
     for (let i = 0; i <= steps; i++)
     {
         let angle = (i < steps) ? i * increment : drawUpTo;
-        let penX = 0;
-        let penY = 0;
-        if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
-        {
-            let armRadius = zRadius1 - zRadius2;
-            let rollingRatio = armRadius / zRadius2;
-            let penAngle = rollingRatio * angle;
-            let normScale = scale / zRadius1;
-            penX = normScale * (armRadius * Math.cos(angle) + zDistance * Math.cos(penAngle));
-            penY = normScale * (armRadius * Math.sin(angle) - zDistance * Math.sin(penAngle));
-        }
+        let [penX, penY] = computePenPoint(angle);
+        penX *= scale;
+        penY *= scale;
 
         let rotX = (xTurns === 0) ? 0 : angle * xTurns / xPeriod;
         let rotY = (yTurns === 0) ? 0 : angle * yTurns / yPeriod;
@@ -868,6 +860,19 @@ function drawAxesIndicator()
     }
 }
 
+function computePenPoint(angle)
+{
+    if (zRadius1 === 0 || zRadius2 === 0 || zDistance === 0)
+        return [0, 0];
+    let armRadius = zRadius1 - zRadius2;
+    let rollingRatio = armRadius / zRadius2;
+    let penAngle = rollingRatio * angle;
+    let norm = 1.0 / zRadius1;
+    let penX = norm * (armRadius * Math.cos(angle) + zDistance * Math.cos(penAngle));
+    let penY = norm * (armRadius * Math.sin(angle) - zDistance * Math.sin(penAngle));
+    return [penX, penY];
+}
+
 function hexToHue(hex)
 {
     var r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -974,17 +979,7 @@ function exportOBJ()
 
     for (let angle = 0.0; angle < totalAngle; angle += increment)
     {
-        let penX = 0;
-        let penY = 0;
-        if (zRadius1 !== 0 && zRadius2 !== 0 && zDistance !== 0)
-        {
-            let armRadius = zRadius1 - zRadius2;
-            let rollingRatio = armRadius / zRadius2;
-            let penAngle = rollingRatio * angle;
-            let normScale = 1.0 / zRadius1;
-            penX = normScale * (armRadius * Math.cos(angle) + zDistance * Math.cos(penAngle));
-            penY = normScale * (armRadius * Math.sin(angle) - zDistance * Math.sin(penAngle));
-        }
+        let [penX, penY] = computePenPoint(angle);
 
         let rotX = (xTurns === 0) ? 0 : angle * xTurns / xPeriod;
         let rotY = (yTurns === 0) ? 0 : angle * yTurns / yPeriod;
@@ -1017,6 +1012,20 @@ function toggleAnimate()
     animateBtn.classList.toggle('btn-active', animating);
 }
 
+function movePanelTo(panel, left, top)
+{
+    if (left < 0)
+        left = 0;
+    if (top < 0)
+        top = 0;
+    if (left > window.innerWidth - panel.offsetWidth)
+        left = window.innerWidth - panel.offsetWidth;
+    if (top > window.innerHeight - panel.offsetHeight)
+        top = window.innerHeight - panel.offsetHeight;
+    panel.style.left = left + 'px';
+    panel.style.top = top + 'px';
+}
+
 function makeDraggable(panel, handle)
 {
     var dragOffsetX = 0;
@@ -1045,24 +1054,14 @@ function makeDraggable(panel, handle)
     {
         if (!panelDragging)
             return;
-        var newLeft = e.clientX - dragOffsetX;
-        var newTop = e.clientY - dragOffsetY;
-        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - panel.offsetWidth));
-        newTop = Math.max(0, Math.min(newTop, window.innerHeight - panel.offsetHeight));
-        panel.style.left = newLeft + 'px';
-        panel.style.top = newTop + 'px';
+        movePanelTo(panel, e.clientX - dragOffsetX, e.clientY - dragOffsetY);
     });
 
     window.addEventListener('touchmove', function(e)
     {
         if (!panelDragging)
             return;
-        var newLeft = e.touches[0].clientX - dragOffsetX;
-        var newTop = e.touches[0].clientY - dragOffsetY;
-        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - panel.offsetWidth));
-        newTop = Math.max(0, Math.min(newTop, window.innerHeight - panel.offsetHeight));
-        panel.style.left = newLeft + 'px';
-        panel.style.top = newTop + 'px';
+        movePanelTo(panel, e.touches[0].clientX - dragOffsetX, e.touches[0].clientY - dragOffsetY);
     }, { passive: false });
 
     window.addEventListener('mouseup', function()
@@ -1166,29 +1165,11 @@ function setCameraZ(value)
     stopAutoRotate();
 }
 
-function setCameraPlaneXY()
+function setCameraPlane(rx, ry, rz)
 {
-    cameraRotationX = 0;
-    cameraRotationY = 0;
-    cameraRotationZ = 0;
-    rebuildViewMat();
-    stopAutoRotate();
-}
-
-function setCameraPlaneXZ()
-{
-    cameraRotationX = 3 * Math.PI / 2;
-    cameraRotationY = 0;
-    cameraRotationZ = 0;
-    rebuildViewMat();
-    stopAutoRotate();
-}
-
-function setCameraPlaneYZ()
-{
-    cameraRotationX = 0;
-    cameraRotationY = Math.PI / 2;
-    cameraRotationZ = 0;
+    cameraRotationX = rx;
+    cameraRotationY = ry;
+    cameraRotationZ = rz;
     rebuildViewMat();
     stopAutoRotate();
 }
