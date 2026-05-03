@@ -34,40 +34,34 @@ canvas {
     white-space: nowrap;
 }
 
-.axis-panel {
+.panel {
     position: absolute;
     background: rgba(10, 20, 50, 0.88);
-    padding: 15px 20px;
     border-radius: 10px;
+}
+
+body.light .panel {
+    background: rgba(220, 225, 255, 0.88);
+}
+
+.axis-panel {
+    padding: 15px 20px;
 }
 
 #panel-right {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 20px;
-    border-radius: 10px;
 }
 
 #panel-bottom-right {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 15px 20px;
-    border-radius: 10px;
 }
 
 #panel-bottom-right > button {
     margin-bottom: 15px;
 }
 
-body.light #panel-bottom-right {
-    background: rgba(220, 225, 255, 0.88);
-}
-
 #panel-bottom {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 15px 30px;
-    border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -130,14 +124,7 @@ body.light .plane-preview {
 }
 
 #panel-axes {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 8px 8px 6px 8px;
-    border-radius: 10px;
-}
-
-body.light #panel-axes {
-    background: rgba(220, 225, 255, 0.88);
 }
 
 .btn-row {
@@ -281,11 +268,6 @@ body.light {
     color: black;
 }
 
-body.light .axis-panel,
-body.light #panel-right,
-body.light #panel-bottom {
-    background: rgba(220, 225, 255, 0.88);
-}
 
 body.light button {
     background: #aaa;
