@@ -2,8 +2,8 @@ var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
 
 var x_radius1 = 0.0, x_radius2 = 0.0, x_distance = 0.0;
-var y_radius1 = 0.0, y_radius2 = 0.0, y_distance = 0.0;
-var z_radius1 = 5.0, z_radius2 = 3.0, z_distance = 5.0;
+var y_radius1 = 2.0, y_radius2 = 1.0, y_distance = 2.0;
+var z_radius1 = 8.0, z_radius2 = 3.0, z_distance = 7.0;
 
 var scale = 200.0, lineWidth = 3, loops = 10, raf = 0;
 var viewMat = mat4.create();
@@ -14,6 +14,7 @@ var cameraRotationX = 0.0, cameraRotationY = 0.0, cameraRotationZ = 0.0;
 var isDragging = false;
 var lastMouseX = 0, lastMouseY = 0;
 var activeMouseButton = -1, dragSensitivity = 0.005;
+var lastPinchDistance = 0, lastTwistAngle = 0;
 var animating = false, animAngle = 0.0, animSpeed = 0.05;
 var showAxes = false;
 
@@ -56,6 +57,24 @@ canvas.addEventListener('mousedown', function(e)
     stopAutoRotate();
 });
 
+function applyXYRotation(deltaX, deltaY)
+{
+    var rotY = mat4.fromYRotation(mat4.create(), deltaX * dragSensitivity);
+    var rotX = mat4.fromXRotation(mat4.create(), deltaY * dragSensitivity);
+    var temp = mat4.create();
+    mat4.multiply(temp, rotY, viewMat);
+    mat4.multiply(viewMat, rotX, temp);
+    cameraRotationY = wrapAngle(cameraRotationY + deltaX * dragSensitivity);
+    cameraRotationX = wrapAngle(cameraRotationX + deltaY * dragSensitivity);
+}
+
+function applyZRotation(radians)
+{
+    var rotZ = mat4.fromZRotation(mat4.create(), radians);
+    mat4.multiply(viewMat, rotZ, viewMat);
+    cameraRotationZ = wrapAngle(cameraRotationZ + radians);
+}
+
 canvas.addEventListener('mousemove', function(e)
 {
     if (!isDragging)
@@ -63,21 +82,9 @@ canvas.addEventListener('mousemove', function(e)
     var deltaX = e.clientX - lastMouseX;
     var deltaY = e.clientY - lastMouseY;
     if (activeMouseButton === 0)
-    {
-        var rotY = mat4.fromYRotation(mat4.create(), deltaX * dragSensitivity);
-        var rotX = mat4.fromXRotation(mat4.create(), deltaY * dragSensitivity);
-        var temp = mat4.create();
-        mat4.multiply(temp, rotY, viewMat);
-        mat4.multiply(viewMat, rotX, temp);
-        cameraRotationY = wrapAngle(cameraRotationY + deltaX * dragSensitivity);
-        cameraRotationX = wrapAngle(cameraRotationX + deltaY * dragSensitivity);
-    }
+        applyXYRotation(deltaX, deltaY);
     else if (activeMouseButton === 2)
-    {
-        var rotZ = mat4.fromZRotation(mat4.create(), deltaY * dragSensitivity);
-        mat4.multiply(viewMat, rotZ, viewMat);
-        cameraRotationZ = wrapAngle(cameraRotationZ + deltaY * dragSensitivity);
-    }
+        applyZRotation(deltaY * dragSensitivity);
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
 });
@@ -90,6 +97,62 @@ function stopDrag()
 
 canvas.addEventListener('mouseup', stopDrag);
 canvas.addEventListener('mouseleave', stopDrag);
+
+canvas.addEventListener('touchstart', function(e)
+{
+    e.preventDefault();
+    if (e.touches.length === 1)
+    {
+        isDragging = true;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+        stopAutoRotate();
+    }
+    else if (e.touches.length === 2)
+    {
+        isDragging = false;
+        var dx = e.touches[1].clientX - e.touches[0].clientX;
+        var dy = e.touches[1].clientY - e.touches[0].clientY;
+        lastPinchDistance = Math.sqrt(dx * dx + dy * dy);
+        lastTwistAngle = Math.atan2(dy, dx);
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', function(e)
+{
+    e.preventDefault();
+    if (e.touches.length === 1 && isDragging)
+    {
+        var deltaX = e.touches[0].clientX - lastMouseX;
+        var deltaY = e.touches[0].clientY - lastMouseY;
+        applyXYRotation(deltaX, deltaY);
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+    }
+    else if (e.touches.length === 2)
+    {
+        var dx = e.touches[1].clientX - e.touches[0].clientX;
+        var dy = e.touches[1].clientY - e.touches[0].clientY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var angle = Math.atan2(dy, dx);
+
+        var pinchDelta = dist - lastPinchDistance;
+        scale += pinchDelta * 0.5;
+        if (scale < 10)
+            scale = 10;
+        if (scale > 400)
+            scale = 400;
+        scaleSlider.value = scale;
+
+        applyZRotation(angle - lastTwistAngle);
+
+        lastPinchDistance = dist;
+        lastTwistAngle = angle;
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchend', stopDrag);
+canvas.addEventListener('touchcancel', stopDrag);
 
 var keyboardStep = 0.05;
 
@@ -985,6 +1048,15 @@ function makeDraggable(panel, handle)
         e.preventDefault();
     });
 
+    handle.addEventListener('touchstart', function(e)
+    {
+        panelDragging = true;
+        var rect = panel.getBoundingClientRect();
+        dragOffsetX = e.touches[0].clientX - rect.left;
+        dragOffsetY = e.touches[0].clientY - rect.top;
+        e.preventDefault();
+    }, { passive: false });
+
     window.addEventListener('mousemove', function(e)
     {
         if (!panelDragging)
@@ -997,7 +1069,29 @@ function makeDraggable(panel, handle)
         panel.style.top = newTop + 'px';
     });
 
+    window.addEventListener('touchmove', function(e)
+    {
+        if (!panelDragging)
+            return;
+        var newLeft = e.touches[0].clientX - dragOffsetX;
+        var newTop = e.touches[0].clientY - dragOffsetY;
+        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - panel.offsetWidth));
+        newTop = Math.max(0, Math.min(newTop, window.innerHeight - panel.offsetHeight));
+        panel.style.left = newLeft + 'px';
+        panel.style.top = newTop + 'px';
+    }, { passive: false });
+
     window.addEventListener('mouseup', function()
+    {
+        panelDragging = false;
+    });
+
+    window.addEventListener('touchend', function()
+    {
+        panelDragging = false;
+    });
+
+    window.addEventListener('touchcancel', function()
     {
         panelDragging = false;
     });
