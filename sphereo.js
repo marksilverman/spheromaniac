@@ -578,7 +578,9 @@ function drawScene()
             ctx.moveTo(prevX, prevY);
             ctx.lineTo(xyz[0], xyz[1]);
             ctx.globalAlpha = 0.15 + 0.85 * depth;
-            ctx.lineWidth = lineWidth * (0.5 + depth);
+            ctx.lineWidth = lineWidth * (0.8 + 0.2 * depth);
+            if (lineWidth > 8)
+                ctx.lineCap = depth > 0.35 ? 'round' : 'butt';
             if (colorMgr.inColor)
             {
                 let hue = colorHue + colorOffset + (angle / totalAngle) * 60;
