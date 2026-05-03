@@ -23,14 +23,14 @@ canvas {
     height: 100%;
 }
 
+#panel-title {
+    padding: 12px 20px;
+    text-align: center;
+}
+
 #title {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 28px;
     letter-spacing: 2px;
-    pointer-events: none;
     white-space: nowrap;
 }
 
@@ -50,7 +50,19 @@ body.light .panel {
 
 #panel-right {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
+
+#panel-right button {
+    width: 100%;
+}
+
+#panel-right .label {
+    width: auto;
+}
+
 
 #panel-bottom-right {
     padding: 15px 20px;
@@ -60,16 +72,14 @@ body.light .panel {
     margin-bottom: 15px;
 }
 
-#panel-bottom {
-    padding: 15px 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+.panel-hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin: 8px 0;
 }
-.panel-row {
-    display: flex;
-    align-items: center;
-    gap: 25px;
+
+body.light .panel-hr {
+    border-top-color: rgba(0, 0, 0, 0.12);
 }
 
 .control {

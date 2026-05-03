@@ -8,7 +8,11 @@
 
 <body>
 <div id="container">
-<div id="title">Spheromaniac</div>
+<div id="panel-title" class="panel">
+    <div class="drag-handle">⠿</div>
+    <div id="title">Spheromaniac</div>
+    <div class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></div>
+</div>
 <canvas id="canvas" width="1024" height="768"></canvas>
 
 <div id="panel-x" class="axis-panel panel">
@@ -81,11 +85,11 @@
             <div class="control btn-row">
                 <span class="axis-label">distance:</span>
                 <button onclick="adjustZDistance(-1)">◀</button>
-                <input type="number" id="z_distance" value="5" oninput="setZDistance()">
+                <input type="number" id="z_distance" value="12" oninput="setZDistance()">
                 <button onclick="adjustZDistance(1)">▶</button>
             </div>
             <div class="control">
-                <input type="range" id="z_distance_slider" value=5 min=0 max=20 step=0.01
+                <input type="range" id="z_distance_slider" value=12 min=0 max=20 step=0.01
                     oninput="setZDistanceFromSlider()">
             </div>
         </div>
@@ -93,28 +97,6 @@
     </div>
 </div>
 
-<div id="panel-right" class="panel">
-    <div class="drag-handle">⠿</div>
-    <div class="control btn-row">
-        <span class="label">loops</span>
-        <input type="text" id="loops_num" value="10"
-            oninput="setLoops(this.value)">
-    </div>
-    <div class="control">
-        <input type="range" id="loops" value=10 min=1 max=60 step=1
-            oninput="setLoops(this.value)">
-    </div>
-    <div class="control">
-        <span class="label">line width</span>
-        <input type="range" id="lineWidth" value=3 min=1 max=20 step=1
-            oninput="lineWidth = parseInt(this.value);">
-    </div>
-    <div class="control">
-        <span class="label">scale</span>
-        <input type="range" id="scale" value=200 min=10 max=400 step=1
-            oninput="scale = parseFloat(this.value);">
-    </div>
-</div>
 
 
 <div id="panel-bottom-right" class="panel">
@@ -164,26 +146,26 @@
     </div>
 </div>
 
-<div id="panel-bottom" class="panel">
+<div id="panel-right" class="panel">
     <div class="drag-handle">⠿</div>
-    <div class="panel-row">
-        <button onclick="randomize()">randomize</button>
-        <label>
-            <input type="checkbox" id="inColor" onclick="colorMgr.flip();">
-            cycle color
-        </label>
-        <label>
-            <input type="checkbox" id="lightMode" onclick="toggleLight();">
-            light mode
-        </label>
-        <button id="animateBtn" onclick="toggleAnimate()">animate</button>
-        <label>
-            <input type="checkbox" id="showAxes" onclick="showAxes = this.checked;">
-            axes
-        </label>
-        <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
-        <span class="credit">by <a href="https://github.com/marksilverman/spheromaniac">Mark Silverman</a></span>
+    <div class="btn-row">
+        <span class="label">loops</span>
+        <input type="text" id="loops_num" value="10" oninput="setLoops(this.value)">
     </div>
+    <input type="range" id="loops" value=10 min=1 max=60 step=1 oninput="setLoops(this.value)">
+    <span class="label">line width</span>
+    <input type="range" id="lineWidth" value=3 min=1 max=20 step=1 oninput="lineWidth = parseInt(this.value);">
+    <span class="label">scale</span>
+    <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="scale = parseFloat(this.value);">
+    <hr class="panel-hr">
+    <button onclick="randomize()">randomize</button>
+    <button id="animateBtn" onclick="toggleAnimate()">animate</button>
+    <button onclick="exportOBJ()">export OBJ</button>
+    <hr class="panel-hr">
+    <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
+    <label><input type="checkbox" id="inColor" onclick="colorMgr.flip();"> cycle color</label>
+    <label><input type="checkbox" id="lightMode" onclick="toggleLight();"> light mode</label>
+    <label><input type="checkbox" id="showAxes" onclick="showAxes = this.checked;"> axes</label>
 </div>
 </div>
 

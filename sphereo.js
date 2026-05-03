@@ -3,7 +3,7 @@ var ctx = canvas.getContext('2d');
 
 var x_turns = 4, x_period = 5;
 var y_turns = 1, y_period = 1;
-var z_radius1 = 8.0, z_radius2 = 6.0, z_distance = 5.0;
+var z_radius1 = 8.0, z_radius2 = 6.0, z_distance = 12.0;
 
 var scale = 200.0, lineWidth = 3, loops = 10;
 var viewMat = mat4.create();
@@ -960,6 +960,52 @@ function toggleAllAutoRotate()
     autoRotateZCheck.checked = autoRotateZ;
 }
 
+function exportOBJ()
+{
+    var totalAngle = loops * 2 * Math.PI;
+    var increment = 2 * Math.PI / 360;
+    var lines = ['# Spheromaniac export'];
+    var indices = [];
+    var i = 1;
+
+    for (let angle = 0.0; angle < totalAngle; angle += increment)
+    {
+        let zContribX = 0;
+        let zContribY = 0;
+        if (z_radius1 !== 0 && z_radius2 !== 0 && z_distance !== 0)
+        {
+            let zArmRadius = z_radius1 - z_radius2;
+            let zRollingRatio = zArmRadius / z_radius2;
+            let zPenAngle = zRollingRatio * angle;
+            let zNorm = 1.0 / z_radius1;
+            zContribX = zNorm * (zArmRadius * Math.cos(angle) + z_distance * Math.cos(zPenAngle));
+            zContribY = zNorm * (zArmRadius * Math.sin(angle) - z_distance * Math.sin(zPenAngle));
+        }
+
+        let rotX = (x_turns === 0) ? 0 : angle * x_turns / x_period;
+        let rotY = (y_turns === 0) ? 0 : angle * y_turns / y_period;
+        let modelMat = mat4.create();
+        mat4.rotateX(modelMat, modelMat, rotX);
+        mat4.rotateY(modelMat, modelMat, rotY);
+
+        let xyz = [zContribX, zContribY, 0];
+        vec3.transformMat4(xyz, xyz, modelMat);
+
+        lines.push('v ' + xyz[0].toFixed(6) + ' ' + xyz[1].toFixed(6) + ' ' + xyz[2].toFixed(6));
+        indices.push(i++);
+    }
+
+    lines.push('l ' + indices.join(' '));
+
+    var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'spheromaniac.obj';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
 function toggleAnimate()
 {
     animating = !animating;
@@ -1033,13 +1079,16 @@ function makeDraggable(panel, handle)
 
 function initPanelPositions()
 {
+    var panelTitle = document.getElementById('panel-title');
     var panelX = document.getElementById('panel-x');
     var panelY = document.getElementById('panel-y');
     var panelZ = document.getElementById('panel-z');
     var panelRight = document.getElementById('panel-right');
     var panelBottomRight = document.getElementById('panel-bottom-right');
-    var panelBottom = document.getElementById('panel-bottom');
     var panelAxes = document.getElementById('panel-axes');
+
+    panelTitle.style.top = '20px';
+    panelTitle.style.left = ((window.innerWidth - panelTitle.offsetWidth) / 2) + 'px';
 
     panelX.style.top = '20px';
     panelX.style.left = '20px';
@@ -1048,7 +1097,6 @@ function initPanelPositions()
     panelZ.style.top = (20 + panelX.offsetHeight + 10 + panelY.offsetHeight + 10) + 'px';
     panelZ.style.left = '20px';
 
-    panelRight.style.right = 'auto';
     panelRight.style.top = '20px';
     panelRight.style.left = (window.innerWidth - panelRight.offsetWidth - 20) + 'px';
 
@@ -1057,20 +1105,15 @@ function initPanelPositions()
     panelBottomRight.style.top = (window.innerHeight - panelBottomRight.offsetHeight - 20) + 'px';
     panelBottomRight.style.left = (window.innerWidth - panelBottomRight.offsetWidth - 20) + 'px';
 
-    panelBottom.style.bottom = 'auto';
-    panelBottom.style.transform = 'none';
-    panelBottom.style.top = (window.innerHeight - panelBottom.offsetHeight - 20) + 'px';
-    panelBottom.style.left = ((window.innerWidth - panelBottom.offsetWidth) / 2) + 'px';
-
     panelAxes.style.top = '20px';
     panelAxes.style.left = Math.floor((window.innerWidth - panelAxes.offsetWidth) * 0.75) + 'px';
 
+    makeDraggable(panelTitle, panelTitle.querySelector('.drag-handle'));
     makeDraggable(panelX, panelX.querySelector('.drag-handle'));
     makeDraggable(panelY, panelY.querySelector('.drag-handle'));
     makeDraggable(panelZ, panelZ.querySelector('.drag-handle'));
     makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
     makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
-    makeDraggable(panelBottom, panelBottom.querySelector('.drag-handle'));
     makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));
 }
 
