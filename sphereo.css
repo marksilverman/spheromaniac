@@ -99,9 +99,10 @@ body.light .panel-hr {
 
 .axis-label {
     display: inline-block;
-    width: 80px;
+    width: 100px;
     font-size: 18px;
     white-space: nowrap;
+    text-align: right;
 }
 
 .axis-panel-header {
@@ -125,7 +126,7 @@ body.light .panel-hr {
     height: 100px;
 }
 
-#z_distance_slider,
+#pen_distance_slider,
 #x_turns_slider, #x_period_slider,
 #y_turns_slider, #y_period_slider {
     width: 210px;

@@ -20,23 +20,23 @@
     <div class="axis-panel-header">X rotation</div>
     <div class="control btn-row">
         <span class="axis-label">turns:</span>
-        <button onclick="adjustXTurns(-1)">◀</button>
-        <input type="number" id="x_turns" value="4" oninput="setXTurns()">
-        <button onclick="adjustXTurns(1)">▶</button>
+        <button onclick="app.adjust(app.xTurnsInput, -1)">◀</button>
+        <input type="number" id="x_turns" value="4" oninput="app.readAllParams()">
+        <button onclick="app.adjust(app.xTurnsInput, 1)">▶</button>
     </div>
     <div class="control">
         <input type="range" id="x_turns_slider" value=4 min=0 max=30 step=0.01
-            oninput="setXTurnsFromSlider()">
+            oninput="app.xTurnsInput.value = this.value; app.readAllParams()">
     </div>
     <div class="control btn-row">
         <span class="axis-label">period:</span>
-        <button onclick="adjustXPeriod(-1)">◀</button>
-        <input type="number" id="x_period" value="5" oninput="setXPeriod()">
-        <button onclick="adjustXPeriod(1)">▶</button>
+        <button onclick="app.adjust(app.xPeriodInput, -1)">◀</button>
+        <input type="number" id="x_period" value="5" oninput="app.readAllParams()">
+        <button onclick="app.adjust(app.xPeriodInput, 1)">▶</button>
     </div>
     <div class="control">
         <input type="range" id="x_period_slider" value=5 min=0 max=20 step=0.01
-            oninput="setXPeriodFromSlider()">
+            oninput="app.xPeriodInput.value = this.value; app.readAllParams()">
     </div>
 </div>
 
@@ -45,104 +45,102 @@
     <div class="axis-panel-header">Y rotation</div>
     <div class="control btn-row">
         <span class="axis-label">turns:</span>
-        <button onclick="adjustYTurns(-1)">◀</button>
-        <input type="number" id="y_turns" value="1" oninput="setYTurns()">
-        <button onclick="adjustYTurns(1)">▶</button>
+        <button onclick="app.adjust(app.yTurnsInput, -1)">◀</button>
+        <input type="number" id="y_turns" value="1" oninput="app.readAllParams()">
+        <button onclick="app.adjust(app.yTurnsInput, 1)">▶</button>
     </div>
     <div class="control">
         <input type="range" id="y_turns_slider" value=1 min=0 max=30 step=0.01
-            oninput="setYTurnsFromSlider()">
+            oninput="app.yTurnsInput.value = this.value; app.readAllParams()">
     </div>
     <div class="control btn-row">
         <span class="axis-label">period:</span>
-        <button onclick="adjustYPeriod(-1)">◀</button>
-        <input type="number" id="y_period" value="1" oninput="setYPeriod()">
-        <button onclick="adjustYPeriod(1)">▶</button>
+        <button onclick="app.adjust(app.yPeriodInput, -1)">◀</button>
+        <input type="number" id="y_period" value="1" oninput="app.readAllParams()">
+        <button onclick="app.adjust(app.yPeriodInput, 1)">▶</button>
     </div>
     <div class="control">
         <input type="range" id="y_period_slider" value=1 min=0 max=20 step=0.01
-            oninput="setYPeriodFromSlider()">
+            oninput="app.yPeriodInput.value = this.value; app.readAllParams()">
     </div>
 </div>
 
-<div id="panel-z" class="axis-panel panel">
+<div id="panel-shape" class="axis-panel panel">
     <div class="drag-handle">⠿</div>
     <div class="axis-panel-header">spirograph</div>
     <div class="axis-panel-body">
         <div class="axis-controls">
             <div class="control btn-row">
                 <span class="axis-label">radius1:</span>
-                <button onclick="adjustZRadius1(-1)">◀</button>
-                <input type="number" id="z_radius1" value="8" oninput="setZRadius1()">
-                <button onclick="adjustZRadius1(1)">▶</button>
+                <button onclick="app.adjust(app.fixedCircleRadiusInput, -1)">◀</button>
+                <input type="number" id="fixed_circle_radius" value="8" oninput="app.readAllParams()">
+                <button onclick="app.adjust(app.fixedCircleRadiusInput, 1)">▶</button>
             </div>
             <div class="control btn-row">
                 <span class="axis-label">radius2:</span>
-                <button onclick="adjustZRadius2(-1)">◀</button>
-                <input type="number" id="z_radius2" value="6" oninput="setZRadius2()">
-                <button onclick="adjustZRadius2(1)">▶</button>
+                <button onclick="app.adjust(app.rollingCircleRadiusInput, -1)">◀</button>
+                <input type="number" id="rolling_circle_radius" value="6" oninput="app.readAllParams()">
+                <button onclick="app.adjust(app.rollingCircleRadiusInput, 1)">▶</button>
             </div>
             <div class="control btn-row">
                 <span class="axis-label">distance:</span>
-                <button onclick="adjustZDistance(-1)">◀</button>
-                <input type="number" id="z_distance" value="12" oninput="setZDistance()">
-                <button onclick="adjustZDistance(1)">▶</button>
+                <button onclick="app.adjust(app.penDistanceInput, -1)">◀</button>
+                <input type="number" id="pen_distance" value="12" oninput="app.readAllParams()">
+                <button onclick="app.adjust(app.penDistanceInput, 1)">▶</button>
             </div>
             <div class="control">
-                <input type="range" id="z_distance_slider" value=12 min=0 max=20 step=0.01
-                    oninput="setZDistanceFromSlider()">
+                <input type="range" id="pen_distance_slider" value=12 min=0 max=20 step=0.01
+                    oninput="app.penDistanceInput.value = this.value; app.readAllParams()">
             </div>
         </div>
-        <canvas class="plane-preview" id="preview_z" width="100" height="100"></canvas>
+        <canvas class="plane-preview" id="preview_shape" width="100" height="100"></canvas>
     </div>
 </div>
 
-
-
 <div id="panel-bottom-right" class="panel">
     <div class="drag-handle">⠿</div>
-    <button onclick="resetCamera()">[r]eset camera</button>
-    <button onclick="toggleAllAutoRotate()">auto-rotate</button>
+    <button onclick="app.resetCamera()">[r]eset camera</button>
+    <button onclick="app.toggleAllAutoRotate()">auto-rotate</button>
     <div class="control btn-row">
-        <button onclick="setCameraPlane(0, 0, 0)">XY</button>
-        <button onclick="setCameraPlane(3*Math.PI/2, 0, 0)">XZ</button>
-        <button onclick="setCameraPlane(0, Math.PI/2, 0)">YZ</button>
+        <button onclick="app.setCameraPlane(0, 0, 0)">XY</button>
+        <button onclick="app.setCameraPlane(3*Math.PI/2, 0, 0)">XZ</button>
+        <button onclick="app.setCameraPlane(0, Math.PI/2, 0)">YZ</button>
     </div>
     <div class="camera-label-row">
         <span class="label">cameraX (w/s)</span>
-        <label><input type="checkbox" id="autoRotateX" checked onclick="autoRotateX = this.checked;"> auto</label>
+        <label><input type="checkbox" id="autoRotateX" checked onclick="app.autoRotateX = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
-        <button class="jump-btn" onclick="setCameraX(cameraRotationX - Math.PI/2)">«</button>
-        <button onclick="setCameraX(cameraRotationX - keyboardStep)">◀</button>
+        <button class="jump-btn" onclick="app.setCameraX(app.cameraRotationX - Math.PI/2)">«</button>
+        <button onclick="app.setCameraX(app.cameraRotationX - app.keyboardStep)">◀</button>
         <input type="range" id="cameraRotationX" value=0 min=0 max=6.28 step=0.001
-            oninput="setCameraX(this.value)">
-        <button onclick="setCameraX(cameraRotationX + keyboardStep)">▶</button>
-        <button class="jump-btn" onclick="setCameraX(cameraRotationX + Math.PI/2)">»</button>
+            oninput="app.setCameraX(this.value)">
+        <button onclick="app.setCameraX(app.cameraRotationX + app.keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="app.setCameraX(app.cameraRotationX + Math.PI/2)">»</button>
     </div>
     <div class="camera-label-row">
         <span class="label">cameraY (a/d)</span>
-        <label><input type="checkbox" id="autoRotateY" checked onclick="autoRotateY = this.checked;"> auto</label>
+        <label><input type="checkbox" id="autoRotateY" checked onclick="app.autoRotateY = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
-        <button class="jump-btn" onclick="setCameraY(cameraRotationY - Math.PI/2)">«</button>
-        <button onclick="setCameraY(cameraRotationY - keyboardStep)">◀</button>
+        <button class="jump-btn" onclick="app.setCameraY(app.cameraRotationY - Math.PI/2)">«</button>
+        <button onclick="app.setCameraY(app.cameraRotationY - app.keyboardStep)">◀</button>
         <input type="range" id="cameraRotationY" value=0 min=0 max=6.28 step=0.001
-            oninput="setCameraY(this.value)">
-        <button onclick="setCameraY(cameraRotationY + keyboardStep)">▶</button>
-        <button class="jump-btn" onclick="setCameraY(cameraRotationY + Math.PI/2)">»</button>
+            oninput="app.setCameraY(this.value)">
+        <button onclick="app.setCameraY(app.cameraRotationY + app.keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="app.setCameraY(app.cameraRotationY + Math.PI/2)">»</button>
     </div>
     <div class="camera-label-row">
         <span class="label">cameraZ (q/e)</span>
-        <label><input type="checkbox" id="autoRotateZ" checked onclick="autoRotateZ = this.checked;"> auto</label>
+        <label><input type="checkbox" id="autoRotateZ" checked onclick="app.autoRotateZ = this.checked;"> auto</label>
     </div>
     <div class="control camera-row">
-        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ - Math.PI/2)">«</button>
-        <button onclick="setCameraZ(cameraRotationZ - keyboardStep)">◀</button>
+        <button class="jump-btn" onclick="app.setCameraZ(app.cameraRotationZ - Math.PI/2)">«</button>
+        <button onclick="app.setCameraZ(app.cameraRotationZ - app.keyboardStep)">◀</button>
         <input type="range" id="cameraRotationZ" value=0 min=0 max=6.28 step=0.001
-            oninput="setCameraZ(this.value)">
-        <button onclick="setCameraZ(cameraRotationZ + keyboardStep)">▶</button>
-        <button class="jump-btn" onclick="setCameraZ(cameraRotationZ + Math.PI/2)">»</button>
+            oninput="app.setCameraZ(this.value)">
+        <button onclick="app.setCameraZ(app.cameraRotationZ + app.keyboardStep)">▶</button>
+        <button class="jump-btn" onclick="app.setCameraZ(app.cameraRotationZ + Math.PI/2)">»</button>
     </div>
 </div>
 
@@ -150,22 +148,22 @@
     <div class="drag-handle">⠿</div>
     <div class="btn-row">
         <span class="label">loops</span>
-        <input type="text" id="loops_num" value="10" oninput="setLoops(this.value)">
+        <input type="text" id="loops_num" value="10" oninput="app.setLoops(this.value)">
     </div>
-    <input type="range" id="loops" value=10 min=1 max=60 step=1 oninput="setLoops(this.value)">
+    <input type="range" id="loops" value=10 min=1 max=60 step=1 oninput="app.setLoops(this.value)">
     <span class="label">line width</span>
-    <input type="range" id="lineWidth" value=3 min=1 max=20 step=1 oninput="lineWidth = parseInt(this.value);">
+    <input type="range" id="lineWidth" value=3 min=1 max=20 step=1 oninput="app.lineWidth = parseInt(this.value);">
     <span class="label">scale</span>
-    <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="scale = parseFloat(this.value);">
+    <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="app.scale = parseFloat(this.value);">
     <hr class="panel-hr">
-    <button onclick="randomize()">randomize</button>
-    <button id="animateBtn" onclick="toggleAnimate()">animate</button>
-    <button onclick="exportOBJ()">export OBJ</button>
+    <button onclick="app.randomize()">randomize</button>
+    <button id="animateBtn" onclick="app.toggleAnimate()">animate</button>
+    <button onclick="app.exportOBJ()">export OBJ</button>
     <hr class="panel-hr">
-    <input type="color" id="colorPicker" value="#00ffff" oninput="customColor = this.value;">
-    <label><input type="checkbox" id="inColor" onclick="colorMgr.flip();"> cycle color</label>
-    <label><input type="checkbox" id="lightMode" onclick="toggleLight();"> light mode</label>
-    <label><input type="checkbox" id="showAxes" onclick="showAxes = this.checked;"> axes</label>
+    <input type="color" id="colorPicker" value="#00ffff" oninput="app.customColor = this.value;">
+    <label><input type="checkbox" id="inColor" onclick="app.colorMgr.flip();"> cycle color</label>
+    <label><input type="checkbox" id="lightMode" onclick="app.toggleLight();"> light mode</label>
+    <label><input type="checkbox" id="showAxes" onclick="app.showAxes = this.checked;"> axes</label>
 </div>
 </div>
 
