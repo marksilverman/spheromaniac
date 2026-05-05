@@ -39,8 +39,10 @@ class Spheromaniac
         this.animating = false;
         this.animationAngle = 0.0;
         this.animationSpeed = 0.05;
+        this.tailLoops = 1;
         this.colorOffset = 0.0;
         this.showAxes = false;
+        this.showMechanism = true;
         this.keyboardStep = 0.05;
 
         this.fixedCircleRadiusInput = null;
@@ -57,6 +59,9 @@ class Spheromaniac
         this.yPeriodSlider = null;
         this.loopsSlider = null;
         this.loopsInput = null;
+        this.tailLoopsSlider = null;
+        this.animationSpeedSlider = null;
+        this.showMechanismCheck = null;
         this.cameraXSlider = null;
         this.cameraYSlider = null;
         this.cameraZSlider = null;
@@ -216,6 +221,25 @@ class Spheromaniac
         this.loops = Math.round(parseFloat(value));
         this.loopsSlider.value = this.loops;
         this.loopsInput.value = this.loops;
+        this.tailLoopsSlider.max = this.loops;
+        if (this.tailLoops > this.loops)
+        {
+            this.tailLoops = this.loops;
+            this.tailLoopsSlider.value = this.tailLoops;
+        }
+    }
+
+    setTailLoops(value)
+    {
+        var parsed = parseFloat(value);
+        if (isNaN(parsed))
+            parsed = 0;
+        if (parsed < 0)
+            parsed = 0;
+        if (parsed > this.loops)
+            parsed = this.loops;
+        this.tailLoops = parsed;
+        this.tailLoopsSlider.value = this.tailLoops;
     }
 
     readAllParams()
@@ -588,7 +612,6 @@ class Spheromaniac
         this.customColor = this.randomColor();
         this.colorMgr.randomize();
         this.updateDisplay();
-        this.animationAngle = 0;
         this.updatePreviews();
     }
 
@@ -847,8 +870,19 @@ class Spheromaniac
         previewCtx.restore();
     }
 
-    drawMechanismOnMain(ctx)
+    drawAxes(ctx)
     {
+        var axisExtent = 5000;
+        this.strokePolyline3D(ctx, [[-axisExtent, 0, 0], [axisExtent, 0, 0]], '#ff4444', 1);
+        this.strokePolyline3D(ctx, [[0, -axisExtent, 0], [0, axisExtent, 0]], '#44cc44', 1);
+        this.strokePolyline3D(ctx, [[0, 0, -axisExtent], [0, 0, axisExtent]], '#4466ff', 1);
+    }
+
+    drawMechanism(ctx)
+    {
+        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0 || this.penDistance == 0)
+            return;
+
         var isLight = document.body.classList.contains('light');
         var faintStroke = 'rgba(255,255,255,0.4)';
         var mediumStroke = 'rgba(255,255,255,0.65)';
@@ -863,17 +897,6 @@ class Spheromaniac
         if (this.colorMgr.inColor)
             penFill = this.colorMgr.fgColor;
         var segments = 48;
-
-        var axisExtent = 5000;
-        this.strokePolyline3D(ctx, [[-axisExtent, 0, 0], [axisExtent, 0, 0]], '#ff4444', 1);
-        this.strokePolyline3D(ctx, [[0, -axisExtent, 0], [0, axisExtent, 0]], '#44cc44', 1);
-        this.strokePolyline3D(ctx, [[0, 0, -axisExtent], [0, 0, axisExtent]], '#4466ff', 1);
-
-        if (!this.animating)
-            return;
-
-        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0 || this.penDistance == 0)
-            return;
 
         var r1 = Math.abs(Math.round(this.fixedCircleRadius));
         var r2 = Math.abs(Math.round(this.rollingCircleRadius));
@@ -916,18 +939,27 @@ class Spheromaniac
 
         var totalAngle = this.loops * 2 * Math.PI;
         var drawUpTo = totalAngle;
+        var tailAngle = 0;
         if (this.animating)
+        {
             drawUpTo = this.animationAngle;
+            tailAngle = this.animationAngle - this.tailLoops * 2 * Math.PI;
+            if (tailAngle < 0)
+                tailAngle = 0;
+        }
         var increment = 2 * Math.PI / 360;
         var colorHue = this.hexToHue(this.customColor);
         var prevX = 0;
         var prevY = 0;
         var hasPrev = false;
+        var startStep = Math.floor(tailAngle / increment);
         var steps = Math.ceil(drawUpTo / increment);
 
-        for (let i = 0; i <= steps; i++)
+        for (let i = startStep; i <= steps; i++)
         {
             let fixedAngle = i * increment;
+            if (i == startStep)
+                fixedAngle = tailAngle;
             if (i == steps)
                 fixedAngle = drawUpTo;
             let [penX, penY] = this.computePenPoint(fixedAngle);
@@ -976,19 +1008,16 @@ class Spheromaniac
 
         this.ctx.globalAlpha = 1.0;
 
-        if (this.animating || this.showAxes)
-            this.drawMechanismOnMain(this.ctx);
+        if (this.showAxes)
+            this.drawAxes(this.ctx);
+        if (this.animating && this.showMechanism)
+            this.drawMechanism(this.ctx);
 
         this.ctx.restore();
 
         if (this.animating)
         {
             this.animationAngle += this.animationSpeed;
-            if (this.animationAngle >= this.loops * 2 * Math.PI)
-            {
-                this.animationAngle = this.loops * 2 * Math.PI;
-                this.stopAnimation();
-            }
             this.updatePreviews();
         }
 
@@ -1094,6 +1123,7 @@ class Spheromaniac
         var panelPreview = document.getElementById('panel-preview');
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
+        var panelAnimation = document.getElementById('panel-animation');
         var panelAxes = document.getElementById('panel-axes');
 
         panelTitle.style.top = '20px';
@@ -1118,6 +1148,11 @@ class Spheromaniac
         panelBottomRight.style.top = (window.innerHeight - panelBottomRight.offsetHeight - 20) + 'px';
         panelBottomRight.style.left = (window.innerWidth - panelBottomRight.offsetWidth - 20) + 'px';
 
+        panelAnimation.style.bottom = 'auto';
+        panelAnimation.style.right = 'auto';
+        panelAnimation.style.top = (window.innerHeight - panelAnimation.offsetHeight - 20) + 'px';
+        panelAnimation.style.left = '20px';
+
         panelAxes.style.top = '20px';
         panelAxes.style.left = Math.floor((window.innerWidth - panelAxes.offsetWidth) * 0.75) + 'px';
     }
@@ -1133,6 +1168,7 @@ class Spheromaniac
         var panelPreview = document.getElementById('panel-preview');
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
+        var panelAnimation = document.getElementById('panel-animation');
         var panelAxes = document.getElementById('panel-axes');
 
         this.makeDraggable(panelTitle, panelTitle.querySelector('.drag-handle'));
@@ -1142,6 +1178,7 @@ class Spheromaniac
         this.makeDraggable(panelPreview, panelPreview.querySelector('.drag-handle'));
         this.makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
         this.makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
+        this.makeDraggable(panelAnimation, panelAnimation.querySelector('.drag-handle'));
         this.makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));
     }
 
@@ -1171,6 +1208,9 @@ class Spheromaniac
 
         this.loopsSlider = document.getElementById('loops');
         this.loopsInput = document.getElementById('loops_num');
+        this.tailLoopsSlider = document.getElementById('tail_loops');
+        this.animationSpeedSlider = document.getElementById('animation_speed');
+        this.showMechanismCheck = document.getElementById('showMechanism');
         this.cameraXSlider = document.getElementById('cameraRotationX');
         this.cameraYSlider = document.getElementById('cameraRotationY');
         this.cameraZSlider = document.getElementById('cameraRotationZ');
@@ -1195,6 +1235,8 @@ class Spheromaniac
         this.cycleColorCheck.checked = this.colorMgr.inColor;
         this.lightModeCheck.checked = false;
         this.showAxesCheck.checked = false;
+        this.showMechanismCheck.checked = true;
+        this.animationSpeedSlider.value = this.animationSpeed;
         this.updatePreviews();
         this.initPanelPositions();
         this.setupEventHandlers();

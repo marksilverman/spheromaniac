@@ -161,7 +161,6 @@
     <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="app.scale = parseFloat(this.value);">
     <hr class="panel-hr">
     <button onclick="app.randomize()">randomize</button>
-    <button id="animateBtn" onclick="app.toggleAnimate()">begin animation</button>
     <button onclick="app.exportOBJ()">export OBJ</button>
     <hr class="panel-hr">
     <div class="btn-row">
@@ -172,6 +171,18 @@
     <label><input type="checkbox" id="lightMode" onclick="app.toggleLight();"> light mode</label>
     <label><input type="checkbox" id="showAxes" onclick="app.showAxes = this.checked;"> axes</label>
 </div>
+</div>
+
+<div id="panel-animation" class="axis-panel panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">animation</div>
+    <button id="animateBtn" onclick="app.toggleAnimate()">begin animation</button>
+    <span class="label">tail</span>
+    <input type="range" id="tail_loops" value=1 min=0 max=10 step=0.05 oninput="app.setTailLoops(this.value)">
+    <span class="label">speed</span>
+    <input type="range" id="animation_speed" value=0.05 min=0.001 max=0.3 step=0.001 oninput="app.animationSpeed = parseFloat(this.value)">
+    <hr class="panel-hr">
+    <label><input type="checkbox" id="showMechanism" checked onclick="app.showMechanism = this.checked;"> mechanism</label>
 </div>
 
 <div id="panel-axes" class="panel">

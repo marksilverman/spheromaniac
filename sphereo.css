@@ -55,6 +55,25 @@ body.light .panel {
     gap: 10px;
 }
 
+#panel-animation {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 220px;
+}
+
+#panel-animation button {
+    width: 100%;
+}
+
+#panel-animation .label {
+    width: auto;
+}
+
+#panel-animation input[type="range"] {
+    width: 100%;
+}
+
 #panel-right button {
     width: 100%;
 }
