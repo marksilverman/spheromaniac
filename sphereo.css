@@ -62,24 +62,16 @@ body.light .panel {
     min-width: 220px;
 }
 
-#panel-animation button {
+#panel-animation button, #panel-right button {
     width: 100%;
 }
 
-#panel-animation .label {
+#panel-animation .label, #panel-right .label {
     width: auto;
 }
 
 #panel-animation input[type="range"] {
     width: 100%;
-}
-
-#panel-right button {
-    width: 100%;
-}
-
-#panel-right .label {
-    width: auto;
 }
 
 
@@ -101,26 +93,22 @@ body.light .panel-hr {
     border-top-color: rgba(0, 0, 0, 0.12);
 }
 
-.control {
+.control:not(:last-child) {
     margin-bottom: 15px;
 }
 
-.control:last-child {
-    margin-bottom: 0;
+.label, .axis-label {
+    display: inline-block;
+    font-size: 18px;
+    white-space: nowrap;
 }
 
 .label {
-    display: inline-block;
     width: 80px;
-    font-size: 18px;
-    white-space: nowrap;
 }
 
 .axis-label {
-    display: inline-block;
     width: 100px;
-    font-size: 18px;
-    white-space: nowrap;
     text-align: right;
 }
 
@@ -155,18 +143,8 @@ body.light .plane-preview {
     background: rgba(255, 255, 255, 0.35);
 }
 
-#panel-axes {
+#panel-axes, #panel-preview {
     padding: 8px 8px 6px 8px;
-}
-
-#panel-preview {
-    padding: 8px 8px 6px 8px;
-}
-
-.btn-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
 .axis-panel .btn-row:last-child {
@@ -174,7 +152,6 @@ body.light .plane-preview {
 }
 
 .btn-row .label {
-    width: 80px;
     font-size: 20px;
 }
 
@@ -230,19 +207,26 @@ body.light .plane-preview {
     background: #4a6585;
 }
 
-.camera-label-row {
+.btn-row, .camera-row, .camera-label-row {
     display: flex;
     align-items: center;
+}
+
+.btn-row {
+    gap: 6px;
+}
+
+.camera-row {
+    gap: 4px;
+}
+
+.camera-label-row {
     justify-content: space-between;
     margin-bottom: 15px;
 }
+
 .camera-label-row .label {
     width: auto;
-}
-.camera-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
 }
 
 input[type="range"] {
