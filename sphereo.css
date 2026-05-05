@@ -62,6 +62,13 @@ body.light .panel {
     min-width: 220px;
 }
 
+#panel-faces {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 180px;
+}
+
 #panel-animation button, #panel-right button {
     width: 100%;
 }

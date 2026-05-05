@@ -170,6 +170,12 @@
     <label><input type="checkbox" id="inColor" onclick="app.colorMgr.flip();"> cycle color</label>
     <label><input type="checkbox" id="lightMode" onclick="app.toggleLight();"> light mode</label>
     <label><input type="checkbox" id="showAxes" onclick="app.showAxes = this.checked;"> axes</label>
+    <hr class="panel-hr">
+    <label><input type="checkbox" id="tubeEnabled" onclick="app.tubeEnabled = this.checked;"> tube</label>
+    <span class="label">tube radius</span>
+    <input type="range" id="tube_radius" value=8 min=1 max=60 step=1 oninput="app.tubeRadius = parseFloat(this.value)">
+    <span class="label">tube sides</span>
+    <input type="range" id="tube_sides" value=6 min=3 max=16 step=1 oninput="app.tubeSides = parseInt(this.value)">
 </div>
 </div>
 
@@ -183,6 +189,12 @@
     <input type="range" id="animation_speed" value=0.05 min=0.001 max=0.3 step=0.001 oninput="app.animationSpeed = parseFloat(this.value)">
     <hr class="panel-hr">
     <label><input type="checkbox" id="showMechanism" checked onclick="app.showMechanism = this.checked;"> mechanism</label>
+</div>
+
+<div id="panel-faces" class="axis-panel panel">
+    <div class="drag-handle">⠿</div>
+    <div class="axis-panel-header">faces</div>
+    <label><input type="checkbox" id="facesEnabled" onclick="app.facesEnabled = this.checked;"> fill</label>
 </div>
 
 <div id="panel-axes" class="panel">
