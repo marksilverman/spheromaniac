@@ -1137,8 +1137,8 @@ class Spheromaniac
         var steps = Math.ceil(drawUpTo / increment);
 
         if (this.facesEnabled)
-            this.drawFaces();
-
+	    this.drawFaces();
+	else
         for (let i = startStep; i <= steps; i++)
         {
             let fixedAngle = i * increment;
