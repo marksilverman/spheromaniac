@@ -149,10 +149,10 @@ class Spheromaniac
     applyRotation(penX, penY, fixedAngle)
     {
         var rotX = 0;
-        if (this.xTurns != 0)
+        if (this.xTurns != 0 && this.xPeriod != 0)
             rotX = fixedAngle * this.xTurns / this.xPeriod;
         var rotY = 0;
-        if (this.yTurns != 0)
+        if (this.yTurns != 0 && this.yPeriod != 0)
             rotY = fixedAngle * this.yTurns / this.yPeriod;
         var modelMat = mat4.create();
         mat4.rotateX(modelMat, modelMat, rotX);
@@ -466,6 +466,7 @@ class Spheromaniac
         window.addEventListener('resize', () => {
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
+            this.resetPanelPositions();
         });
 
         this.canvas.addEventListener('mousedown', (e) => {
@@ -604,9 +605,25 @@ class Spheromaniac
 
     toggleAnimate()
     {
-        this.animating = !this.animating;
+        if (this.animating)
+            this.stopAnimation();
+        else
+            this.startAnimation();
+    }
+
+    startAnimation()
+    {
+        this.animating = true;
         this.animationAngle = 0;
-        this.animateBtn.classList.toggle('btn-active', this.animating);
+        this.animateBtn.classList.add('btn-active');
+        this.animateBtn.textContent = 'stop animation';
+    }
+
+    stopAnimation()
+    {
+        this.animating = false;
+        this.animateBtn.classList.remove('btn-active');
+        this.animateBtn.textContent = 'begin animation';
     }
 
     toggleLight()
@@ -968,7 +985,10 @@ class Spheromaniac
         {
             this.animationAngle += this.animationSpeed;
             if (this.animationAngle >= this.loops * 2 * Math.PI)
+            {
                 this.animationAngle = this.loops * 2 * Math.PI;
+                this.stopAnimation();
+            }
             this.updatePreviews();
         }
 
@@ -1065,12 +1085,13 @@ class Spheromaniac
         });
     }
 
-    initPanelPositions()
+    resetPanelPositions()
     {
         var panelTitle = document.getElementById('panel-title');
         var panelX = document.getElementById('panel-x');
         var panelY = document.getElementById('panel-y');
         var panelShape = document.getElementById('panel-shape');
+        var panelPreview = document.getElementById('panel-preview');
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
         var panelAxes = document.getElementById('panel-axes');
@@ -1080,6 +1101,10 @@ class Spheromaniac
 
         panelShape.style.top = '20px';
         panelShape.style.left = '20px';
+
+        panelPreview.style.top = '20px';
+        panelPreview.style.left = (20 + panelShape.offsetWidth + 10) + 'px';
+
         panelX.style.top = (20 + panelShape.offsetHeight + 10) + 'px';
         panelX.style.left = '20px';
         panelY.style.top = (20 + panelShape.offsetHeight + 10 + panelX.offsetHeight + 10) + 'px';
@@ -1095,11 +1120,26 @@ class Spheromaniac
 
         panelAxes.style.top = '20px';
         panelAxes.style.left = Math.floor((window.innerWidth - panelAxes.offsetWidth) * 0.75) + 'px';
+    }
+
+    initPanelPositions()
+    {
+        this.resetPanelPositions();
+
+        var panelTitle = document.getElementById('panel-title');
+        var panelX = document.getElementById('panel-x');
+        var panelY = document.getElementById('panel-y');
+        var panelShape = document.getElementById('panel-shape');
+        var panelPreview = document.getElementById('panel-preview');
+        var panelRight = document.getElementById('panel-right');
+        var panelBottomRight = document.getElementById('panel-bottom-right');
+        var panelAxes = document.getElementById('panel-axes');
 
         this.makeDraggable(panelTitle, panelTitle.querySelector('.drag-handle'));
         this.makeDraggable(panelX, panelX.querySelector('.drag-handle'));
         this.makeDraggable(panelY, panelY.querySelector('.drag-handle'));
         this.makeDraggable(panelShape, panelShape.querySelector('.drag-handle'));
+        this.makeDraggable(panelPreview, panelPreview.querySelector('.drag-handle'));
         this.makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
         this.makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
         this.makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));

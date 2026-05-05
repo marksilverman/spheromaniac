@@ -140,6 +140,10 @@ body.light .plane-preview {
     padding: 8px 8px 6px 8px;
 }
 
+#panel-preview {
+    padding: 8px 8px 6px 8px;
+}
+
 .btn-row {
     display: flex;
     align-items: center;

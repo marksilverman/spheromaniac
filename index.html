@@ -93,8 +93,12 @@
                     oninput="app.penDistanceInput.value = this.value; app.readAllParams()">
             </div>
         </div>
-        <canvas class="plane-preview" id="preview_shape" width="100" height="100"></canvas>
     </div>
+</div>
+
+<div id="panel-preview" class="panel">
+    <div class="drag-handle">⠿</div>
+    <canvas class="plane-preview" id="preview_shape" width="100" height="100"></canvas>
 </div>
 
 <div id="panel-bottom-right" class="panel">
@@ -157,10 +161,13 @@
     <input type="range" id="scale" value=200 min=10 max=400 step=1 oninput="app.scale = parseFloat(this.value);">
     <hr class="panel-hr">
     <button onclick="app.randomize()">randomize</button>
-    <button id="animateBtn" onclick="app.toggleAnimate()">animate</button>
+    <button id="animateBtn" onclick="app.toggleAnimate()">begin animation</button>
     <button onclick="app.exportOBJ()">export OBJ</button>
     <hr class="panel-hr">
-    <input type="color" id="colorPicker" value="#00ffff" oninput="app.customColor = this.value;">
+    <div class="btn-row">
+        <span class="label">color: </span>
+        <input type="color" id="colorPicker" value="#00ffff" oninput="app.customColor = this.value;">
+    </div>
     <label><input type="checkbox" id="inColor" onclick="app.colorMgr.flip();"> cycle color</label>
     <label><input type="checkbox" id="lightMode" onclick="app.toggleLight();"> light mode</label>
     <label><input type="checkbox" id="showAxes" onclick="app.showAxes = this.checked;"> axes</label>
