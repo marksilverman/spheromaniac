@@ -46,11 +46,11 @@
     <div class="control btn-row">
         <span class="axis-label">turns:</span>
         <button onclick="app.adjust(app.yTurnsInput, -1)">◀</button>
-        <input type="number" id="y_turns" value="1" oninput="app.readAllParams()">
+        <input type="number" id="y_turns" value="0" oninput="app.readAllParams()">
         <button onclick="app.adjust(app.yTurnsInput, 1)">▶</button>
     </div>
     <div class="control">
-        <input type="range" id="y_turns_slider" value=1 min=0 max=30 step=0.01
+        <input type="range" id="y_turns_slider" value=0 min=0 max=30 step=0.01
             oninput="app.yTurnsInput.value = this.value; app.readAllParams()">
     </div>
     <div class="control btn-row">

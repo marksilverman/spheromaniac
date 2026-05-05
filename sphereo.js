@@ -11,7 +11,7 @@ class Spheromaniac
 
         this.xTurns = 4;
         this.xPeriod = 5;
-        this.yTurns = 1;
+        this.yTurns = 0;
         this.yPeriod = 1;
 
         this.scale = 200.0;
@@ -453,8 +453,7 @@ class Spheromaniac
     {
         this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        this.canvas.addEventListener('wheel', (e) =>
-        {
+        this.canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             this.scale -= e.deltaY * 0.5;
             if (this.scale < 10)
@@ -464,14 +463,12 @@ class Spheromaniac
             this.scaleSlider.value = this.scale;
         }, { passive: false });
 
-        window.addEventListener('resize', () =>
-        {
+        window.addEventListener('resize', () => {
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
         });
 
-        this.canvas.addEventListener('mousedown', (e) =>
-        {
+        this.canvas.addEventListener('mousedown', (e) => {
             this.isDragging = true;
             this.activeMouseButton = e.button;
             this.lastMouseX = e.clientX;
@@ -479,8 +476,7 @@ class Spheromaniac
             this.stopAutoRotate();
         });
 
-        this.canvas.addEventListener('mousemove', (e) =>
-        {
+        this.canvas.addEventListener('mousemove', (e) => {
             if (!this.isDragging)
                 return;
             var deltaX = e.clientX - this.lastMouseX;
@@ -496,8 +492,7 @@ class Spheromaniac
         this.canvas.addEventListener('mouseup', () => this.stopDrag());
         this.canvas.addEventListener('mouseleave', () => this.stopDrag());
 
-        this.canvas.addEventListener('touchstart', (e) =>
-        {
+        this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (e.touches.length == 1)
             {
@@ -516,8 +511,7 @@ class Spheromaniac
             }
         }, { passive: false });
 
-        this.canvas.addEventListener('touchmove', (e) =>
-        {
+        this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             if (e.touches.length == 1 && this.isDragging)
             {
@@ -1030,8 +1024,7 @@ class Spheromaniac
         var dragOffsetY = 0;
         var panelDragging = false;
 
-        handle.addEventListener('mousedown', (e) =>
-        {
+        handle.addEventListener('mousedown', (e) => {
             panelDragging = true;
             var rect = panel.getBoundingClientRect();
             dragOffsetX = e.clientX - rect.left;
@@ -1039,8 +1032,7 @@ class Spheromaniac
             e.preventDefault();
         });
 
-        handle.addEventListener('touchstart', (e) =>
-        {
+        handle.addEventListener('touchstart', (e) => {
             panelDragging = true;
             var rect = panel.getBoundingClientRect();
             dragOffsetX = e.touches[0].clientX - rect.left;
@@ -1048,32 +1040,27 @@ class Spheromaniac
             e.preventDefault();
         }, { passive: false });
 
-        window.addEventListener('mousemove', (e) =>
-        {
+        window.addEventListener('mousemove', (e) => {
             if (!panelDragging)
                 return;
             this.movePanelTo(panel, e.clientX - dragOffsetX, e.clientY - dragOffsetY);
         });
 
-        window.addEventListener('touchmove', (e) =>
-        {
+        window.addEventListener('touchmove', (e) => {
             if (!panelDragging)
                 return;
             this.movePanelTo(panel, e.touches[0].clientX - dragOffsetX, e.touches[0].clientY - dragOffsetY);
         }, { passive: false });
 
-        window.addEventListener('mouseup', () =>
-        {
+        window.addEventListener('mouseup', () => {
             panelDragging = false;
         });
 
-        window.addEventListener('touchend', () =>
-        {
+        window.addEventListener('touchend', () => {
             panelDragging = false;
         });
 
-        window.addEventListener('touchcancel', () =>
-        {
+        window.addEventListener('touchcancel', () => {
             panelDragging = false;
         });
     }
