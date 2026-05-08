@@ -62,11 +62,19 @@ body.light .panel {
     min-width: 220px;
 }
 
-#panel-faces {
+#panel-effects {
     display: flex;
     flex-direction: column;
     gap: 12px;
     min-width: 180px;
+}
+
+#panel-effects .label {
+    width: auto;
+}
+
+#panel-effects input[type="range"] {
+    width: 100%;
 }
 
 #panel-animation button, #panel-right button {

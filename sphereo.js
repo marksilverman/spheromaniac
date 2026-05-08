@@ -74,6 +74,7 @@ class Spheromaniac
         this.cameraYSlider = null;
         this.cameraZSlider = null;
         this.scaleSlider = null;
+        this.lineWidthSlider = null;
         this.autoRotateXCheck = null;
         this.autoRotateYCheck = null;
         this.autoRotateZCheck = null;
@@ -655,6 +656,22 @@ class Spheromaniac
         this.animating = false;
         this.animateBtn.classList.remove('btn-active');
         this.animateBtn.textContent = 'begin animation';
+    }
+
+    setFacesEnabled(checked)
+    {
+        this.facesEnabled = checked;
+        this.updateFacesUIState();
+    }
+
+    updateFacesUIState()
+    {
+        var disabled = this.facesEnabled;
+        this.lineWidthSlider.disabled = disabled;
+        this.animateBtn.disabled = disabled;
+        this.tailLoopsSlider.disabled = disabled;
+        this.animationSpeedSlider.disabled = disabled;
+        this.showMechanismCheck.disabled = disabled;
     }
 
     toggleLight()
@@ -1310,7 +1327,7 @@ class Spheromaniac
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
         var panelAnimation = document.getElementById('panel-animation');
-        var panelFaces = document.getElementById('panel-faces');
+        var panelEffects = document.getElementById('panel-effects');
         var panelAxes = document.getElementById('panel-axes');
 
         panelTitle.style.top = '20px';
@@ -1340,13 +1357,14 @@ class Spheromaniac
         panelAnimation.style.top = (window.innerHeight - panelAnimation.offsetHeight - 20) + 'px';
         panelAnimation.style.left = '20px';
 
-        panelFaces.style.bottom = 'auto';
-        panelFaces.style.right = 'auto';
-        panelFaces.style.top = (window.innerHeight - panelFaces.offsetHeight - 20) + 'px';
-        panelFaces.style.left = Math.floor((window.innerWidth - panelFaces.offsetWidth) / 2) + 'px';
+        panelEffects.style.bottom = 'auto';
+        panelEffects.style.right = 'auto';
+        panelEffects.style.top = '20px';
+        panelEffects.style.left = (window.innerWidth - panelRight.offsetWidth - 20 - panelEffects.offsetWidth - 10) + 'px';
 
+        var effectsLeft = window.innerWidth - panelRight.offsetWidth - 20 - panelEffects.offsetWidth - 10;
         panelAxes.style.top = '20px';
-        panelAxes.style.left = Math.floor((window.innerWidth - panelAxes.offsetWidth) * 0.75) + 'px';
+        panelAxes.style.left = (effectsLeft - panelAxes.offsetWidth - 10) + 'px';
     }
 
     initPanelPositions()
@@ -1361,7 +1379,7 @@ class Spheromaniac
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
         var panelAnimation = document.getElementById('panel-animation');
-        var panelFaces = document.getElementById('panel-faces');
+        var panelEffects = document.getElementById('panel-effects');
         var panelAxes = document.getElementById('panel-axes');
 
         this.makeDraggable(panelTitle, panelTitle.querySelector('.drag-handle'));
@@ -1372,7 +1390,7 @@ class Spheromaniac
         this.makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
         this.makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
         this.makeDraggable(panelAnimation, panelAnimation.querySelector('.drag-handle'));
-        this.makeDraggable(panelFaces, panelFaces.querySelector('.drag-handle'));
+        this.makeDraggable(panelEffects, panelEffects.querySelector('.drag-handle'));
         this.makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));
     }
 
@@ -1413,6 +1431,7 @@ class Spheromaniac
         this.cameraYSlider = document.getElementById('cameraRotationY');
         this.cameraZSlider = document.getElementById('cameraRotationZ');
         this.scaleSlider = document.getElementById('scale');
+        this.lineWidthSlider = document.getElementById('lineWidth');
         this.autoRotateXCheck = document.getElementById('autoRotateX');
         this.autoRotateYCheck = document.getElementById('autoRotateY');
         this.autoRotateZCheck = document.getElementById('autoRotateZ');
@@ -1439,6 +1458,7 @@ class Spheromaniac
         this.tubeRadiusSlider.value = this.tubeRadius;
         this.tubeSidesSlider.value = this.tubeSides;
         this.facesCheck.checked = false;
+        this.updateFacesUIState();
         this.updatePreviews();
         this.initPanelPositions();
         this.setupEventHandlers();
