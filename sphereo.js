@@ -46,7 +46,7 @@ class Spheromaniac
         this.tubeEnabled = false;
         this.tubeRadius = 8;
         this.tubeSides = 6;
-        this.facesEnabled = false;
+        this.evenOddEnabled = false;
         this.keyboardStep = 0.05;
 
         this.fixedCircleRadiusInput = null;
@@ -69,7 +69,7 @@ class Spheromaniac
         this.tubeCheck = null;
         this.tubeRadiusSlider = null;
         this.tubeSidesSlider = null;
-        this.facesCheck = null;
+        this.evenOddCheck = null;
         this.cameraXSlider = null;
         this.cameraYSlider = null;
         this.cameraZSlider = null;
@@ -658,15 +658,15 @@ class Spheromaniac
         this.animateBtn.textContent = 'begin animation';
     }
 
-    setFacesEnabled(checked)
+    setEvenOddEnabled(checked)
     {
-        this.facesEnabled = checked;
-        this.updateFacesUIState();
+        this.evenOddEnabled = checked;
+        this.updateEvenOddUIState();
     }
 
-    updateFacesUIState()
+    updateEvenOddUIState()
     {
-        var disabled = this.facesEnabled;
+        var disabled = this.evenOddEnabled;
         this.lineWidthSlider.disabled = disabled;
         this.animateBtn.disabled = disabled;
         this.tailLoopsSlider.disabled = disabled;
@@ -954,7 +954,7 @@ class Spheromaniac
         this.fillDot3D(ctx, rotatedPen, 3, penFill);
     }
 
-    drawFaces()
+    drawEvenOdd()
     {
         var totalAngle = this.loops * 2 * Math.PI;
         var increment = 2 * Math.PI / 360;
@@ -1153,8 +1153,8 @@ class Spheromaniac
         var startStep = Math.floor(tailAngle / increment);
         var steps = Math.ceil(drawUpTo / increment);
 
-        if (this.facesEnabled)
-	    this.drawFaces();
+        if (this.evenOddEnabled)
+	    this.drawEvenOdd();
 	else
         for (let i = startStep; i <= steps; i++)
         {
@@ -1426,7 +1426,7 @@ class Spheromaniac
         this.tubeCheck = document.getElementById('tubeEnabled');
         this.tubeRadiusSlider = document.getElementById('tube_radius');
         this.tubeSidesSlider = document.getElementById('tube_sides');
-        this.facesCheck = document.getElementById('facesEnabled');
+        this.evenOddCheck = document.getElementById('evenOddEnabled');
         this.cameraXSlider = document.getElementById('cameraRotationX');
         this.cameraYSlider = document.getElementById('cameraRotationY');
         this.cameraZSlider = document.getElementById('cameraRotationZ');
@@ -1457,8 +1457,8 @@ class Spheromaniac
         this.tubeCheck.checked = false;
         this.tubeRadiusSlider.value = this.tubeRadius;
         this.tubeSidesSlider.value = this.tubeSides;
-        this.facesCheck.checked = false;
-        this.updateFacesUIState();
+        this.evenOddCheck.checked = false;
+        this.updateEvenOddUIState();
         this.updatePreviews();
         this.initPanelPositions();
         this.setupEventHandlers();
