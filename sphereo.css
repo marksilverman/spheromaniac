@@ -23,99 +23,120 @@ canvas {
     height: 100%;
 }
 
+#panel-title {
+    padding: 12px 20px;
+    text-align: center;
+}
+
 #title {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 28px;
     letter-spacing: 2px;
-    pointer-events: none;
     white-space: nowrap;
 }
 
-.axis-panel {
+.panel {
     position: absolute;
     background: rgba(10, 20, 50, 0.88);
-    padding: 15px 20px;
     border-radius: 10px;
+}
+
+body.light .panel {
+    background: rgba(220, 225, 255, 0.88);
+}
+
+.axis-panel {
+    padding: 15px 20px;
 }
 
 #panel-right {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 20px;
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
+#panel-animation {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 240px;
+}
+
+#panel-animation button, #panel-right button {
+    width: 100%;
+    white-space: nowrap;
+}
+
+#panel-animation .label, #panel-right .label {
+    width: auto;
+}
+
+#panel-animation input[type="range"] {
+    width: 100%;
+}
+
+
 #panel-bottom-right {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
     padding: 15px 20px;
-    border-radius: 10px;
 }
 
 #panel-bottom-right > button {
     margin-bottom: 15px;
 }
 
-body.light #panel-bottom-right {
-    background: rgba(220, 225, 255, 0.88);
+.panel-hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin: 8px 0;
 }
 
-#panel-bottom {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
-    padding: 15px 30px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-.panel-row {
-    display: flex;
-    align-items: center;
-    gap: 25px;
+body.light .panel-hr {
+    border-top-color: rgba(0, 0, 0, 0.12);
 }
 
-.control {
+.control:not(:last-child) {
     margin-bottom: 15px;
 }
 
-.control:last-child {
-    margin-bottom: 0;
+.label, .axis-label {
+    display: inline-block;
+    font-size: 18px;
+    white-space: nowrap;
 }
 
 .label {
-    display: inline-block;
     width: 80px;
-    font-size: 18px;
-    white-space: nowrap;
 }
 
 .axis-label {
-    display: inline-block;
-    width: 80px;
-    font-size: 18px;
-    white-space: nowrap;
+    width: 100px;
+    text-align: right;
 }
 
 .axis-panel-header {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 12px;
+    text-align: center;
+}
+
+.axis-panel-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .plane-preview {
-    display: block;
-    margin-top: 12px;
+    flex-shrink: 0;
     border-radius: 5px;
     background: rgba(0, 0, 0, 0.25);
     width: 100px;
     height: 100px;
 }
 
-#x_distance_slider, #y_distance_slider, #z_distance_slider {
+#pen_distance_slider,
+#x_turns_slider, #x_period_slider,
+#y_turns_slider, #y_period_slider {
     width: 210px;
 }
 
@@ -123,21 +144,8 @@ body.light .plane-preview {
     background: rgba(255, 255, 255, 0.35);
 }
 
-#panel-axes {
-    position: absolute;
-    background: rgba(10, 20, 50, 0.88);
+#panel-axes, #panel-preview {
     padding: 8px 8px 6px 8px;
-    border-radius: 10px;
-}
-
-body.light #panel-axes {
-    background: rgba(220, 225, 255, 0.88);
-}
-
-.btn-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
 .axis-panel .btn-row:last-child {
@@ -145,7 +153,6 @@ body.light #panel-axes {
 }
 
 .btn-row .label {
-    width: 80px;
     font-size: 20px;
 }
 
@@ -201,19 +208,26 @@ body.light #panel-axes {
     background: #4a6585;
 }
 
-.camera-label-row {
+.btn-row, .camera-row, .camera-label-row {
     display: flex;
     align-items: center;
+}
+
+.btn-row {
+    gap: 6px;
+}
+
+.camera-row {
+    gap: 4px;
+}
+
+.camera-label-row {
     justify-content: space-between;
     margin-bottom: 15px;
 }
+
 .camera-label-row .label {
     width: auto;
-}
-.camera-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
 }
 
 input[type="range"] {
@@ -275,14 +289,23 @@ body.light {
     color: black;
 }
 
-body.light .axis-panel,
-body.light #panel-right,
-body.light #panel-bottom {
-    background: rgba(220, 225, 255, 0.88);
+
+button.btn-active {
+    background: #446;
+    color: white;
+}
+
+button.btn-active:hover {
+    background: #558;
 }
 
 body.light button {
     background: #aaa;
+    color: black;
+}
+
+body.light button.btn-active {
+    background: #88c;
     color: black;
 }
 
