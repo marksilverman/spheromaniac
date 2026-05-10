@@ -43,9 +43,6 @@ class Spheromaniac
         this.colorOffset = 0.0;
         this.showAxes = false;
         this.showMechanism = true;
-        this.tubeEnabled = false;
-        this.tubeRadius = 8;
-        this.tubeSides = 6;
         this.evenOddEnabled = false;
         this.keyboardStep = 0.05;
 
@@ -66,9 +63,6 @@ class Spheromaniac
         this.tailLoopsSlider = null;
         this.animationSpeedSlider = null;
         this.showMechanismCheck = null;
-        this.tubeCheck = null;
-        this.tubeRadiusSlider = null;
-        this.tubeSidesSlider = null;
         this.evenOddCheck = null;
         this.cameraXSlider = null;
         this.cameraYSlider = null;
@@ -985,148 +979,6 @@ class Spheromaniac
         this.ctx.fill('evenodd');
     }
 
-    drawTube()
-    {
-        var totalAngle = this.loops * 2 * Math.PI;
-        var samples = 60 * this.loops;
-        if (samples < 60)
-            samples = 60;
-        var stepAngle = totalAngle / samples;
-
-        var positions = [];
-        for (let i = 0; i <= samples; i++)
-        {
-            let angle = i * stepAngle;
-            let [px, py] = this.computePenPoint(angle);
-            px *= this.scale;
-            py *= this.scale;
-            positions.push(this.applyRotation(px, py, angle));
-        }
-
-        var tangents = [];
-        for (let i = 0; i <= samples; i++)
-        {
-            let prev = positions[Math.max(0, i - 1)];
-            let next = positions[Math.min(samples, i + 1)];
-            let t = [next[0] - prev[0], next[1] - prev[1], next[2] - prev[2]];
-            let len = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]);
-            if (len > 1e-8)
-            {
-                t[0] /= len;
-                t[1] /= len;
-                t[2] /= len;
-            }
-            tangents.push(t);
-        }
-
-        var up = [0, 0, 1];
-        if (Math.abs(tangents[0][0] * up[0] + tangents[0][1] * up[1] + tangents[0][2] * up[2]) > 0.99)
-            up = [0, 1, 0];
-        var n0 = [
-            tangents[0][1] * up[2] - tangents[0][2] * up[1],
-            tangents[0][2] * up[0] - tangents[0][0] * up[2],
-            tangents[0][0] * up[1] - tangents[0][1] * up[0]
-        ];
-        var n0Len = Math.sqrt(n0[0] * n0[0] + n0[1] * n0[1] + n0[2] * n0[2]);
-        n0[0] /= n0Len;
-        n0[1] /= n0Len;
-        n0[2] /= n0Len;
-        var normals = [n0];
-
-        for (let i = 1; i <= samples; i++)
-        {
-            let prevT = tangents[i - 1];
-            let curT = tangents[i];
-            let axis = [
-                prevT[1] * curT[2] - prevT[2] * curT[1],
-                prevT[2] * curT[0] - prevT[0] * curT[2],
-                prevT[0] * curT[1] - prevT[1] * curT[0]
-            ];
-            let axisLen = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
-            let cur = [normals[i - 1][0], normals[i - 1][1], normals[i - 1][2]];
-            if (axisLen > 1e-8)
-            {
-                axis[0] /= axisLen;
-                axis[1] /= axisLen;
-                axis[2] /= axisLen;
-                let dot = prevT[0] * curT[0] + prevT[1] * curT[1] + prevT[2] * curT[2];
-                if (dot > 1)
-                    dot = 1;
-                if (dot < -1)
-                    dot = -1;
-                let angle = Math.acos(dot);
-                let cs = Math.cos(angle);
-                let sn = Math.sin(angle);
-                let kdotv = axis[0] * cur[0] + axis[1] * cur[1] + axis[2] * cur[2];
-                let kcrossv = [
-                    axis[1] * cur[2] - axis[2] * cur[1],
-                    axis[2] * cur[0] - axis[0] * cur[2],
-                    axis[0] * cur[1] - axis[1] * cur[0]
-                ];
-                cur = [
-                    cur[0] * cs + kcrossv[0] * sn + axis[0] * kdotv * (1 - cs),
-                    cur[1] * cs + kcrossv[1] * sn + axis[1] * kdotv * (1 - cs),
-                    cur[2] * cs + kcrossv[2] * sn + axis[2] * kdotv * (1 - cs)
-                ];
-            }
-
-            let dot2 = cur[0] * curT[0] + cur[1] * curT[1] + cur[2] * curT[2];
-            cur[0] -= dot2 * curT[0];
-            cur[1] -= dot2 * curT[1];
-            cur[2] -= dot2 * curT[2];
-            let curLen = Math.sqrt(cur[0] * cur[0] + cur[1] * cur[1] + cur[2] * cur[2]);
-            cur[0] /= curLen;
-            cur[1] /= curLen;
-            cur[2] /= curLen;
-            normals.push(cur);
-        }
-
-        var rings = [];
-        for (let i = 0; i <= samples; i++)
-        {
-            let n = normals[i];
-            let t = tangents[i];
-            let b = [
-                t[1] * n[2] - t[2] * n[1],
-                t[2] * n[0] - t[0] * n[2],
-                t[0] * n[1] - t[1] * n[0]
-            ];
-            let ring = [];
-            for (let k = 0; k < this.tubeSides; k++)
-            {
-                let theta = 2 * Math.PI * k / this.tubeSides;
-                let cs = Math.cos(theta);
-                let sn = Math.sin(theta);
-                let v = [
-                    positions[i][0] + this.tubeRadius * (cs * n[0] + sn * b[0]),
-                    positions[i][1] + this.tubeRadius * (cs * n[1] + sn * b[1]),
-                    positions[i][2] + this.tubeRadius * (cs * n[2] + sn * b[2])
-                ];
-                ring.push(v);
-            }
-            rings.push(ring);
-        }
-
-        var stroke = this.customColor;
-        if (this.colorMgr.inColor)
-            stroke = this.colorMgr.fgColor;
-
-        for (let i = 0; i <= samples; i++)
-        {
-            let closed = rings[i].slice();
-            closed.push(rings[i][0]);
-            this.strokePolyline3D(this.ctx, closed, stroke, 1);
-        }
-
-        for (let k = 0; k < this.tubeSides; k++)
-        {
-            let line = [];
-            for (let i = 0; i <= samples; i++)
-                line.push(rings[i][k]);
-            this.strokePolyline3D(this.ctx, line, stroke, 1);
-        }
-    }
-
     drawScene()
     {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -1213,8 +1065,6 @@ class Spheromaniac
             this.drawAxes(this.ctx);
         if (this.animating && this.showMechanism)
             this.drawMechanism(this.ctx);
-        if (this.tubeEnabled)
-            this.drawTube();
 
         this.ctx.restore();
 
@@ -1327,7 +1177,6 @@ class Spheromaniac
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
         var panelAnimation = document.getElementById('panel-animation');
-        var panelEffects = document.getElementById('panel-effects');
         var panelAxes = document.getElementById('panel-axes');
 
         panelTitle.style.top = '20px';
@@ -1357,14 +1206,8 @@ class Spheromaniac
         panelAnimation.style.top = (window.innerHeight - panelAnimation.offsetHeight - 20) + 'px';
         panelAnimation.style.left = '20px';
 
-        panelEffects.style.bottom = 'auto';
-        panelEffects.style.right = 'auto';
-        panelEffects.style.top = '20px';
-        panelEffects.style.left = (window.innerWidth - panelRight.offsetWidth - 20 - panelEffects.offsetWidth - 10) + 'px';
-
-        var effectsLeft = window.innerWidth - panelRight.offsetWidth - 20 - panelEffects.offsetWidth - 10;
         panelAxes.style.top = '20px';
-        panelAxes.style.left = (effectsLeft - panelAxes.offsetWidth - 10) + 'px';
+        panelAxes.style.left = (window.innerWidth - panelRight.offsetWidth - 20 - panelAxes.offsetWidth - 10) + 'px';
     }
 
     initPanelPositions()
@@ -1379,7 +1222,6 @@ class Spheromaniac
         var panelRight = document.getElementById('panel-right');
         var panelBottomRight = document.getElementById('panel-bottom-right');
         var panelAnimation = document.getElementById('panel-animation');
-        var panelEffects = document.getElementById('panel-effects');
         var panelAxes = document.getElementById('panel-axes');
 
         this.makeDraggable(panelTitle, panelTitle.querySelector('.drag-handle'));
@@ -1390,7 +1232,6 @@ class Spheromaniac
         this.makeDraggable(panelRight, panelRight.querySelector('.drag-handle'));
         this.makeDraggable(panelBottomRight, panelBottomRight.querySelector('.drag-handle'));
         this.makeDraggable(panelAnimation, panelAnimation.querySelector('.drag-handle'));
-        this.makeDraggable(panelEffects, panelEffects.querySelector('.drag-handle'));
         this.makeDraggable(panelAxes, panelAxes.querySelector('.drag-handle'));
     }
 
@@ -1423,9 +1264,6 @@ class Spheromaniac
         this.tailLoopsSlider = document.getElementById('tail_loops');
         this.animationSpeedSlider = document.getElementById('animation_speed');
         this.showMechanismCheck = document.getElementById('showMechanism');
-        this.tubeCheck = document.getElementById('tubeEnabled');
-        this.tubeRadiusSlider = document.getElementById('tube_radius');
-        this.tubeSidesSlider = document.getElementById('tube_sides');
         this.evenOddCheck = document.getElementById('evenOddEnabled');
         this.cameraXSlider = document.getElementById('cameraRotationX');
         this.cameraYSlider = document.getElementById('cameraRotationY');
@@ -1454,9 +1292,6 @@ class Spheromaniac
         this.showAxesCheck.checked = false;
         this.showMechanismCheck.checked = true;
         this.animationSpeedSlider.value = this.animationSpeed;
-        this.tubeCheck.checked = false;
-        this.tubeRadiusSlider.value = this.tubeRadius;
-        this.tubeSidesSlider.value = this.tubeSides;
         this.evenOddCheck.checked = false;
         this.updateEvenOddUIState();
         this.updatePreviews();
