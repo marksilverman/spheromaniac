@@ -172,7 +172,7 @@ class Spheromaniac
 
     computePenPoint(fixedAngle)
     {
-        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0 || this.penDistance == 0)
+        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0)
             return [0, 0];
         var [x, y] = this.calculatePoint(fixedAngle, this.fixedCircleRadius, this.rollingCircleRadius, this.penDistance);
         return [x / this.fixedCircleRadius, y / this.fixedCircleRadius];
@@ -196,7 +196,7 @@ class Spheromaniac
 
         var periods = [];
 
-        if (this.fixedCircleRadius != 0 && this.rollingCircleRadius != 0 && this.penDistance != 0)
+        if (this.fixedCircleRadius != 0 && this.rollingCircleRadius != 0)
         {
             var r1 = Math.abs(Math.round(this.fixedCircleRadius));
             var r2 = Math.abs(Math.round(this.rollingCircleRadius));
@@ -224,12 +224,6 @@ class Spheromaniac
         this.loops = Math.round(parseFloat(value));
         this.loopsSlider.value = this.loops;
         this.loopsInput.value = this.loops;
-        this.tailLoopsSlider.max = this.loops;
-        if (this.tailLoops > this.loops)
-        {
-            this.tailLoops = this.loops;
-            this.tailLoopsSlider.value = this.tailLoops;
-        }
     }
 
     setTailLoops(value)
@@ -239,8 +233,6 @@ class Spheromaniac
             parsed = 0;
         if (parsed < 0)
             parsed = 0;
-        if (parsed > this.loops)
-            parsed = this.loops;
         this.tailLoops = parsed;
         this.tailLoopsSlider.value = this.tailLoops;
     }
@@ -286,7 +278,6 @@ class Spheromaniac
         this.yPeriodSlider.value = this.yPeriod;
 
         this.autoSetLoops();
-        this.animationAngle = 0;
         this.updatePreviews();
     }
 
@@ -787,7 +778,7 @@ class Spheromaniac
 
         previewCtx.clearRect(0, 0, size, size);
 
-        if (fixedR == 0 || rollingR == 0 || penD == 0)
+        if (fixedR == 0 || rollingR == 0)
             return;
 
         var r1 = Math.abs(Math.round(fixedR));
@@ -899,7 +890,7 @@ class Spheromaniac
 
     drawMechanism(ctx)
     {
-        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0 || this.penDistance == 0)
+        if (this.fixedCircleRadius == 0 || this.rollingCircleRadius == 0)
             return;
 
         var isLight = document.body.classList.contains('light');

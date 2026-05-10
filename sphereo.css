@@ -59,11 +59,12 @@ body.light .panel {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    min-width: 220px;
+    width: 240px;
 }
 
 #panel-animation button, #panel-right button {
     width: 100%;
+    white-space: nowrap;
 }
 
 #panel-animation .label, #panel-right .label {
