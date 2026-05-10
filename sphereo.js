@@ -40,6 +40,7 @@ class Spheromaniac
         this.animationAngle = 0.0;
         this.animationSpeed = 0.05;
         this.tailLoops = 1;
+        this.autoLoopsEnabled = true;
         this.colorOffset = 0.0;
         this.showAxes = false;
         this.showMechanism = true;
@@ -60,6 +61,7 @@ class Spheromaniac
         this.yPeriodSlider = null;
         this.loopsSlider = null;
         this.loopsInput = null;
+        this.autoLoopsCheck = null;
         this.tailLoopsSlider = null;
         this.animationSpeedSlider = null;
         this.showMechanismCheck = null;
@@ -189,8 +191,17 @@ class Spheromaniac
         return false;
     }
 
+    setAutoLoops(enabled)
+    {
+        this.autoLoopsEnabled = enabled;
+        if (this.autoLoopsEnabled)
+            this.autoSetLoops();
+    }
+
     autoSetLoops()
     {
+        if (!this.autoLoopsEnabled)
+            return;
         if (this.hasFractionalParams())
             return;
 
@@ -203,9 +214,9 @@ class Spheromaniac
             if (r1 > 0 && r2 > 0)
                 periods.push(r2 / this.greatestCommonDivisor(r1, r2));
         }
-        if (this.xTurns != 0)
+        if (this.xTurns != 0 && this.xPeriod != 0)
             periods.push(Math.abs(this.xPeriod));
-        if (this.yTurns != 0)
+        if (this.yTurns != 0 && this.yPeriod != 0)
             periods.push(Math.abs(this.yPeriod));
 
         if (periods.length == 0)
@@ -1252,6 +1263,7 @@ class Spheromaniac
 
         this.loopsSlider = document.getElementById('loops');
         this.loopsInput = document.getElementById('loops_num');
+        this.autoLoopsCheck = document.getElementById('autoLoops');
         this.tailLoopsSlider = document.getElementById('tail_loops');
         this.animationSpeedSlider = document.getElementById('animation_speed');
         this.showMechanismCheck = document.getElementById('showMechanism');
@@ -1282,6 +1294,7 @@ class Spheromaniac
         this.lightModeCheck.checked = false;
         this.showAxesCheck.checked = false;
         this.showMechanismCheck.checked = true;
+        this.autoLoopsCheck.checked = this.autoLoopsEnabled;
         this.animationSpeedSlider.value = this.animationSpeed;
         this.evenOddCheck.checked = false;
         this.updateEvenOddUIState();

@@ -150,6 +150,7 @@
 
 <div id="panel-right" class="panel">
     <div class="drag-handle">⠿</div>
+    <label><input type="checkbox" id="autoLoops" checked onclick="app.setAutoLoops(this.checked)"> auto-calc loops</label>
     <div class="btn-row">
         <span class="label">loops</span>
         <input type="text" id="loops_num" value="10" oninput="app.setLoops(this.value)">
